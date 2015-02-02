@@ -1,0 +1,7 @@
+<?import javafx.scene.layout.*?>
+<GridPane fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain"
+      xmlns:fx="http://javafx.com/fxml">
+
+
+
+</GridPane>
