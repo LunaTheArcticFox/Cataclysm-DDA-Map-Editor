@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain">
     <center>
         <SplitPane dividerPositions="0.2" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
@@ -12,14 +12,25 @@
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                 <HBox prefHeight="34.0" prefWidth="420.0"/>
-                <ScrollPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS"/>
+                <ScrollPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <AnchorPane>
+                        <Canvas fx:id="canvas" width="768" height="768"/>
+                        <Canvas fx:id="canvasOverlay" width="768" height="768"/>
+                    </AnchorPane>
+                </ScrollPane>
             </VBox>
         </SplitPane>
     </center>
     <top>
         <MenuBar BorderPane.alignment="CENTER">
             <Menu text="File">
+                <MenuItem text="New" onAction="#testMapgenDataFileReader"/>
+                <MenuItem text="Open"/>
+                <MenuItem text="Open Recent"/>
+                <MenuItem text="Save"/>
+                <MenuItem text="Save As"/>
                 <MenuItem text="Close"/>
+                <MenuItem text="Exit"/>
             </Menu>
             <Menu text="Edit">
                 <MenuItem text="Delete"/>

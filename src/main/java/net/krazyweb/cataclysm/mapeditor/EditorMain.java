@@ -2,12 +2,21 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import java.nio.file.Paths;
+
 public class EditorMain extends Application {
+
+	@FXML
+	private Canvas canvas, canvasOverlay;
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -18,6 +27,59 @@ public class EditorMain extends Application {
 		//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
 		primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
 		primaryStage.show();
+	}
+
+	private int lastX = 0;
+	private int lastY = 0;
+
+	private void clearOverlay() {
+		canvasOverlay.getGraphicsContext2D().clearRect((lastX / 32) * 32 - 5, (lastY / 32) * 32 - 5, 42, 42);
+	}
+
+	private void drawBox(final int mouseX, final int mouseY) {
+
+		clearOverlay();
+
+		lastX = (mouseX / 32) * 32;
+		lastY = (mouseY / 32) * 32;
+
+		canvasOverlay.getGraphicsContext2D().setStroke(Color.ANTIQUEWHITE);
+		canvasOverlay.getGraphicsContext2D().strokeRect(lastX, lastY, 32, 32);
+
+	}
+
+	private void drawBox(final double mouseX, final double mouseY) {
+		drawBox((int) mouseX, (int) mouseY);
+	}
+
+	@FXML
+	private void testMapgenDataFileReader() {
+
+		canvasOverlay.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
+		canvasOverlay.setOnMouseExited(event -> clearOverlay());
+
+		MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
+		reader.start();
+
+		reader.setOnSucceeded(event -> {
+
+			MapgenMap map = reader.getMap();
+
+			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
+
+			for (int x = 0; x < 24; x++) {
+				for (int y = 0; y < 24; y++) {
+					if (map.terrain[x][y] == 0) {
+						graphics2D.setFill(Color.CHOCOLATE);
+					} else {
+						graphics2D.setFill(Color.CADETBLUE);
+					}
+					graphics2D.fillRect(x * 32, y * 32, 32, 32);
+				}
+			}
+
+		});
+
 	}
 
 }
