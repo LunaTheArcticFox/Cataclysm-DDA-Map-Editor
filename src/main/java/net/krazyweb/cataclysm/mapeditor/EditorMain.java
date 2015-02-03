@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import javafx.application.Application;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,10 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.file.Paths;
 
 public class EditorMain extends Application {
@@ -43,7 +48,7 @@ public class EditorMain extends Application {
 		lastX = (mouseX / 32) * 32;
 		lastY = (mouseY / 32) * 32;
 
-		canvasOverlay.getGraphicsContext2D().setStroke(Color.ANTIQUEWHITE);
+		canvasOverlay.getGraphicsContext2D().setStroke(Color.WHITE);
 		canvasOverlay.getGraphicsContext2D().strokeRect(lastX, lastY, 32, 32);
 
 	}
@@ -52,8 +57,21 @@ public class EditorMain extends Application {
 		drawBox((int) mouseX, (int) mouseY);
 	}
 
+	private static class Value<T> {
+		T value;
+	}
+
 	@FXML
 	private void testMapgenDataFileReader() {
+
+		Value<BufferedImage> texture = new Value<>();
+		texture.value = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
+
+		try {
+			texture.value = ImageIO.read(new File("Sample Data/tileset/tiles.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
 		canvasOverlay.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
 		canvasOverlay.setOnMouseExited(event -> clearOverlay());
@@ -61,8 +79,10 @@ public class EditorMain extends Application {
 		canvasOverlay.setOnMouseClicked(event -> {
 			//TODO currentTool.click(x, y);
 			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
-			graphics2D.setFill(Color.CHOCOLATE);
-			graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
+			//TODO move to tool, use selected texture
+			graphics2D.drawImage(SwingFXUtils.toFXImage(texture.value.getSubimage(32, 0, 32, 32), null), ((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32);
+			//graphics2D.setFill(Color.CHOCOLATE);
+			//graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
 			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);
 		});
 
