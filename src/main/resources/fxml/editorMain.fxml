@@ -1,7 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<GridPane fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain"
-      xmlns:fx="http://javafx.com/fxml">
 
-
-
-</GridPane>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain">
+    <center>
+        <SplitPane dividerPositions="0.2" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <items>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <HBox prefHeight="34.0" prefWidth="172.0" />
+                        <ScrollPane hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                    </children>
+                </VBox>
+                <VBox prefHeight="200.0" prefWidth="100.0">
+                    <children>
+                        <HBox prefHeight="34.0" prefWidth="420.0" />
+                        <ScrollPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+                    </children>
+                </VBox>
+            </items>
+        </SplitPane>
+    </center>
+    <top>
+        <MenuBar BorderPane.alignment="CENTER">
+            <menus>
+                <Menu text="File">
+                    <items>
+                        <MenuItem text="Close" />
+                    </items>
+                </Menu>
+                <Menu text="Edit">
+                    <items>
+                        <MenuItem text="Delete" />
+                    </items>
+                </Menu>
+                <Menu text="Help">
+                    <items>
+                        <MenuItem text="About" />
+                    </items>
+                </Menu>
+            </menus>
+        </MenuBar>
+    </top>
+</BorderPane>
