@@ -2,15 +2,17 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
+import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -22,6 +24,11 @@ public class EditorMain extends Application {
 
 	@FXML
 	private Canvas canvas, canvasOverlay;
+
+	@FXML
+	private Button pencilButton, lineButton;
+
+	private Tool tool = new PencilTool();
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
@@ -61,6 +68,14 @@ public class EditorMain extends Application {
 		T value;
 	}
 
+	private int convertMouseCoord(final int point) {
+		return (point / 32) * 32;
+	}
+
+	private int convertMouseCoord(final double point) {
+		return convertMouseCoord((int) point);
+	}
+
 	@FXML
 	private void testMapgenDataFileReader() {
 
@@ -76,23 +91,18 @@ public class EditorMain extends Application {
 		canvasOverlay.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
 		canvasOverlay.setOnMouseExited(event -> clearOverlay());
 
-		canvasOverlay.setOnMouseClicked(event -> {
-			//TODO currentTool.click(x, y);
-			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
-			//TODO move to tool, use selected texture
-			graphics2D.drawImage(SwingFXUtils.toFXImage(texture.value.getSubimage(32, 0, 32, 32), null), ((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32);
-			//graphics2D.setFill(Color.CHOCOLATE);
-			//graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
-			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);
+		canvasOverlay.setOnMousePressed(event -> {
+			tool.click(convertMouseCoord(event.getX()), convertMouseCoord(event.getY()), canvas);
 		});
 
 		canvasOverlay.setOnMouseDragged(event -> {
 			drawBox(event.getX(), event.getY());
 			//TODO currentTool.drag(x, y);
-			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
+			tool.drag(convertMouseCoord(event.getX()), convertMouseCoord(event.getY()), canvas);
+			/*GraphicsContext graphics2D = canvas.getGraphicsContext2D();
 			graphics2D.setFill(Color.CHOCOLATE);
 			graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
-			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);
+			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);*/
 		});
 
 		MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
