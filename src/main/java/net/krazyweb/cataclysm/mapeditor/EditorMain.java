@@ -9,15 +9,15 @@ import javafx.stage.Stage;
 
 public class EditorMain extends Application {
 
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("/fxml/editorMain.fxml"));
-        primaryStage.setTitle("Cataclysm Map Editor");
-        primaryStage.setScene(new Scene(root, 1600, 900));
-        primaryStage.setResizable(true);
-        //primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
-        primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
-        primaryStage.show();
-    }
+	@Override
+	public void start(Stage primaryStage) throws Exception {
+		Parent root = FXMLLoader.load(getClass().getResource("/fxml/editorMain.fxml"));
+		primaryStage.setTitle("Cataclysm Map Editor");
+		primaryStage.setScene(new Scene(root, 1600, 900));
+		primaryStage.setResizable(true);
+		//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
+		primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
+		primaryStage.show();
+	}
 
 }
