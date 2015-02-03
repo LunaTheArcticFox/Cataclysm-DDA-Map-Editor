@@ -58,6 +58,23 @@ public class EditorMain extends Application {
 		canvasOverlay.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
 		canvasOverlay.setOnMouseExited(event -> clearOverlay());
 
+		canvasOverlay.setOnMouseClicked(event -> {
+			//TODO currentTool.click(x, y);
+			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
+			graphics2D.setFill(Color.CHOCOLATE);
+			graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
+			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);
+		});
+
+		canvasOverlay.setOnMouseDragged(event -> {
+			drawBox(event.getX(), event.getY());
+			//TODO currentTool.drag(x, y);
+			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
+			graphics2D.setFill(Color.CHOCOLATE);
+			graphics2D.fillRect(((int) event.getX() / 32) * 32, ((int) event.getY() / 32) * 32, 32, 32);
+			System.out.println("Paint " + ((int) event.getX() / 32) * 32 + "," + ((int) event.getY() / 32) * 32);
+		});
+
 		MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
 		reader.start();
 
