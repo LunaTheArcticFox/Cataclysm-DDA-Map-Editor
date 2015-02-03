@@ -9,7 +9,7 @@
             <VBox fx:id="splitPane">
                 <ToolBar/>
                 <ScrollPane fx:id="tilePickerParent" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
-                    <TilePane fx:id="tilePicker"/>
+                    <TilePane fx:id="tilePicker" vgap="5" hgap="5"/>
                 </ScrollPane>
             </VBox>
             <VBox>
