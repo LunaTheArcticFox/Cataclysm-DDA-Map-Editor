@@ -79,6 +79,8 @@ public class EditorMain extends Application {
 	@FXML
 	private void testMapgenDataFileReader() {
 
+		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
+
 		Value<BufferedImage> texture = new Value<>();
 		texture.value = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
 

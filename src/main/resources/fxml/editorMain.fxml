@@ -12,6 +12,9 @@
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0">
                 <ToolBar>
+                    <Button fx:id="editTerrainAndFurnitureLayerButton" text="Terrain/Furniture Layer"/>
+                    <Button fx:id="editSpawnLayerButton" text="Spawn Layer"/>
+                    <Separator orientation="VERTICAL" />
                     <Button fx:id="pencilButton" text="Pencil"/>
                     <Button fx:id="lineButton" text="Line"/>
                 </ToolBar>
