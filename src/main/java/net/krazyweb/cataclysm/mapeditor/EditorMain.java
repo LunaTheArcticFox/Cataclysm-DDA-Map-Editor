@@ -9,6 +9,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.TilePane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
@@ -28,6 +32,15 @@ public class EditorMain extends Application {
 	@FXML
 	private Button pencilButton, lineButton;
 
+	@FXML
+	private ScrollPane tilePickerParent;
+
+	@FXML
+	private VBox splitPane;
+
+	@FXML
+	private TilePane tilePicker;
+
 	private Tool tool = new PencilTool();
 
 	@Override
@@ -39,6 +52,12 @@ public class EditorMain extends Application {
 		//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
 		primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
 		primaryStage.show();
+	}
+
+	@FXML
+	private void initialize() {
+		tilePickerParent.setFitToWidth(true);
+		tilePickerParent.maxHeightProperty().bind(splitPane.heightProperty());
 	}
 
 	private int lastX = 0;
@@ -80,6 +99,10 @@ public class EditorMain extends Application {
 	private void testMapgenDataFileReader() {
 
 		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
+
+		TileSet.textures.entrySet().forEach(textureEntry -> {
+			tilePicker.getChildren().add(new ImageView(textureEntry.getValue()));
+		});
 
 		Value<BufferedImage> texture = new Value<>();
 		texture.value = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);

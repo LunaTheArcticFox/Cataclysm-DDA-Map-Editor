@@ -10,8 +10,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 //TODO Make this a service
 public class TileSet {
@@ -19,7 +19,7 @@ public class TileSet {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	//TODO Un-static this
-	public static Map<String, Image> textures = new HashMap<>();
+	public static Map<String, Image> textures = new TreeMap<>();
 
 	private BufferedImage texture = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
 
