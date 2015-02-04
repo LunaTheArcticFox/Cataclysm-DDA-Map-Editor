@@ -11,6 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
+import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,14 +55,28 @@ public class MapDisplay {
 
 	private EventBus eventBus;
 
+	private Tile currentTile;
+
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+
+	@Subscribe
+	public void tilePickedEventListener(final TilePickedEvent event) {
+		currentTile = event.getTile();
 	}
 
 	@FXML
 	private void initialize() {
 		root.setOnMouseMoved(event -> {
 			drawBox(event.getX(), event.getY());
+		});
+		root.setOnMousePressed(event -> {
+			int eventX = ((int) (event.getX() - 1) / 32);
+			int eventY = ((int) (event.getY() - 1) / 32);
+			//Current tool draw
+			map.terrain[eventX][eventY] = currentTile.getName();
+			drawTile(eventX, eventY, terrain.getGraphicsContext2D(), map.terrain);
 		});
 		tileGroups.put("t_wall_h", "wallGroup");
 		tileGroups.put("t_wall_v", "wallGroup");

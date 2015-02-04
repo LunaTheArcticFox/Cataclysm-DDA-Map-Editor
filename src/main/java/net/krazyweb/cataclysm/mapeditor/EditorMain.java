@@ -10,6 +10,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
@@ -25,6 +26,9 @@ public class EditorMain extends Application {
 
 	@FXML
 	private ScrollPane mapPanel;
+
+	@FXML
+	private VBox tilePickerPanel;
 
 	private EventBus eventBus = new EventBus();
 
@@ -46,7 +50,18 @@ public class EditorMain extends Application {
 	@FXML
 	private void initialize() {
 
-		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
+		//-> Tile picker
+		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
+		try {
+			tilePickerLoader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		eventBus.register(tilePickerLoader.getController());
+		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
+		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
+
+		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
 
 		eventBus.register(this);
 		eventBus.register(new MapLoader(eventBus));
@@ -76,9 +91,8 @@ public class EditorMain extends Application {
 		loader.<MapDisplay>getController().setEventBus(eventBus);
 		mapPanel.setContent(loader.<ScrollPane>getRoot());
 		//-> Toolbars
-		//-> Tile picker
 
-		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("fortified_house01.json")));
+		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("house05.json")));
 
 		//Bind listeners for things such as hotkeys
 

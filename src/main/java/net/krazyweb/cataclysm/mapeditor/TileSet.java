@@ -2,14 +2,17 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -23,7 +26,10 @@ public class TileSet {
 
 	private BufferedImage texture = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
 
-	public TileSet(final Path path) {
+	private EventBus eventBus;
+
+	public TileSet(final Path path, final EventBus eventBus) {
+		this.eventBus = eventBus;
 		try {
 			texture = ImageIO.read(new File("Sample Data/tileset/tiles.png"));
 		} catch (IOException e) {
@@ -42,7 +48,7 @@ public class TileSet {
 
 		root.get("tiles-new").get(0).get("tiles").forEach(tileDef -> {
 
-			Tile tile = new Tile();
+			Tile tile = new Tile(tileDef.get("id").asText());
 
 			if (tileDef.has("fg")) {
 				int tileNumber = tileDef.get("fg").asInt();
@@ -56,7 +62,7 @@ public class TileSet {
 			}
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
 				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
-					Tile additionalTile = new Tile();
+					Tile additionalTile = new Tile(additionalTileDef.get("id").asText());
 					if (additionalTileDef.has("fg")) {
 						int tileNumber = additionalTileDef.get("fg").asInt();
 						loadImageFromNumber(tileNumber);
@@ -72,6 +78,8 @@ public class TileSet {
 			}
 			Tile.tiles.put(tileDef.get("id").asText(), tile);
 		});
+
+		eventBus.post(new TilesetLoadedEvent(Paths.get("")));
 
 	}
 

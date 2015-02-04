@@ -11,12 +11,18 @@ public class Tile {
 
 	public static Map<String, Tile> tiles = new HashMap<>();
 
+	private String name;
 	private int foreground;
 	private int background;
 
 	private Map<AdditionalTileType, Tile> additionalTiles = new HashMap<>();
 
-	public Tile() {
+	public Tile(final String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	public void setForeground(final int foreground) {

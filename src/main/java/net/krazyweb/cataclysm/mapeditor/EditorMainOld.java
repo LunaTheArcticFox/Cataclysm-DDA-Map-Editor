@@ -22,7 +22,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Paths;
 
 public class EditorMainOld extends Application {
 
@@ -104,7 +103,7 @@ public class EditorMainOld extends Application {
 	@FXML
 	private void testMapgenDataFileReader() {
 
-		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
+		//new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
 
 		TileSet.textures.entrySet().forEach(textureEntry -> {
 			tilePicker.getChildren().add(new ImageView(textureEntry.getValue()));
