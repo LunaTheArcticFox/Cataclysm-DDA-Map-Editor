@@ -48,7 +48,7 @@ public class MapDisplay {
 	@FXML
 	private Canvas terrain, overlays;
 
-	private int lastX, lastY;
+	private int lastX, lastY, lastHoverX, lastHoverY;
 
 	private MapgenMap map;
 
@@ -65,6 +65,9 @@ public class MapDisplay {
 		});
 		tileGroups.put("t_wall_h", "wallGroup");
 		tileGroups.put("t_wall_v", "wallGroup");
+		tileGroups.put("t_window_boarded", "wallGroup");
+		tileGroups.put("t_door_c", "wallGroup");
+		tileGroups.put("t_door_locked", "wallGroup");
 	}
 
 	private void clearOverlay() {
@@ -81,10 +84,14 @@ public class MapDisplay {
 		overlays.getGraphicsContext2D().setStroke(Color.WHITE);
 		overlays.getGraphicsContext2D().strokeRect(lastX, lastY, 32, 32);
 
-		int eventX = (mouseX / 32);
-		int eventY = (mouseY / 32);
+		int eventX = ((mouseX - 1) / 32);
+		int eventY = ((mouseY - 1) / 32);
 
-		eventBus.post(new TileHoverEvent(map.terrain[eventX][eventY], eventX, eventY));
+		if (eventX != lastHoverX || eventY != lastHoverY) {
+			eventBus.post(new TileHoverEvent(map.terrain[eventX][eventY], eventX, eventY));
+			lastHoverX = eventX;
+			lastHoverY = eventY;
+		}
 
 	}
 
@@ -104,7 +111,6 @@ public class MapDisplay {
 			for (int x = 0; x < 24; x++) {
 				for (int y = 0; y < 24; y++) {
 					if (Tile.tiles.get(map.terrain[x][y]).isMultiTile()) {
-						System.out.println("Multitile");
 						int bitwiseMapping = getBitwiseMapping(x, y);
 						Image background = TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getBackground(BITWISE_TYPES[bitwiseMapping]));
 						Image foreground = TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getForeground(BITWISE_TYPES[bitwiseMapping]));

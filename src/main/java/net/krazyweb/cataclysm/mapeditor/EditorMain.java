@@ -1,7 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -9,14 +8,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 
 import java.io.IOException;
 import java.nio.file.Paths;
 
 public class EditorMain extends Application {
+
+	@FXML
+	private BorderPane root;
 
 	@FXML
 	private ScrollPane mapPanel;
@@ -50,6 +53,16 @@ public class EditorMain extends Application {
 
 		//Load each component in the main view and pass the model to them
 		//-> Status bar
+		FXMLLoader statusBarLoader = new FXMLLoader(getClass().getResource("/fxml/statusBar.fxml"));
+		try {
+			statusBarLoader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		eventBus.register(statusBarLoader.<MapDisplay>getController());
+		statusBarLoader.<StatusBar>getController().setEventBus(eventBus);
+		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
+
 		//-> Canvasses
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mapCanvasses.fxml"));
 		try {
@@ -67,11 +80,6 @@ public class EditorMain extends Application {
 
 		//Bind listeners for things such as hotkeys
 
-	}
-
-	@Subscribe
-	public void tileHoverEventListener(final TileHoverEvent event) {
-		System.out.println(event.getTileName() + "\t" + event.getX() + ", " + event.getY());
 	}
 
 }
