@@ -5,18 +5,50 @@ import java.util.Map;
 
 public class Tile {
 
-	public final int foreground;
-	public final int background;
-
-	public Tile(final int foreground, final int background) {
-		this.foreground = foreground;
-		this.background = background;
+	public static enum AdditionalTileType {
+		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED
 	}
 
 	public static Map<String, Tile> tiles = new HashMap<>();
 
-	public static void addNewTile(final String tileName, final int foreground, final int background) {
-		tiles.put(tileName, new Tile(foreground, background));
+	private int foreground;
+	private int background;
+
+	private Map<AdditionalTileType, Tile> additionalTiles = new HashMap<>();
+
+	public Tile() {
+	}
+
+	public void setForeground(final int foreground) {
+		this.foreground = foreground;
+	}
+
+	public void setBackground(final int background) {
+		this.background = background;
+	}
+
+	public void addMultiTile(final Tile tile, final AdditionalTileType type) {
+		additionalTiles.put(type, tile);
+	}
+
+	public boolean isMultiTile() {
+		return !additionalTiles.isEmpty();
+	}
+
+	public int getForeground(final AdditionalTileType type) {
+		return additionalTiles.get(type).foreground;
+	}
+
+	public int getForeground() {
+		return foreground;
+	}
+
+	public int getBackground(final AdditionalTileType type) {
+		return additionalTiles.get(type).background;
+	}
+
+	public int getBackground() {
+		return background;
 	}
 
 }

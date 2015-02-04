@@ -38,30 +38,49 @@ public class TileSet {
 
 	private void load(final Path path) throws IOException {
 
-		JsonNode root = OBJECT_MAPPER.readTree(path.toFile()); //TODO Allow for multiple maps per file
+		JsonNode root = OBJECT_MAPPER.readTree(path.toFile());
 
 		root.get("tiles-new").get(0).get("tiles").forEach(tileDef -> {
-			int foreground = 0;
-			int background = 0;
-			if (tileDef.get("fg") != null) {
+
+			Tile tile = new Tile();
+
+			if (tileDef.has("fg")) {
 				int tileNumber = tileDef.get("fg").asInt();
-				int x = tileNumber % 16;
-				int y = tileNumber / 16;
-				Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
-				textures.put(tileNumber, image);
-				foreground = tileNumber;
+				loadImageFromID(tileNumber);
+				tile.setForeground(tileNumber);
 			}
-			if (tileDef.get("bg") != null) {
+			if (tileDef.has("bg")) {
 				int tileNumber = tileDef.get("bg").asInt();
-				int x = tileNumber % 16;
-				int y = tileNumber / 16;
-				Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
-				textures.put(tileNumber, image);
-				background = tileNumber;
+				loadImageFromID(tileNumber);
+				tile.setBackground(tileNumber);
 			}
-			Tile.addNewTile(tileDef.get("id").asText(), foreground, background);
+			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
+				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
+					System.out.println("Tile....");
+					Tile additionalTile = new Tile();
+					if (additionalTileDef.has("fg")) {
+						int tileNumber = additionalTileDef.get("fg").asInt();
+						loadImageFromID(tileNumber);
+						additionalTile.setForeground(tileNumber);
+					}
+					if (additionalTileDef.has("bg")) {
+						int tileNumber = additionalTileDef.get("bg").asInt();
+						loadImageFromID(tileNumber);
+						additionalTile.setBackground(tileNumber);
+					}
+					Tile.tiles.put(additionalTileDef.get("id").asText(), additionalTile);
+				});
+			}
+			Tile.tiles.put(tileDef.get("id").asText(), tile);
 		});
 
+	}
+
+	private void loadImageFromID(final int id) {
+		int x = id % 16;
+		int y = id / 16;
+		Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
+		textures.put(id, image);
 	}
 
 }
