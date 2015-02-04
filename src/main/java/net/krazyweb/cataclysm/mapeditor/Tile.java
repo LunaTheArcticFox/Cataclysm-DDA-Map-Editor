@@ -36,7 +36,11 @@ public class Tile {
 	}
 
 	public int getForeground(final AdditionalTileType type) {
-		return additionalTiles.get(type).foreground;
+		if (additionalTiles.containsKey(type)) {
+			return additionalTiles.get(type).foreground;
+		} else {
+			return getForeground();
+		}
 	}
 
 	public int getForeground() {
@@ -44,7 +48,11 @@ public class Tile {
 	}
 
 	public int getBackground(final AdditionalTileType type) {
-		return additionalTiles.get(type).background;
+		if (additionalTiles.containsKey(type)) {
+			return additionalTiles.get(type).background;
+		} else {
+			return getBackground();
+		}
 	}
 
 	public int getBackground() {

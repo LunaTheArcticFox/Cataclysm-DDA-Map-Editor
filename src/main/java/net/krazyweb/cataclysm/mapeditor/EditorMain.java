@@ -76,7 +76,7 @@ public class EditorMain extends Application {
 		//-> Toolbars
 		//-> Tile picker
 
-		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("house05.json")));
+		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("fortified_house01.json")));
 
 		//Bind listeners for things such as hotkeys
 

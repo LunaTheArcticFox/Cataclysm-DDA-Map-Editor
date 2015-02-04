@@ -88,7 +88,7 @@ public class MapDisplay {
 		int eventY = ((mouseY - 1) / 32);
 
 		if (eventX != lastHoverX || eventY != lastHoverY) {
-			eventBus.post(new TileHoverEvent(map.terrain[eventX][eventY], eventX, eventY));
+			eventBus.post(new TileHoverEvent(map.terrain[eventX][eventY] + " | " + map.furniture[eventX][eventY], eventX, eventY));
 			lastHoverX = eventX;
 			lastHoverY = eventY;
 		}
@@ -106,26 +106,37 @@ public class MapDisplay {
 
 			map = event.getMap();
 
-			GraphicsContext terrainGraphicsContext = terrain.getGraphicsContext2D();
+			GraphicsContext graphicsContext = terrain.getGraphicsContext2D();
 
 			for (int x = 0; x < 24; x++) {
 				for (int y = 0; y < 24; y++) {
-					if (Tile.tiles.get(map.terrain[x][y]).isMultiTile()) {
-						int bitwiseMapping = getBitwiseMapping(x, y);
-						Image background = TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getBackground(BITWISE_TYPES[bitwiseMapping]));
-						Image foreground = TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getForeground(BITWISE_TYPES[bitwiseMapping]));
-						int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-						drawRotatedImage(terrainGraphicsContext, background, rotation, x * 32, y * 32);
-						drawRotatedImage(terrainGraphicsContext, foreground, rotation, x * 32, y * 32);
-					} else {
-						terrainGraphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getBackground()), x * 32, y * 32);
-						terrainGraphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(map.terrain[x][y]).getForeground()), x * 32, y * 32);
-					}
+					drawTile(x, y, graphicsContext, map.terrain);
+					drawTile(x, y, graphicsContext, map.furniture);
 				}
 			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+	}
+
+	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext, final String[][] data) {
+
+		if (data[x][y] == null || data[x][y].isEmpty()) {
+			return;
+		}
+
+		if (Tile.tiles.get(data[x][y]).isMultiTile()) {
+			int bitwiseMapping = getBitwiseMapping(x, y, data);
+			Image background = TileSet.textures.get(Tile.tiles.get(data[x][y]).getBackground(BITWISE_TYPES[bitwiseMapping]));
+			Image foreground = TileSet.textures.get(Tile.tiles.get(data[x][y]).getForeground(BITWISE_TYPES[bitwiseMapping]));
+			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
+			drawRotatedImage(graphicsContext, background, rotation, x * 32, y * 32);
+			drawRotatedImage(graphicsContext, foreground, rotation, x * 32, y * 32);
+		} else {
+			graphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(data[x][y]).getBackground()), x * 32, y * 32);
+			graphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(data[x][y]).getForeground()), x * 32, y * 32);
 		}
 
 	}
@@ -145,9 +156,9 @@ public class MapDisplay {
 		graphicsContext.restore(); // back to original state (before rotation)
 	}
 
-	private int getBitwiseMapping(final int x, final int y) {
+	private int getBitwiseMapping(final int x, final int y, final String[][] data) {
 
-		String current = tileAt(x, y);
+		String current = tileAt(x, y, data);
 
 		byte tilemap = 0;
 
@@ -155,19 +166,19 @@ public class MapDisplay {
 			return 0;
 		}
 
-		if (tileAt(x, y + 1).equals(current)) {
+		if (tileAt(x, y + 1, data) != null && tileAt(x, y + 1, data).equals(current)) {
 			tilemap += 1;
 		}
 
-		if (tileAt(x + 1, y).equals(current)) {
+		if (tileAt(x + 1, y, data) != null && tileAt(x + 1, y, data).equals(current)) {
 			tilemap += 2;
 		}
 
-		if (tileAt(x, y - 1).equals(current)) {
+		if (tileAt(x, y - 1, data) != null && tileAt(x, y - 1, data).equals(current)) {
 			tilemap += 4;
 		}
 
-		if (tileAt(x - 1, y).equals(current)) {
+		if (tileAt(x - 1, y, data) != null && tileAt(x - 1, y, data).equals(current)) {
 			tilemap += 8;
 		}
 
@@ -175,15 +186,15 @@ public class MapDisplay {
 
 	}
 
-	private String tileAt(final int x, final int y) {
+	private String tileAt(final int x, final int y, final String[][] data) {
 		if (x < 0 || y < 0 || x > 24 - 1 || y > 24 - 1) {
 			return "";
 		}
-		String tile = map.terrain[x][y];
+		String tile = data[x][y];
 		if (tileGroups.containsKey(tile)) {
 			return tileGroups.get(tile);
 		}
-		return map.terrain[x][y];
+		return data[x][y];
 	}
 
 }
