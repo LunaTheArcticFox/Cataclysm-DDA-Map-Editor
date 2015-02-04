@@ -3,7 +3,7 @@
 <?import javafx.scene.canvas.*?>
 <?import javafx.scene.layout.*?>
 
-<StackPane prefHeight="768.0" prefWidth="768.0" fx:controller="net.krazyweb.cataclysm.mapeditor.MapDisplay" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-	<Canvas height="768.0" width="768.0"/>
-	<Canvas height="768.0" width="768.0"/>
+<StackPane prefHeight="768.0" prefWidth="768.0" fx:controller="net.krazyweb.cataclysm.mapeditor.MapDisplay" fx:id="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<Canvas fx:id="terrain"  height="768.0" width="768.0"/>
+	<Canvas fx:id="overlays" height="768.0" width="768.0"/>
 </StackPane>

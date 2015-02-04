@@ -58,23 +58,13 @@ public class MapgenDataFileReader extends Service<Boolean> {
 		System.out.println("terrain =");
 		object.get("terrain").fields().forEachRemaining(tile -> {
 			terrainMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-			if (!Tile.terrain.containsKey(tile.getValue().asText())) {
-				Tile.addNewTile(tile.getValue().asText(), false);
-			}
 			System.out.println(tile.getKey() + "  " + tile.getValue().asText());
 		});
 
 		System.out.println("furniture =");
 		object.get("furniture").fields().forEachRemaining(tile -> {
-
 			furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-
-			if (!Tile.furniture.containsKey(tile.getValue().asText())) {
-				Tile.addNewTile(tile.getValue().asText(), true);
-			}
-
 			System.out.println(tile.getKey() + "  " + tile.getValue().asText());
-
 		});
 
 		System.out.println("\r\nbackground =");
@@ -84,8 +74,8 @@ public class MapgenDataFileReader extends Service<Boolean> {
 		object.get("rows").forEach(row -> {
 			String rowString = row.asText();
 			for (int i = 0; i < rowString.length(); i++) {
-				map.terrain[i][y.value] = Tile.terrain.get(terrainMap.get(rowString.charAt(i)));
-				System.out.print(Tile.terrain.get(terrainMap.get(rowString.charAt(i))));
+				map.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+				System.out.print(terrainMap.get(rowString.charAt(i)));
 			}
 			System.out.println();
 			y.value++;
@@ -96,7 +86,7 @@ public class MapgenDataFileReader extends Service<Boolean> {
 			String rowString = row.asText();
 			for (int i = 0; i < rowString.length(); i++) {
 				if (furnitureMap.containsKey(rowString.charAt(i))) {
-					System.out.print(Tile.furniture.get(furnitureMap.get(rowString.charAt(i))));
+					System.out.print(furnitureMap.get(rowString.charAt(i)));
 				} else {
 					System.out.print(" ");
 				}

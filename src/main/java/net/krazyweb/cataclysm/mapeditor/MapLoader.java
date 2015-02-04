@@ -23,21 +23,6 @@ public class MapLoader {
 
 		reader.setOnSucceeded(value -> {
 			eventBus.post(new MapLoadedEvent(reader.getMap()));
-			/*MapgenMap map = reader.getMap();
-
-			GraphicsContext graphics2D = canvas.getGraphicsContext2D();
-
-			for (int x = 0; x < 24; x++) {
-				for (int y = 0; y < 24; y++) {
-					if (map.terrain[x][y] == 0) {
-						graphics2D.setFill(Color.CHOCOLATE);
-					} else {
-						graphics2D.setFill(Color.CADETBLUE);
-					}
-					graphics2D.fillRect(x * 32, y * 32, 32, 32);
-				}
-			}*/
-
 		});
 
 	}

@@ -7,7 +7,6 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
@@ -141,7 +140,7 @@ public class EditorMainOld extends Application {
 			tool.dragEnd(convertMouseCoord(event.getX()), convertMouseCoord(event.getY()), canvas);
 		});
 
-		MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
+		/*MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
 		reader.start();
 
 		reader.setOnSucceeded(event -> {
@@ -161,7 +160,7 @@ public class EditorMainOld extends Application {
 				}
 			}
 
-		});
+		});*/
 
 	}
 

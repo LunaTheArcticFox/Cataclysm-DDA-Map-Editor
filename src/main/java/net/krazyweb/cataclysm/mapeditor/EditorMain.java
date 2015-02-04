@@ -23,17 +23,23 @@ public class EditorMain extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("/fxml/newEditorMain.fxml"));
-		primaryStage.setTitle("Cataclysm Map Editor");
-		primaryStage.setScene(new Scene(root, 1600, 900));
-		primaryStage.setResizable(true);
-		//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
-		primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
-		primaryStage.show();
+		try {
+			Parent root = FXMLLoader.load(getClass().getResource("/fxml/newEditorMain.fxml"));
+			primaryStage.setTitle("Cataclysm Map Editor");
+			primaryStage.setScene(new Scene(root, 1600, 900));
+			primaryStage.setResizable(true);
+			//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
+			primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
+			primaryStage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@FXML
 	private void initialize() {
+
+		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
 
 		eventBus.register(new MapLoader(eventBus));
 

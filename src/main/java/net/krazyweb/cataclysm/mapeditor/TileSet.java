@@ -19,7 +19,7 @@ public class TileSet {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	//TODO Un-static this
-	public static Map<String, Image> textures = new TreeMap<>();
+	public static Map<Integer, Image> textures = new TreeMap<>();
 
 	private BufferedImage texture = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
 
@@ -41,15 +41,25 @@ public class TileSet {
 		JsonNode root = OBJECT_MAPPER.readTree(path.toFile()); //TODO Allow for multiple maps per file
 
 		root.get("tiles-new").get(0).get("tiles").forEach(tileDef -> {
-			if (tileDef.get("fg") == null) {
-				return;
+			int foreground = 0;
+			int background = 0;
+			if (tileDef.get("fg") != null) {
+				int tileNumber = tileDef.get("fg").asInt();
+				int x = tileNumber % 16;
+				int y = tileNumber / 16;
+				Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
+				textures.put(tileNumber, image);
+				foreground = tileNumber;
 			}
-			int tileNumber = tileDef.get("fg").asInt();
-			int x = tileNumber % 16;
-			int y = tileNumber / 16;
-			System.out.println("Adding " + tileDef.get("id") + " " + x * 32 + ", " + y * 32);
-			Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
-			textures.put(tileDef.get("id").asText(), image);
+			if (tileDef.get("bg") != null) {
+				int tileNumber = tileDef.get("bg").asInt();
+				int x = tileNumber % 16;
+				int y = tileNumber / 16;
+				Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
+				textures.put(tileNumber, image);
+				background = tileNumber;
+			}
+			Tile.addNewTile(tileDef.get("id").asText(), foreground, background);
 		});
 
 	}
