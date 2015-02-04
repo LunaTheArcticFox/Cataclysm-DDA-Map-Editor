@@ -8,6 +8,6 @@ public abstract class Tool {
 	public void click(final int x, final int y, final Canvas canvas) {} //Single point click and release
 	public void drag(final int x, final int y, final Canvas canvas) {} //Click and drag for each movement
 	public void dragStart(final int x, final int y, final Canvas canvas) {} //Start of drag, single point
-	public void dragRelease(final int x, final int y, final Canvas canvas) {} //End of drag, single point
+	public void dragEnd(final int x, final int y, final Canvas canvas) {} //End of drag, single point
 
 }
