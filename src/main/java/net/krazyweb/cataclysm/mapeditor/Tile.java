@@ -6,7 +6,7 @@ import java.util.Map;
 public class Tile {
 
 	public static enum AdditionalTileType {
-		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED
+		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED, BROKEN, OPEN
 	}
 
 	public static Map<String, Tile> tiles = new HashMap<>();

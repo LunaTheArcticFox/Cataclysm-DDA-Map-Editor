@@ -46,29 +46,28 @@ public class TileSet {
 
 			if (tileDef.has("fg")) {
 				int tileNumber = tileDef.get("fg").asInt();
-				loadImageFromID(tileNumber);
+				loadImageFromNumber(tileNumber);
 				tile.setForeground(tileNumber);
 			}
 			if (tileDef.has("bg")) {
 				int tileNumber = tileDef.get("bg").asInt();
-				loadImageFromID(tileNumber);
+				loadImageFromNumber(tileNumber);
 				tile.setBackground(tileNumber);
 			}
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
 				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
-					System.out.println("Tile....");
 					Tile additionalTile = new Tile();
 					if (additionalTileDef.has("fg")) {
 						int tileNumber = additionalTileDef.get("fg").asInt();
-						loadImageFromID(tileNumber);
+						loadImageFromNumber(tileNumber);
 						additionalTile.setForeground(tileNumber);
 					}
 					if (additionalTileDef.has("bg")) {
 						int tileNumber = additionalTileDef.get("bg").asInt();
-						loadImageFromID(tileNumber);
+						loadImageFromNumber(tileNumber);
 						additionalTile.setBackground(tileNumber);
 					}
-					Tile.tiles.put(additionalTileDef.get("id").asText(), additionalTile);
+					tile.addMultiTile(additionalTile, Tile.AdditionalTileType.valueOf(additionalTileDef.get("id").asText().toUpperCase()));
 				});
 			}
 			Tile.tiles.put(tileDef.get("id").asText(), tile);
@@ -76,11 +75,11 @@ public class TileSet {
 
 	}
 
-	private void loadImageFromID(final int id) {
-		int x = id % 16;
-		int y = id / 16;
+	private void loadImageFromNumber(final int number) {
+		int x = number % 16;
+		int y = number / 16;
 		Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
-		textures.put(id, image);
+		textures.put(number, image);
 	}
 
 }

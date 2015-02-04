@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
+import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -41,6 +43,7 @@ public class EditorMain extends Application {
 
 		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"));
 
+		eventBus.register(this);
 		eventBus.register(new MapLoader(eventBus));
 
 		//Load the model
@@ -55,6 +58,7 @@ public class EditorMain extends Application {
 			e.printStackTrace();
 		}
 		eventBus.register(loader.<MapDisplay>getController());
+		loader.<MapDisplay>getController().setEventBus(eventBus);
 		mapPanel.setContent(loader.<ScrollPane>getRoot());
 		//-> Toolbars
 		//-> Tile picker
@@ -63,6 +67,11 @@ public class EditorMain extends Application {
 
 		//Bind listeners for things such as hotkeys
 
+	}
+
+	@Subscribe
+	public void tileHoverEventListener(final TileHoverEvent event) {
+		System.out.println(event.getTileName() + "\t" + event.getX() + ", " + event.getY());
 	}
 
 }
