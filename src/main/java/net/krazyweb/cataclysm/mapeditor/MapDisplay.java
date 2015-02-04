@@ -127,6 +127,13 @@ public class MapDisplay {
 			return;
 		}
 
+		//Fallback for tiles not supported by tileset
+		if (Tile.tiles.get(data[x][y]) == null) {
+			graphicsContext.setFill(Color.FUCHSIA);
+			graphicsContext.fillRect(x * 32, y * 32, 32, 32);
+			return;
+		}
+
 		if (Tile.tiles.get(data[x][y]).isMultiTile()) {
 			int bitwiseMapping = getBitwiseMapping(x, y, data);
 			Image background = TileSet.textures.get(Tile.tiles.get(data[x][y]).getBackground(BITWISE_TYPES[bitwiseMapping]));
