@@ -10,9 +10,11 @@ import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
@@ -79,6 +81,20 @@ public class EditorMain extends Application {
 		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("fortified_house01.json")));
 
 		//Bind listeners for things such as hotkeys
+
+	}
+
+	@FXML
+	private void openFile() {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Pick Json File");
+		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+
+		File selectedFile = fileChooser.showOpenDialog(null);
+		if (selectedFile != null) {
+			eventBus.post(new LoadMapEvent(selectedFile.toPath()));
+		}
 
 	}
 

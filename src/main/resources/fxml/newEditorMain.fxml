@@ -7,8 +7,8 @@
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
-			<Menu mnemonicParsing="false" text="File">
-				<MenuItem mnemonicParsing="false" text="Close"/>
+			<Menu text="_File">
+				<MenuItem text="_Open" onAction="#openFile"/>
 			</Menu>
 			<Menu mnemonicParsing="false" text="Edit">
 				<MenuItem mnemonicParsing="false" text="Delete"/>

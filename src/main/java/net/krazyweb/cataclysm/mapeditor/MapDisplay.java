@@ -141,9 +141,9 @@ public class MapDisplay {
 
 	}
 
-	private void rotate(final GraphicsContext gc, final double angle, final double x, final double y) {
-		Rotate r = new Rotate(angle, x, y);
-		gc.setTransform(r.getMxx(), r.getMyx(), r.getMxy(), r.getMyy(), r.getTx(), r.getTy());
+	private void rotate(final GraphicsContext graphicsContext, final double angle, final double x, final double y) {
+		Rotate rotation = new Rotate(angle, x, y);
+		graphicsContext.setTransform(rotation.getMxx(), rotation.getMyx(), rotation.getMxy(), rotation.getMyy(), rotation.getTx(), rotation.getTy());
 	}
 
 	private void drawRotatedImage(final GraphicsContext graphicsContext, final Image image, final double angle, final int x, final int y) {

@@ -43,45 +43,46 @@ public class MapgenDataFileReader extends Service<Boolean> {
 
 	private void load() throws IOException {
 
-		JsonNode root = OBJECT_MAPPER.readTree(path.toFile()).get(0); //TODO Allow for multiple maps per file
+		OBJECT_MAPPER.readTree(path.toFile()).forEach(root -> {
 
-		System.out.println("type = " + root.get("type").asText());
-		System.out.println("om_terrain = " + root.get("om_terrain").get(0).asText());
-		System.out.println("method = " + root.get("method").asText());
-		System.out.println("weight = " + root.get("weight").asInt());
-
-		JsonNode object = root.get("object");
-
-		Map<Character, String> terrainMap = new HashMap<>();
-		Map<Character, String> furnitureMap = new HashMap<>();
-
-		object.get("terrain").fields().forEachRemaining(tile -> {
-			terrainMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-		});
-
-		object.get("furniture").fields().forEachRemaining(tile -> {
-			furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-		});
-
-
-		Value<Integer> y = new Value<>();
-		y.value = 0;
-		object.get("rows").forEach(row -> {
-			String rowString = row.asText();
-			for (int i = 0; i < rowString.length(); i++) {
-				map.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+			if (!(root.get("type").asText().equals("mapgen") || root.get("type").asText().equals("overmap_terrain"))) {
+				return;
 			}
-			y.value++;
-		});
 
-		y.value = 0;
+			System.out.println("type = " + root.get("type").asText());
 
-		object.get("rows").forEach(row -> {
-			String rowString = row.asText();
-			for (int i = 0; i < rowString.length(); i++) {
-				map.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
-			}
-			y.value++;
+			JsonNode object = root.get("type").asText().equals("overmap_terrain") ? root.get("mapgen").get(0).get("object") : root.get("object");
+
+			Map<Character, String> terrainMap = new HashMap<>();
+			Map<Character, String> furnitureMap = new HashMap<>();
+
+			object.get("terrain").fields().forEachRemaining(tile -> {
+				terrainMap.put(tile.getKey().charAt(0), tile.getValue().asText());
+			});
+
+			object.get("furniture").fields().forEachRemaining(tile -> {
+				furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText());
+			});
+
+
+			Value<Integer> y = new Value<>();
+			y.value = 0;
+			object.get("rows").forEach(row -> {
+				String rowString = row.asText();
+				for (int i = 0; i < rowString.length(); i++) {
+					map.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+				}
+				y.value++;
+			});
+
+			y.value = 0;
+
+			object.get("rows").forEach(row -> {
+				String rowString = row.asText();
+				for (int i = 0; i < rowString.length(); i++) {
+					map.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
+				}
+				y.value++;
 /*			String rowString = row.asText();
 			for (int i = 0; i < rowString.length(); i++) {
 				if (furnitureMap.containsKey(rowString.charAt(i))) {
@@ -91,6 +92,8 @@ public class MapgenDataFileReader extends Service<Boolean> {
 				}
 			}
 			System.out.println();*/
+			});
+
 		});
 
 	}
