@@ -12,10 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.RedrawRequestEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
+import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
 public class MapDisplay {
 
@@ -48,16 +50,92 @@ public class MapDisplay {
 	@FXML
 	private Canvas terrain, overlays;
 
-	private int lastX, lastY, lastHoverX, lastHoverY;
-
+	private int lastHoverX, lastHoverY, lastDrawX = -1, lastDrawY = -1;
+	private boolean dragging = false;
 	private CataclysmMap map;
-
 	private EventBus eventBus;
-
+	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
 	private Tile currentTile;
+
+	//TODO Condense these handlers
+	private final EventHandler<MouseEvent> clickEvent = event -> {
+
+		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+
+		if (lastDrawX != eventX || lastDrawY != eventY) {
+			tool.click(eventX, eventY, currentTile, map);
+			lastDrawX = eventX;
+			lastDrawY = eventY;
+		}
+
+	};
+
+	private final EventHandler<MouseEvent> dragEvent = event -> {
+
+		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+
+		if (lastDrawX != eventX || lastDrawY != eventY) {
+			tool.drag(eventX, eventY, currentTile, map);
+			lastDrawX = eventX;
+			lastDrawY = eventY;
+		}
+
+	};
+
+	private final EventHandler<MouseEvent> dragStartEvent = event -> {
+
+		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+
+		tool.dragStart(eventX, eventY, currentTile, map);
+		lastDrawX = eventX;
+		lastDrawY = eventY;
+
+	};
+
+	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
+
+		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+
+		tool.dragEnd(eventX, eventY, currentTile, map);
+		lastDrawX = eventX;
+		lastDrawY = eventY;
+
+	};
+
 
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+
+	@FXML
+	private void initialize() {
+
+		root.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
+
+		root.setOnMouseReleased(event -> {
+			if (dragging) {
+				dragging = false;
+				dragFinishEvent.handle(event);
+			}
+		});
+
+		root.setOnMousePressed(clickEvent);
+		root.setOnMouseDragged(event -> {
+			if (!dragging) {
+				dragging = true;
+				dragStartEvent.handle(event);
+			}
+			dragEvent.handle(event);
+		});
+
 	}
 
 	@Subscribe
@@ -65,45 +143,8 @@ public class MapDisplay {
 		currentTile = event.getTile();
 	}
 
-	@FXML
-	private void initialize() {
-		root.setOnMouseMoved(event -> {
-			drawBox(event.getX(), event.getY());
-		});
-		EventHandler<MouseEvent> mouseListener = event -> {
-			if (event.isSecondaryButtonDown()) {
-				//rotateMapClockwise();
-				return;
-			}
-			drawBox(event.getX(), event.getY());
-			int eventX = ((int) (event.getX() - 1) / 32);
-			int eventY = ((int) (event.getY() - 1) / 32);
-			//Current tool draw
-			//TODO Do this much better, including updating orientation for surrounding tiles when re-drawn
-			map.drawTile(eventX, eventY, currentTile);
-			/*if (currentTile.getID().startsWith("t")) {
-				map.terrain[eventX][eventY] = currentTile.getID();
-				if (currentTile.getID().endsWith("_v") || currentTile.getID().endsWith("_h")) {
-					System.out.println(currentTile.getID());
-					int bitwiseMapping = getBitwiseMapping(eventX, eventY, map.terrain);
-					map.terrain[eventX][eventY] = currentTile.getID().substring(0, currentTile.getID().lastIndexOf("_"));
-					map.terrain[eventX][eventY] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
-				}
-			} else {
-				map.furniture[eventX][eventY] = currentTile.getID();
-			}*/
-			/*drawTile(eventX, eventY);
-			drawTile(eventX + 1, eventY);
-			drawTile(eventX - 1, eventY);
-			drawTile(eventX, eventY + 1);
-			drawTile(eventX, eventY - 1);*/
-		};
-		root.setOnMousePressed(mouseListener);
-		root.setOnMouseDragged(mouseListener);
-	}
-
 	@Subscribe
-	public void redrawRequestEventListener(final RedrawRequestEvent event) {
+	public void redrawRequestEventListener(final TileRedrawRequestEvent event) {
 		drawTile(event.getX(),     event.getY());
 		drawTile(event.getX() + 1, event.getY());
 		drawTile(event.getX() - 1, event.getY());
@@ -117,7 +158,7 @@ public class MapDisplay {
 		transposeArray(map.furniture);
 		reverseColumns(map.furniture);
 		drawMap();
-	}*/
+	}
 
 	private void transposeArray(final String[][] array) {
 		for(int i = 0; i < 24; i++) {
@@ -137,29 +178,28 @@ public class MapDisplay {
 				array[array.length - i - 1][j] = temp;
 			}
 		}
-	}
+	}*/
 
 	private void clearOverlay() {
-		overlays.getGraphicsContext2D().clearRect((lastX / 32) * 32 - 5, (lastY / 32) * 32 - 5, 42, 42);
+		overlays.getGraphicsContext2D().clearRect(lastHoverX  * 32 - 5, lastHoverY * 32 - 5, 42, 42); //TODO Use tileset size
 	}
 
 	private void drawBox(final int mouseX, final int mouseY) {
 
-		clearOverlay();
-
-		lastX = (mouseX / 32) * 32;
-		lastY = (mouseY / 32) * 32;
-
-		overlays.getGraphicsContext2D().setStroke(Color.WHITE);
-		overlays.getGraphicsContext2D().strokeRect(lastX, lastY, 32, 32);
-
-		int eventX = ((mouseX - 1) / 32);
-		int eventY = ((mouseY - 1) / 32);
+		int eventX = (mouseX / 32); //TODO Use tileset size
+		int eventY = (mouseY / 32); //TODO Use tileset size
 
 		if (eventX != lastHoverX || eventY != lastHoverY) {
+
+			clearOverlay();
+
 			eventBus.post(new TileHoverEvent(map.getTerrainAt(eventX, eventY) + " | " + map.getFurnitureAt(eventX, eventY), eventX, eventY));
 			lastHoverX = eventX;
 			lastHoverY = eventY;
+
+			overlays.getGraphicsContext2D().setStroke(Color.WHITE);
+			overlays.getGraphicsContext2D().strokeRect(lastHoverX * 32, lastHoverY * 32, 32, 32); //TODO Use tileset size
+
 		}
 
 	}
@@ -181,8 +221,8 @@ public class MapDisplay {
 	}
 
 	private void drawMap() {
-		for (int x = 0; x < 24; x++) {
-			for (int y = 0; y < 24; y++) {
+		for (int x = 0; x < CataclysmMap.SIZE; x++) {
+			for (int y = 0; y < CataclysmMap.SIZE; y++) {
 				drawTile(x, y);
 			}
 		}
@@ -191,7 +231,7 @@ public class MapDisplay {
 	private void drawTile(final int x, final int y) {
 
 		terrain.getGraphicsContext2D().setFill(Color.BLACK);
-		terrain.getGraphicsContext2D().fillRect(x * 32, y * 32, 32, 32);
+		terrain.getGraphicsContext2D().fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
 
 		drawTile(x, y, terrain.getGraphicsContext2D());
 
@@ -199,14 +239,14 @@ public class MapDisplay {
 
 	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext) {
 
-		if (x < 0 || y < 0 || x >= 24 || y >= 24) {
+		if (x < 0 || y < 0 || x >= CataclysmMap.SIZE || y >= CataclysmMap.SIZE) {
 			return;
 		}
 
 		//Fallback for tiles not supported by tileset
 		if (Tile.tiles.get(map.getTerrainAt(x, y)) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
-			graphicsContext.fillRect(x * 32, y * 32, 32, 32);
+			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
 			return;
 		}
 
@@ -215,10 +255,10 @@ public class MapDisplay {
 			int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.TERRAIN);
 			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32);
+			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size
 		} else {
 			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile().getID());
-			graphicsContext.drawImage(texture, x * 32, y * 32);
+			graphicsContext.drawImage(texture, x * 32, y * 32); //TODO Use tileset size
 		}
 
 		//TODO Don't duplicate these sections
@@ -227,10 +267,10 @@ public class MapDisplay {
 				int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.FURNITURE);
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 				int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-				drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32);
+				drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size
 			} else {
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile().getID());
-				graphicsContext.drawImage(texture, x * 32, y * 32);
+				graphicsContext.drawImage(texture, x * 32, y * 32); //TODO Use tileset size
 			}
 		}
 

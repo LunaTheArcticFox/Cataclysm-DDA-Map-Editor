@@ -70,7 +70,7 @@ public class Tile {
 			return tileGroups.get(tile1).equals(tileGroups.get(tile2));
 		}
 
-		return (tile1.endsWith("_v") || tile1.endsWith("_h")) && tile1.startsWith(tile2.substring(0, tile2.lastIndexOf("_")));
+		return (tile1.endsWith("_v") || tile1.endsWith("_h")) && (tile2.endsWith("_v") || tile2.endsWith("_h")) && tile1.startsWith(tile2.substring(0, tile2.lastIndexOf("_")));
 
 	}
 

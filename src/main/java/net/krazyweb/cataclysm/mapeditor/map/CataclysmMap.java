@@ -2,7 +2,7 @@ package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.events.RedrawRequestEvent;
+import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
 
 public class CataclysmMap {
 
@@ -61,7 +61,7 @@ public class CataclysmMap {
 		editing = false;
 	}
 
-	public void drawTile(final int x, final int y, final Tile tile) {
+	public void setTile(final int x, final int y, final Tile tile) {
 
 		String terrainBefore = getTerrainAt(x, y);
 		String furnitureBefore = getFurnitureAt(x, y);
@@ -77,7 +77,7 @@ public class CataclysmMap {
 		updateTilesSurrounding(x, y);
 
 		if (!getTerrainAt(x, y).equals(terrainBefore) || !getFurnitureAt(x, y).equals(furnitureBefore)) {
-			eventBus.post(new RedrawRequestEvent(x, y));
+			eventBus.post(new TileRedrawRequestEvent(x, y));
 		}
 
 	}

@@ -1,10 +1,10 @@
 package net.krazyweb.cataclysm.mapeditor.events;
 
-public class RedrawRequestEvent {
+public class TileRedrawRequestEvent {
 
 	private final int x, y;
 
-	public RedrawRequestEvent(final int x, final int y) {
+	public TileRedrawRequestEvent(final int x, final int y) {
 		this.x = x;
 		this.y = y;
 	}

@@ -17,7 +17,7 @@ public class LineTool extends Tool {
 	private int startY;
 	private boolean dragging = false;
 
-	@Override
+	/*@Override
 	public void drag(final int x, final int y, final Canvas canvas) {
 		if (!dragging) {
 			dragStart(x, y, canvas);
@@ -69,6 +69,6 @@ public class LineTool extends Tool {
 			}
 		}
 
-	}
+	}*/
 
 }

@@ -1,22 +1,28 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
-import net.krazyweb.cataclysm.mapeditor.TileSet;
+import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
 public class PencilTool extends Tool {
 
 	@Override
-	public void click(final int x, final int y, final Canvas canvas) {
-		GraphicsContext graphics2D = canvas.getGraphicsContext2D();
-		//TODO cache subimage textures as needed
-		//TODO use selected texture
-		graphics2D.drawImage(TileSet.textures.get("t_dirtfloor"), x, y);
+	public void click(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		map.setTile(x, y, tile);
 	}
 
 	@Override
-	public void drag(final int x, final int y, final Canvas canvas) {
-		click(x, y, canvas);
+	public void drag(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		click(x, y, tile, map);
+	}
+
+	@Override
+	public void dragStart(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		System.out.println("Drag Started");
+	}
+
+	@Override
+	public void dragEnd(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		System.out.println("Drag Ended");
 	}
 
 }

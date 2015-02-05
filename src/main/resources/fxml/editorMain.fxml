@@ -1,51 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.canvas.Canvas?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMainOld">
-    <center>
-        <SplitPane dividerPositions="0.2" BorderPane.alignment="CENTER">
-            <VBox fx:id="splitPane">
-                <ToolBar/>
-                <ScrollPane fx:id="tilePickerParent" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
-                    <TilePane fx:id="tilePicker" vgap="5" hgap="5"/>
-                </ScrollPane>
-            </VBox>
-            <VBox>
-                <ToolBar>
-                    <Button fx:id="editTerrainAndFurnitureLayerButton" text="Terrain/Furniture Layer"/>
-                    <Button fx:id="editSpawnLayerButton" text="Spawn Layer"/>
-                    <Separator orientation="VERTICAL" />
-                    <Button fx:id="pencilButton" text="Pencil"/>
-                    <Button fx:id="lineButton" text="Line"/>
-                </ToolBar>
-                <ScrollPane VBox.vgrow="ALWAYS">
-                    <AnchorPane>
-                        <Canvas fx:id="canvas" width="768" height="768"/>
-                        <Canvas fx:id="canvasOverlay" width="768" height="768"/>
-                    </AnchorPane>
-                </ScrollPane>
-            </VBox>
-        </SplitPane>
-    </center>
-    <top>
-        <MenuBar BorderPane.alignment="CENTER">
-            <Menu text="File">
-                <MenuItem text="New" onAction="#testMapgenDataFileReader"/>
-                <MenuItem text="Open"/>
-                <MenuItem text="Open Recent"/>
-                <MenuItem text="Save"/>
-                <MenuItem text="Save As"/>
-                <MenuItem text="Close"/>
-                <MenuItem text="Exit"/>
-            </Menu>
-            <Menu text="Edit">
-                <MenuItem text="Delete"/>
-            </Menu>
-            <Menu text="Help">
-                <MenuItem text="About"/>
-            </Menu>
-        </MenuBar>
-    </top>
+
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<top>
+		<MenuBar BorderPane.alignment="CENTER">
+			<Menu text="_File">
+				<MenuItem text="_New" onAction="#newFile"/>
+				<MenuItem text="_Open" onAction="#openFile"/>
+				<MenuItem text="_Save"/>
+			</Menu>
+			<Menu text="_Edit">
+				<MenuItem text="_Undo"/>
+				<MenuItem text="_Redo"/>
+				<MenuItem text="_Cut"/>
+				<MenuItem text="_Copy"/>
+				<MenuItem text="_Paste"/>
+			</Menu>
+			<Menu text="_Tools">
+				<MenuItem text="_Randomize Dirt and Grass"/>
+			</Menu>
+			<Menu text="_Help">
+				<MenuItem mnemonicParsing="false" text="About"/>
+			</Menu>
+		</MenuBar>
+	</top>
+	<center>
+		<SplitPane dividerPositions="0.25" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="tilePickerPanel"/>
+			<VBox prefHeight="200.0" prefWidth="100.0">
+				<ToolBar prefHeight="30.0" prefWidth="200.0">
+					<Button mnemonicParsing="false" text="Button"/>
+				</ToolBar>
+				<ScrollPane focusTraversable="false" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="ALWAYS" fx:id="mapPanel"/>
+			</VBox>
+		</SplitPane>
+	</center>
 </BorderPane>

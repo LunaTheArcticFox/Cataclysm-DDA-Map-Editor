@@ -35,7 +35,7 @@ public class EditorMain extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/newEditorMain.fxml"));
+			Parent root = FXMLLoader.load(getClass().getResource("/fxml/editorMain.fxml"));
 			primaryStage.setTitle("Cataclysm Map Editor");
 			primaryStage.setScene(new Scene(root, 1600, 900));
 			primaryStage.setResizable(true);
