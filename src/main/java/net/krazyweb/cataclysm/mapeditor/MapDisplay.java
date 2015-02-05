@@ -11,10 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
-import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
+import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
@@ -110,7 +107,6 @@ public class MapDisplay {
 
 	};
 
-
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
 	}
@@ -150,6 +146,11 @@ public class MapDisplay {
 		drawTile(event.getX() - 1, event.getY());
 		drawTile(event.getX(),     event.getY() + 1);
 		drawTile(event.getX(),     event.getY() - 1);
+	}
+
+	@Subscribe
+	public void toolSelectedEventListener(final ToolSelectedEvent event) {
+		tool = event.getTool();
 	}
 
 	/*private void rotateMapClockwise() {

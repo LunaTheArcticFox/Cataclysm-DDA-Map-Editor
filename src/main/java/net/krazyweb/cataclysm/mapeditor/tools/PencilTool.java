@@ -15,14 +15,4 @@ public class PencilTool extends Tool {
 		click(x, y, tile, map);
 	}
 
-	@Override
-	public void dragStart(final int x, final int y, final Tile tile, final CataclysmMap map) {
-		System.out.println("Drag Started");
-	}
-
-	@Override
-	public void dragEnd(final int x, final int y, final Tile tile, final CataclysmMap map) {
-		System.out.println("Drag Ended");
-	}
-
 }

@@ -28,7 +28,7 @@ public class EditorMain extends Application {
 	private ScrollPane mapPanel;
 
 	@FXML
-	private VBox tilePickerPanel;
+	private VBox tilePickerPanel, toolbarPanel;
 
 	private EventBus eventBus = new EventBus();
 
@@ -66,7 +66,15 @@ public class EditorMain extends Application {
 		eventBus.register(this);
 		eventBus.register(new MapLoader(eventBus));
 
-		//Load the model
+		//-> Toolbars
+		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
+		try {
+			mapToolbarLoader.load();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
+		toolbarPanel.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
 
 		//Load each component in the main view and pass the model to them
 		//-> Status bar
@@ -90,7 +98,6 @@ public class EditorMain extends Application {
 		eventBus.register(loader.<MapDisplay>getController());
 		loader.<MapDisplay>getController().setEventBus(eventBus);
 		mapPanel.setContent(loader.<ScrollPane>getRoot());
-		//-> Toolbars
 
 		newFile();
 

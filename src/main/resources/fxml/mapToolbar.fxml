@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ToolBar?>
+
+<ToolBar prefHeight="30.0" prefWidth="200.0" fx:controller="net.krazyweb.cataclysm.mapeditor.MapToolbar" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<Button mnemonicParsing="false" text="Pencil" onAction="#selectPencil"/>
+	<Button mnemonicParsing="false" text="Line" onAction="#selectLine"/>
+</ToolBar>
