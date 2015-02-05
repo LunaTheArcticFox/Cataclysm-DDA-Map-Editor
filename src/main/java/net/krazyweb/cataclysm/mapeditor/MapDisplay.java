@@ -12,17 +12,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.RedrawRequestEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
-
-import java.util.HashMap;
-import java.util.Map;
+import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
 public class MapDisplay {
-
-	private static enum Orientation {
-		EITHER, VERTICAL, HORIZONTAL
-	}
 
 	private static final Tile.AdditionalTileType[] BITWISE_TYPES = {
 			Tile.AdditionalTileType.UNCONNECTED,
@@ -47,27 +42,6 @@ public class MapDisplay {
 			0, 0, 270, 0, 180, 0, 270, 270, 90, 90, 90, 0, 180, 90, 180, 0
 	};
 
-	private static final Orientation[] BITWISE_FORCE_ORIENTATION = {
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.VERTICAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.HORIZONTAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER
-	};
-
-	private static final Map<String, String> tileGroups = new HashMap<>();
-
 	@FXML
 	private StackPane root;
 
@@ -76,7 +50,7 @@ public class MapDisplay {
 
 	private int lastX, lastY, lastHoverX, lastHoverY;
 
-	private MapgenMap map;
+	private CataclysmMap map;
 
 	private EventBus eventBus;
 
@@ -98,7 +72,7 @@ public class MapDisplay {
 		});
 		EventHandler<MouseEvent> mouseListener = event -> {
 			if (event.isSecondaryButtonDown()) {
-				rotateMapClockwise();
+				//rotateMapClockwise();
 				return;
 			}
 			drawBox(event.getX(), event.getY());
@@ -106,7 +80,8 @@ public class MapDisplay {
 			int eventY = ((int) (event.getY() - 1) / 32);
 			//Current tool draw
 			//TODO Do this much better, including updating orientation for surrounding tiles when re-drawn
-			if (currentTile.getID().startsWith("t")) {
+			map.drawTile(eventX, eventY, currentTile);
+			/*if (currentTile.getID().startsWith("t")) {
 				map.terrain[eventX][eventY] = currentTile.getID();
 				if (currentTile.getID().endsWith("_v") || currentTile.getID().endsWith("_h")) {
 					System.out.println(currentTile.getID());
@@ -116,32 +91,33 @@ public class MapDisplay {
 				}
 			} else {
 				map.furniture[eventX][eventY] = currentTile.getID();
-			}
-			drawTile(eventX, eventY);
+			}*/
+			/*drawTile(eventX, eventY);
 			drawTile(eventX + 1, eventY);
 			drawTile(eventX - 1, eventY);
 			drawTile(eventX, eventY + 1);
-			drawTile(eventX, eventY - 1);
+			drawTile(eventX, eventY - 1);*/
 		};
 		root.setOnMousePressed(mouseListener);
 		root.setOnMouseDragged(mouseListener);
-		tileGroups.put("t_wall_h", "wallGroup");
-		tileGroups.put("t_wall_v", "wallGroup");
-		tileGroups.put("t_window_frame", "wallGroup");
-		tileGroups.put("t_window_boarded", "wallGroup");
-		tileGroups.put("t_window_empty", "wallGroup");
-		tileGroups.put("t_window_domestic", "wallGroup");
-		tileGroups.put("t_door_c", "wallGroup");
-		tileGroups.put("t_door_locked", "wallGroup");
 	}
 
-	private void rotateMapClockwise() {
+	@Subscribe
+	public void redrawRequestEventListener(final RedrawRequestEvent event) {
+		drawTile(event.getX(),     event.getY());
+		drawTile(event.getX() + 1, event.getY());
+		drawTile(event.getX() - 1, event.getY());
+		drawTile(event.getX(),     event.getY() + 1);
+		drawTile(event.getX(),     event.getY() - 1);
+	}
+
+	/*private void rotateMapClockwise() {
 		transposeArray(map.terrain);
 		reverseColumns(map.terrain);
 		transposeArray(map.furniture);
 		reverseColumns(map.furniture);
 		drawMap();
-	}
+	}*/
 
 	private void transposeArray(final String[][] array) {
 		for(int i = 0; i < 24; i++) {
@@ -181,7 +157,7 @@ public class MapDisplay {
 		int eventY = ((mouseY - 1) / 32);
 
 		if (eventX != lastHoverX || eventY != lastHoverY) {
-			eventBus.post(new TileHoverEvent(map.terrain[eventX][eventY] + " | " + map.furniture[eventX][eventY], eventX, eventY));
+			eventBus.post(new TileHoverEvent(map.getTerrainAt(eventX, eventY) + " | " + map.getFurnitureAt(eventX, eventY), eventX, eventY));
 			lastHoverX = eventX;
 			lastHoverY = eventY;
 		}
@@ -217,32 +193,45 @@ public class MapDisplay {
 		terrain.getGraphicsContext2D().setFill(Color.BLACK);
 		terrain.getGraphicsContext2D().fillRect(x * 32, y * 32, 32, 32);
 
-		drawTile(x, y, terrain.getGraphicsContext2D(), map.terrain);
-		drawTile(x, y, terrain.getGraphicsContext2D(), map.furniture);
+		drawTile(x, y, terrain.getGraphicsContext2D());
 
 	}
 
-	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext, final String[][] data) {
+	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext) {
 
-		if (x < 0 || y < 0 || x >= 24 || y >= 24 || data[x][y] == null || data[x][y].isEmpty()) {
+		if (x < 0 || y < 0 || x >= 24 || y >= 24) {
 			return;
 		}
 
 		//Fallback for tiles not supported by tileset
-		if (Tile.tiles.get(data[x][y]) == null) {
+		if (Tile.tiles.get(map.getTerrainAt(x, y)) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
 			graphicsContext.fillRect(x * 32, y * 32, 32, 32);
 			return;
 		}
 
-		if (Tile.tiles.get(data[x][y]).isMultiTile()) {
-			int bitwiseMapping = getBitwiseMapping(x, y, data);
-			Image texture = TileSet.textures.get(Tile.tiles.get(data[x][y]).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
+		//TODO Don't duplicate these sections
+		if (Tile.tiles.get(map.getTerrainAt(x, y)).isMultiTile()) {
+			int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.TERRAIN);
+			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
 			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32);
 		} else {
-			Image texture = TileSet.textures.get(Tile.tiles.get(data[x][y]).getTile().getID());
+			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile().getID());
 			graphicsContext.drawImage(texture, x * 32, y * 32);
+		}
+
+		//TODO Don't duplicate these sections
+		if (map.getFurnitureAt(x, y) != null) {
+			if (Tile.tiles.get(map.getFurnitureAt(x, y)).isMultiTile()) {
+				int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.FURNITURE);
+				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
+				int rotation = BITWISE_ROTATIONS[bitwiseMapping];
+				drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32);
+			} else {
+				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile().getID());
+				graphicsContext.drawImage(texture, x * 32, y * 32);
+			}
 		}
 
 	}
@@ -260,57 +249,6 @@ public class MapDisplay {
 		rotate(graphicsContext, angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
 		graphicsContext.drawImage(image, x, y);
 		graphicsContext.restore(); // back to original state (before rotation)
-	}
-
-	private int getBitwiseMapping(final int x, final int y, final String[][] data) {
-
-		String current = tileAt(x, y, data);
-
-		byte tilemap = 0;
-
-		if (current.isEmpty()) {
-			return 0;
-		}
-
-		if (tileAt(x, y + 1, data) != null && tilesConnect(tileAt(x, y + 1, data), current)) {
-			tilemap += 1;
-		}
-
-		if (tileAt(x + 1, y, data) != null && tilesConnect(tileAt(x + 1, y, data), current)) {
-			tilemap += 2;
-		}
-
-		if (tileAt(x, y - 1, data) != null && tilesConnect(tileAt(x, y - 1, data), current)) {
-			tilemap += 4;
-		}
-
-		if (tileAt(x - 1, y, data) != null && tilesConnect(tileAt(x - 1, y, data), current)) {
-			tilemap += 8;
-		}
-
-		return tilemap;
-
-	}
-
-	private boolean tilesConnect(final String tile1, final String tile2) {
-
-		if (tile1.equals(tile2)) {
-			return true;
-		}
-
-		if (tileGroups.containsKey(tile1) && tileGroups.containsKey(tile2)) {
-			return tileGroups.get(tile1).equals(tileGroups.get(tile2));
-		}
-
-		return (tile1.endsWith("_v") || tile1.endsWith("_h")) && tile1.startsWith(tile2.substring(0, tile2.lastIndexOf("_")));
-
-	}
-
-	private String tileAt(final int x, final int y, final String[][] data) {
-		if (x < 0 || y < 0 || x > 24 - 1 || y > 24 - 1) {
-			return "";
-		}
-		return data[x][y];
 	}
 
 }

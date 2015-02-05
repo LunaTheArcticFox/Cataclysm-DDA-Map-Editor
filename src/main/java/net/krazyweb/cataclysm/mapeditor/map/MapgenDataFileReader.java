@@ -1,7 +1,8 @@
-package net.krazyweb.cataclysm.mapeditor;
+package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.eventbus.EventBus;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
@@ -16,10 +17,12 @@ public class MapgenDataFileReader extends Service<Boolean> {
 
 	private Path path;
 
-	private MapgenMap map = new MapgenMap();
+	private CataclysmMap map;
+	private EventBus eventBus;
 
-	public MapgenDataFileReader(final Path path) {
+	public MapgenDataFileReader(final Path path, final EventBus eventBus) {
 		this.path = path;
+		this.eventBus = eventBus;
 	}
 
 	@Override
@@ -33,7 +36,7 @@ public class MapgenDataFileReader extends Service<Boolean> {
 		};
 	}
 
-	public MapgenMap getMap() {
+	public CataclysmMap getMap() {
 		return map;
 	}
 
@@ -42,6 +45,8 @@ public class MapgenDataFileReader extends Service<Boolean> {
 	}
 
 	private void load() throws IOException {
+
+		map = new CataclysmMap(eventBus);
 
 		OBJECT_MAPPER.readTree(path.toFile()).forEach(root -> {
 
@@ -64,13 +69,24 @@ public class MapgenDataFileReader extends Service<Boolean> {
 				furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText());
 			});
 
+			Value<String> fillTer = new Value<>();
+
+			if (object.has("fill_ter")) {
+				fillTer.value = object.get("fill_ter").asText();
+			} else {
+				fillTer.value = "";
+			}
 
 			Value<Integer> y = new Value<>();
 			y.value = 0;
 			object.get("rows").forEach(row -> {
 				String rowString = row.asText();
 				for (int i = 0; i < rowString.length(); i++) {
-					map.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+					map.currentState.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+					if (map.currentState.terrain[i][y.value] == null) {
+						System.out.println("EMPTY");
+						map.currentState.terrain[i][y.value] = fillTer.value;
+					}
 				}
 				y.value++;
 			});
@@ -80,18 +96,9 @@ public class MapgenDataFileReader extends Service<Boolean> {
 			object.get("rows").forEach(row -> {
 				String rowString = row.asText();
 				for (int i = 0; i < rowString.length(); i++) {
-					map.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
+					map.currentState.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
 				}
 				y.value++;
-/*			String rowString = row.asText();
-			for (int i = 0; i < rowString.length(); i++) {
-				if (furnitureMap.containsKey(rowString.charAt(i))) {
-					System.out.print(furnitureMap.get(rowString.charAt(i)));
-				} else {
-					System.out.print(" ");
-				}
-			}
-			System.out.println();*/
 			});
 
 		});

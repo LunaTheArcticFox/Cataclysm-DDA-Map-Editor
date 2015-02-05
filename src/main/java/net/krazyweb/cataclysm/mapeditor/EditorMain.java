@@ -117,11 +117,4 @@ public class EditorMain extends Application {
 
 	}
 
-	@FXML
-	private void saveFile() {
-
-
-
-	}
-
 }

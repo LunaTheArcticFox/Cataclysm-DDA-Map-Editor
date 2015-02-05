@@ -1,0 +1,11 @@
+[
+	{
+		"type" : "group",
+		"name" : "Wood Door",
+		"states" : {
+			"Locked" : [
+				""
+			]
+		}
+	}
+]

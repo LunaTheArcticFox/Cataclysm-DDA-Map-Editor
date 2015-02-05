@@ -10,12 +10,19 @@
 			<Menu text="_File">
 				<MenuItem text="_New" onAction="#newFile"/>
 				<MenuItem text="_Open" onAction="#openFile"/>
-				<MenuItem text="_Save" onAction="#saveFile"/>
+				<MenuItem text="_Save"/>
 			</Menu>
-			<Menu mnemonicParsing="false" text="Edit">
-				<MenuItem mnemonicParsing="false" text="Delete"/>
+			<Menu text="_Edit">
+				<MenuItem text="_Undo"/>
+				<MenuItem text="_Redo"/>
+				<MenuItem text="_Cut"/>
+				<MenuItem text="_Copy"/>
+				<MenuItem text="_Paste"/>
 			</Menu>
-			<Menu mnemonicParsing="false" text="Help">
+			<Menu text="_Tools">
+				<MenuItem text="_Randomize Dirt and Grass"/>
+			</Menu>
+			<Menu text="_Help">
 				<MenuItem mnemonicParsing="false" text="About"/>
 			</Menu>
 		</MenuBar>

@@ -4,6 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.MapgenDataFileReader;
 
 public class MapLoader {
 
@@ -16,12 +17,13 @@ public class MapLoader {
 	@Subscribe
 	public void loadMapEventListener(final LoadMapEvent event) {
 
-		MapgenDataFileReader reader = new MapgenDataFileReader(event.getPath());
-		reader.start();
+		MapgenDataFileReader reader = new MapgenDataFileReader(event.getPath(), eventBus);
 
 		reader.setOnSucceeded(value -> {
 			eventBus.post(new MapLoadedEvent(reader.getMap()));
 		});
+
+		reader.start();
 
 	}
 
