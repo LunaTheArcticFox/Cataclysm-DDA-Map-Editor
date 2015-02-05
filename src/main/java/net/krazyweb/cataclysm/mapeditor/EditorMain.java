@@ -92,10 +92,15 @@ public class EditorMain extends Application {
 		mapPanel.setContent(loader.<ScrollPane>getRoot());
 		//-> Toolbars
 
-		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("default.json")));
+		newFile();
 
 		//Bind listeners for things such as hotkeys
 
+	}
+
+	@FXML
+	private void newFile() {
+		eventBus.post(new LoadMapEvent(Paths.get("templates").resolve("default.json")));
 	}
 
 	@FXML
