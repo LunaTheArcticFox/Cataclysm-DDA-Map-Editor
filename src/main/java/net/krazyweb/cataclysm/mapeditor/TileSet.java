@@ -22,7 +22,7 @@ public class TileSet {
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
 	//TODO Un-static this
-	public static Map<Integer, Image> textures = new TreeMap<>();
+	public static Map<String, Image> textures = new TreeMap<>();
 
 	private BufferedImage texture = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
 
@@ -50,7 +50,20 @@ public class TileSet {
 
 			Tile tile = new Tile(tileDef.get("id").asText());
 
+			int foreground = -1;
+			int background = -1;
+
 			if (tileDef.has("fg")) {
+				foreground = tileDef.get("fg").asInt();
+			}
+
+			if (tileDef.has("bg")) {
+				background = tileDef.get("bg").asInt();
+			}
+
+			createTileImage(tile.getID(), foreground, background);
+
+			/*if (tileDef.has("fg")) {
 				int tileNumber = tileDef.get("fg").asInt();
 				loadImageFromNumber(tileNumber);
 				tile.setForeground(tileNumber);
@@ -59,21 +72,27 @@ public class TileSet {
 				int tileNumber = tileDef.get("bg").asInt();
 				loadImageFromNumber(tileNumber);
 				tile.setBackground(tileNumber);
-			}
+			}*/
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
 				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
-					Tile additionalTile = new Tile(additionalTileDef.get("id").asText());
+
+					Tile additionalTile = new Tile(tile.getID() + ">>" + additionalTileDef.get("id").asText());
+
+					int foregroundID = -1;
+					int backgroundID = -1;
+
 					if (additionalTileDef.has("fg")) {
-						int tileNumber = additionalTileDef.get("fg").asInt();
-						loadImageFromNumber(tileNumber);
-						additionalTile.setForeground(tileNumber);
+						foregroundID = additionalTileDef.get("fg").asInt();
 					}
+
 					if (additionalTileDef.has("bg")) {
-						int tileNumber = additionalTileDef.get("bg").asInt();
-						loadImageFromNumber(tileNumber);
-						additionalTile.setBackground(tileNumber);
+						backgroundID = additionalTileDef.get("bg").asInt();
 					}
+
+					createTileImage(additionalTile.getID(), foregroundID, backgroundID);
+
 					tile.addMultiTile(additionalTile, Tile.AdditionalTileType.valueOf(additionalTileDef.get("id").asText().toUpperCase()));
+
 				});
 			}
 			Tile.tiles.put(tileDef.get("id").asText(), tile);
@@ -83,11 +102,43 @@ public class TileSet {
 
 	}
 
-	private void loadImageFromNumber(final int number) {
+	private void createTileImage(String id, final int foreground, final int background) {
+
+		int x = foreground % 16;
+		int y = foreground / 16;
+
+		BufferedImage foregroundImage = null;
+		BufferedImage backgroundImage = null;
+
+		if (foreground >= 0) {
+			foregroundImage = texture.getSubimage(x * 32, y * 32, 32, 32);
+		}
+
+		if (background >= 0) {
+			x = background % 16;
+			y = background / 16;
+			backgroundImage = texture.getSubimage(x * 32, y * 32, 32, 32);
+			if (foregroundImage != null) {
+				BufferedImage tempImage = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
+				tempImage.getGraphics().drawImage(backgroundImage, 0, 0, null);
+				tempImage.getGraphics().drawImage(foregroundImage, 0, 0, null);
+				backgroundImage = tempImage;
+			}
+		}
+
+		if (backgroundImage != null) {
+			textures.put(id, SwingFXUtils.toFXImage(backgroundImage, null));
+		} else {
+			textures.put(id, SwingFXUtils.toFXImage(foregroundImage, null));
+		}
+
+	}
+
+	/*private void loadImageFromNumber(final int number) {
 		int x = number % 16;
 		int y = number / 16;
 		Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
 		textures.put(number, image);
-	}
+	}*/
 
 }

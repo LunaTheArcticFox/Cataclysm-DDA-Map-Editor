@@ -92,7 +92,7 @@ public class EditorMain extends Application {
 		mapPanel.setContent(loader.<ScrollPane>getRoot());
 		//-> Toolbars
 
-		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("house05.json")));
+		eventBus.post(new LoadMapEvent(Paths.get("Sample Data").resolve("default.json")));
 
 		//Bind listeners for things such as hotkeys
 

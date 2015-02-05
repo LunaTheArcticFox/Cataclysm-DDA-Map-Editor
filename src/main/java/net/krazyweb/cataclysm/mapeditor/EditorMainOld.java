@@ -139,7 +139,7 @@ public class EditorMainOld extends Application {
 			tool.dragEnd(convertMouseCoord(event.getX()), convertMouseCoord(event.getY()), canvas);
 		});
 
-		/*MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("house05.json"));
+		/*MapgenDataFileReader reader = new MapgenDataFileReader(Paths.get("Sample Data").resolve("default.json"));
 		reader.start();
 
 		reader.setOnSucceeded(event -> {

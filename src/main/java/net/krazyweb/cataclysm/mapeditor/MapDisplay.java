@@ -75,8 +75,13 @@ public class MapDisplay {
 			int eventX = ((int) (event.getX() - 1) / 32);
 			int eventY = ((int) (event.getY() - 1) / 32);
 			//Current tool draw
-			map.terrain[eventX][eventY] = currentTile.getName();
-			drawTile(eventX, eventY, terrain.getGraphicsContext2D(), map.terrain);
+			//TODO Determine which map the tile should go on; terrain or furniture
+			map.terrain[eventX][eventY] = currentTile.getID();
+			drawTile(eventX, eventY);
+			drawTile(eventX + 1, eventY);
+			drawTile(eventX - 1, eventY);
+			drawTile(eventX, eventY + 1);
+			drawTile(eventX, eventY - 1);
 		});
 		tileGroups.put("t_wall_h", "wallGroup");
 		tileGroups.put("t_wall_v", "wallGroup");
@@ -121,12 +126,9 @@ public class MapDisplay {
 
 			map = event.getMap();
 
-			GraphicsContext graphicsContext = terrain.getGraphicsContext2D();
-
 			for (int x = 0; x < 24; x++) {
 				for (int y = 0; y < 24; y++) {
-					drawTile(x, y, graphicsContext, map.terrain);
-					drawTile(x, y, graphicsContext, map.furniture);
+					drawTile(x, y);
 				}
 			}
 
@@ -136,9 +138,19 @@ public class MapDisplay {
 
 	}
 
+	private void drawTile(final int x, final int y) {
+
+		terrain.getGraphicsContext2D().setFill(Color.BLACK);
+		terrain.getGraphicsContext2D().fillRect(x * 32, y * 32, 32, 32);
+
+		drawTile(x, y, terrain.getGraphicsContext2D(), map.terrain);
+		drawTile(x, y, terrain.getGraphicsContext2D(), map.furniture);
+
+	}
+
 	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext, final String[][] data) {
 
-		if (data[x][y] == null || data[x][y].isEmpty()) {
+		if (x < 0 || y < 0 || x >= 24 || y >= 24 || data[x][y] == null || data[x][y].isEmpty()) {
 			return;
 		}
 
@@ -151,14 +163,12 @@ public class MapDisplay {
 
 		if (Tile.tiles.get(data[x][y]).isMultiTile()) {
 			int bitwiseMapping = getBitwiseMapping(x, y, data);
-			Image background = TileSet.textures.get(Tile.tiles.get(data[x][y]).getBackground(BITWISE_TYPES[bitwiseMapping]));
-			Image foreground = TileSet.textures.get(Tile.tiles.get(data[x][y]).getForeground(BITWISE_TYPES[bitwiseMapping]));
+			Image texture = TileSet.textures.get(Tile.tiles.get(data[x][y]).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-			drawRotatedImage(graphicsContext, background, rotation, x * 32, y * 32);
-			drawRotatedImage(graphicsContext, foreground, rotation, x * 32, y * 32);
+			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32);
 		} else {
-			graphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(data[x][y]).getBackground()), x * 32, y * 32);
-			graphicsContext.drawImage(TileSet.textures.get(Tile.tiles.get(data[x][y]).getForeground()), x * 32, y * 32);
+			Image texture = TileSet.textures.get(Tile.tiles.get(data[x][y]).getTile().getID());
+			graphicsContext.drawImage(texture, x * 32, y * 32);
 		}
 
 	}

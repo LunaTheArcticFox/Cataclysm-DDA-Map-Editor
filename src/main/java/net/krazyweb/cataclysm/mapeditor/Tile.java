@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class Tile {
 
@@ -9,28 +10,18 @@ public class Tile {
 		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED, BROKEN, OPEN
 	}
 
-	public static Map<String, Tile> tiles = new HashMap<>();
+	public static Map<String, Tile> tiles = new TreeMap<>();
 
-	private String name;
-	private int foreground;
-	private int background;
+	private String id;
 
 	private Map<AdditionalTileType, Tile> additionalTiles = new HashMap<>();
 
-	public Tile(final String name) {
-		this.name = name;
+	public Tile(final String id) {
+		this.id = id;
 	}
 
-	public String getName() {
-		return name;
-	}
-
-	public void setForeground(final int foreground) {
-		this.foreground = foreground;
-	}
-
-	public void setBackground(final int background) {
-		this.background = background;
+	public String getID() {
+		return id;
 	}
 
 	public void addMultiTile(final Tile tile, final AdditionalTileType type) {
@@ -41,28 +32,16 @@ public class Tile {
 		return !additionalTiles.isEmpty();
 	}
 
-	public int getForeground(final AdditionalTileType type) {
+	public Tile getTile() {
+		return this;
+	}
+
+	public Tile getTile(final AdditionalTileType type) {
 		if (additionalTiles.containsKey(type)) {
-			return additionalTiles.get(type).foreground;
+			return additionalTiles.get(type);
 		} else {
-			return getForeground();
+			return getTile();
 		}
-	}
-
-	public int getForeground() {
-		return foreground;
-	}
-
-	public int getBackground(final AdditionalTileType type) {
-		if (additionalTiles.containsKey(type)) {
-			return additionalTiles.get(type).background;
-		} else {
-			return getBackground();
-		}
-	}
-
-	public int getBackground() {
-		return background;
 	}
 
 }
