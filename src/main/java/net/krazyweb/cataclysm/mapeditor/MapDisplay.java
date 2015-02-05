@@ -57,8 +57,8 @@ public class MapDisplay {
 	//TODO Condense these handlers
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 
-		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		if (lastDrawX != eventX || lastDrawY != eventY) {
@@ -71,8 +71,8 @@ public class MapDisplay {
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 
-		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		if (lastDrawX != eventX || lastDrawY != eventY) {
@@ -85,8 +85,8 @@ public class MapDisplay {
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 
-		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		tool.dragStart(eventX, eventY, currentTile, map);
@@ -97,8 +97,8 @@ public class MapDisplay {
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 
-		int eventX = ((int) (event.getX() - 1) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY() - 1) / 32); //TODO Use tileset size
+		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		tool.dragEnd(eventX, eventY, currentTile, map);
@@ -115,6 +115,8 @@ public class MapDisplay {
 	private void initialize() {
 
 		root.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
+
+		root.setOnMouseExited(event -> clearOverlay());
 
 		root.setOnMouseReleased(event -> {
 			if (dragging) {
@@ -189,6 +191,13 @@ public class MapDisplay {
 
 		int eventX = (mouseX / 32); //TODO Use tileset size
 		int eventY = (mouseY / 32); //TODO Use tileset size
+
+		if (eventX < 0 || eventY < 0 || eventX >= CataclysmMap.SIZE || eventY >= CataclysmMap.SIZE) {
+			clearOverlay();
+			lastHoverX = eventX;
+			lastHoverY = eventY;
+			return;
+		}
 
 		if (eventX != lastHoverX || eventY != lastHoverY) {
 

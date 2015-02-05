@@ -63,6 +63,10 @@ public class CataclysmMap {
 
 	public void setTile(final int x, final int y, final Tile tile) {
 
+		if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
+			return;
+		}
+
 		String terrainBefore = getTerrainAt(x, y);
 		String furnitureBefore = getFurnitureAt(x, y);
 
