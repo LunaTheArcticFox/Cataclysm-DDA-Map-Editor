@@ -97,6 +97,10 @@ public class MapDisplay {
 			drawBox(event.getX(), event.getY());
 		});
 		EventHandler<MouseEvent> mouseListener = event -> {
+			if (event.isSecondaryButtonDown()) {
+				rotateMapClockwise();
+				return;
+			}
 			drawBox(event.getX(), event.getY());
 			int eventX = ((int) (event.getX() - 1) / 32);
 			int eventY = ((int) (event.getY() - 1) / 32);
@@ -129,6 +133,34 @@ public class MapDisplay {
 		tileGroups.put("t_window_domestic", "wallGroup");
 		tileGroups.put("t_door_c", "wallGroup");
 		tileGroups.put("t_door_locked", "wallGroup");
+	}
+
+	private void rotateMapClockwise() {
+		transposeArray(map.terrain);
+		reverseColumns(map.terrain);
+		transposeArray(map.furniture);
+		reverseColumns(map.furniture);
+		drawMap();
+	}
+
+	private void transposeArray(final String[][] array) {
+		for(int i = 0; i < 24; i++) {
+			for(int j = i + 1; j < 24; j++) {
+				String temp = array[i][j];
+				array[i][j] = array[j][i];
+				array[j][i] = temp;
+			}
+		}
+	}
+
+	private void reverseColumns(final String[][] array) {
+		for(int j = 0; j < array.length; j++){
+			for(int i = 0; i < array[j].length / 2; i++) {
+				String temp = array[i][j];
+				array[i][j] = array[array.length - i - 1][j];
+				array[array.length - i - 1][j] = temp;
+			}
+		}
 	}
 
 	private void clearOverlay() {
@@ -164,19 +196,20 @@ public class MapDisplay {
 	public void mapLoadedEventListener(final MapLoadedEvent event) {
 
 		try {
-
 			map = event.getMap();
-
-			for (int x = 0; x < 24; x++) {
-				for (int y = 0; y < 24; y++) {
-					drawTile(x, y);
-				}
-			}
-
+			drawMap();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
+	}
+
+	private void drawMap() {
+		for (int x = 0; x < 24; x++) {
+			for (int y = 0; y < 24; y++) {
+				drawTile(x, y);
+			}
+		}
 	}
 
 	private void drawTile(final int x, final int y) {
