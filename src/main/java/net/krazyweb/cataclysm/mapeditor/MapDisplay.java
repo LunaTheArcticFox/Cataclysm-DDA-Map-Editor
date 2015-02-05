@@ -61,11 +61,9 @@ public class MapDisplay {
 		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
-		if (lastDrawX != eventX || lastDrawY != eventY) {
-			tool.click(eventX, eventY, currentTile, event.getButton(), map);
-			lastDrawX = eventX;
-			lastDrawY = eventY;
-		}
+		tool.click(eventX, eventY, currentTile, event.getButton(), map);
+		lastDrawX = eventX;
+		lastDrawY = eventY;
 
 	};
 

@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import net.krazyweb.cataclysm.mapeditor.events.RotateMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.ToolSelectedEvent;
 import net.krazyweb.cataclysm.mapeditor.tools.EraserTool;
+import net.krazyweb.cataclysm.mapeditor.tools.FillTool;
 import net.krazyweb.cataclysm.mapeditor.tools.LineTool;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 
@@ -24,6 +25,11 @@ public class MapToolbar {
 	@FXML
 	private void selectLine() {
 		eventBus.post(new ToolSelectedEvent(new LineTool()));
+	}
+
+	@FXML
+	private void selectFill() {
+		eventBus.post(new ToolSelectedEvent(new FillTool()));
 	}
 
 	@FXML

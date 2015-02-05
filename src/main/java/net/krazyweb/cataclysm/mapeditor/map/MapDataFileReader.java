@@ -84,7 +84,6 @@ public class MapDataFileReader extends Service<Boolean> {
 				for (int i = 0; i < rowString.length(); i++) {
 					map.currentState.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
 					if (map.currentState.terrain[i][y.value] == null) {
-						System.out.println("EMPTY");
 						map.currentState.terrain[i][y.value] = fillTer.value;
 					}
 				}
@@ -97,6 +96,9 @@ public class MapDataFileReader extends Service<Boolean> {
 				String rowString = row.asText();
 				for (int i = 0; i < rowString.length(); i++) {
 					map.currentState.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
+					if (map.currentState.furniture[i][y.value] == null) {
+						map.currentState.furniture[i][y.value] = "f_null";
+					}
 				}
 				y.value++;
 			});
