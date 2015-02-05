@@ -3,6 +3,8 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.events.MapRedrawRequestEvent;
+import net.krazyweb.cataclysm.mapeditor.events.RotateMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.SaveMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
 
@@ -63,6 +65,40 @@ public class CataclysmMap {
 		//TODO Lock editing while saving (or copy state to save so editing can continue
 		writer.start();
 
+	}
+
+	@Subscribe
+	public void rotateMapEventListener(final RotateMapEvent event) {
+		rotateMapClockwise();
+	}
+
+	private void rotateMapClockwise() {
+		//TODO Allow undo/redo
+		transposeArray(currentState.terrain);
+		reverseColumns(currentState.terrain);
+		transposeArray(currentState.furniture);
+		reverseColumns(currentState.furniture);
+		eventBus.post(new MapRedrawRequestEvent());
+	}
+
+	private void transposeArray(final String[][] array) {
+		for(int i = 0; i < 24; i++) {
+			for(int j = i + 1; j < 24; j++) {
+				String temp = array[i][j];
+				array[i][j] = array[j][i];
+				array[j][i] = temp;
+			}
+		}
+	}
+
+	private void reverseColumns(final String[][] array) {
+		for(int j = 0; j < array.length; j++){
+			for(int i = 0; i < array[j].length / 2; i++) {
+				String temp = array[i][j];
+				array[i][j] = array[array.length - i - 1][j];
+				array[array.length - i - 1][j] = temp;
+			}
+		}
 	}
 
 	public void startEdit() {

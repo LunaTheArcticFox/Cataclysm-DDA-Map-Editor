@@ -142,7 +142,12 @@ public class MapDisplay {
 	}
 
 	@Subscribe
-	public void redrawRequestEventListener(final TileRedrawRequestEvent event) {
+	public void mapRedrawRequestEventListener(final MapRedrawRequestEvent event) {
+		drawMap();
+	}
+
+	@Subscribe
+	public void tileRedrawRequestEventListener(final TileRedrawRequestEvent event) {
 		drawTile(event.getX(),     event.getY());
 		drawTile(event.getX() + 1, event.getY());
 		drawTile(event.getX() - 1, event.getY());
@@ -154,34 +159,6 @@ public class MapDisplay {
 	public void toolSelectedEventListener(final ToolSelectedEvent event) {
 		tool = event.getTool();
 	}
-
-	/*private void rotateMapClockwise() {
-		transposeArray(map.terrain);
-		reverseColumns(map.terrain);
-		transposeArray(map.furniture);
-		reverseColumns(map.furniture);
-		drawMap();
-	}
-
-	private void transposeArray(final String[][] array) {
-		for(int i = 0; i < 24; i++) {
-			for(int j = i + 1; j < 24; j++) {
-				String temp = array[i][j];
-				array[i][j] = array[j][i];
-				array[j][i] = temp;
-			}
-		}
-	}
-
-	private void reverseColumns(final String[][] array) {
-		for(int j = 0; j < array.length; j++){
-			for(int i = 0; i < array[j].length / 2; i++) {
-				String temp = array[i][j];
-				array[i][j] = array[array.length - i - 1][j];
-				array[array.length - i - 1][j] = temp;
-			}
-		}
-	}*/
 
 	private void clearOverlay() {
 		overlays.getGraphicsContext2D().clearRect(lastHoverX  * 32 - 5, lastHoverY * 32 - 5, 42, 42); //TODO Use tileset size
