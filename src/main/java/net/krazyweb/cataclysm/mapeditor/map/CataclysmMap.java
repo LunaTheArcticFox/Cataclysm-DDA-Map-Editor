@@ -1,7 +1,9 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.events.SaveMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
 
 public class CataclysmMap {
@@ -50,6 +52,17 @@ public class CataclysmMap {
 	public CataclysmMap(final EventBus eventBus) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
+	}
+
+	@Subscribe
+	public void saveMapEventListener(final SaveMapEvent event) {
+
+		MapDataFileWriter writer = new MapDataFileWriter(event.getPath(), this, eventBus);
+		writer.setOnSucceeded(e -> System.out.println("File saved to " + event.getPath()));
+
+		//TODO Lock editing while saving (or copy state to save so editing can continue
+		writer.start();
+
 	}
 
 	public void startEdit() {

@@ -11,7 +11,7 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapgenDataFileReader extends Service<Boolean> {
+public class MapDataFileReader extends Service<Boolean> {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -20,7 +20,7 @@ public class MapgenDataFileReader extends Service<Boolean> {
 	private CataclysmMap map;
 	private EventBus eventBus;
 
-	public MapgenDataFileReader(final Path path, final EventBus eventBus) {
+	public MapDataFileReader(final Path path, final EventBus eventBus) {
 		this.path = path;
 		this.eventBus = eventBus;
 	}

@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
+import net.krazyweb.cataclysm.mapeditor.events.SaveMapEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -122,6 +123,11 @@ public class EditorMain extends Application {
 			eventBus.post(new LoadMapEvent(selectedFile.toPath()));
 		}
 
+	}
+
+	@FXML
+	private void saveFile() {
+		eventBus.post(new SaveMapEvent(Paths.get("Sample Data").resolve("temp.json")));
 	}
 
 }

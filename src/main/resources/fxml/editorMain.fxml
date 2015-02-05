@@ -10,7 +10,7 @@
 			<Menu text="_File">
 				<MenuItem text="_New" onAction="#newFile"/>
 				<MenuItem text="_Open" onAction="#openFile"/>
-				<MenuItem text="_Save"/>
+				<MenuItem text="_Save" onAction="#saveFile"/>
 			</Menu>
 			<Menu text="_Edit">
 				<MenuItem text="_Undo"/>
