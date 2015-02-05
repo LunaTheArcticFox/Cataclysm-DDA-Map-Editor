@@ -78,8 +78,12 @@ public class MapDisplay {
 			int eventX = ((int) (event.getX() - 1) / 32);
 			int eventY = ((int) (event.getY() - 1) / 32);
 			//Current tool draw
-			//TODO Determine which map the tile should go on; terrain or furniture
-			map.terrain[eventX][eventY] = currentTile.getID();
+			//TODO Do this better
+			if (currentTile.getID().startsWith("t")) {
+				map.terrain[eventX][eventY] = currentTile.getID();
+			} else {
+				map.furniture[eventX][eventY] = currentTile.getID();
+			}
 			drawTile(eventX, eventY);
 			drawTile(eventX + 1, eventY);
 			drawTile(eventX - 1, eventY);
