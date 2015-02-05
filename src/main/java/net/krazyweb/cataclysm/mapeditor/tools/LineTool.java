@@ -1,5 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
+import javafx.scene.input.MouseButton;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
@@ -9,13 +10,13 @@ public class LineTool extends Tool {
 	private int startY;
 
 	@Override
-	public void dragStart(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public void dragStart(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
 		startX = x;
 		startY = y;
 	}
 
 	@Override
-	public void dragEnd(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public void dragEnd(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
 
 		int delta = 0;
 
