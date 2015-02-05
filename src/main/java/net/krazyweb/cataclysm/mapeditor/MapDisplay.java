@@ -20,6 +20,10 @@ import java.util.Map;
 
 public class MapDisplay {
 
+	private static enum Orientation {
+		EITHER, VERTICAL, HORIZONTAL
+	}
+
 	private static final Tile.AdditionalTileType[] BITWISE_TYPES = {
 			Tile.AdditionalTileType.UNCONNECTED,
 			Tile.AdditionalTileType.END_PIECE,
@@ -41,6 +45,25 @@ public class MapDisplay {
 
 	private static final int[] BITWISE_ROTATIONS = {
 			0, 0, 270, 0, 180, 0, 270, 270, 90, 90, 90, 0, 180, 90, 180, 0
+	};
+
+	private static final Orientation[] BITWISE_FORCE_ORIENTATION = {
+			Orientation.EITHER,
+			Orientation.VERTICAL,
+			Orientation.HORIZONTAL,
+			Orientation.EITHER,
+			Orientation.VERTICAL,
+			Orientation.VERTICAL,
+			Orientation.EITHER,
+			Orientation.VERTICAL,
+			Orientation.HORIZONTAL,
+			Orientation.EITHER,
+			Orientation.HORIZONTAL,
+			Orientation.HORIZONTAL,
+			Orientation.EITHER,
+			Orientation.VERTICAL,
+			Orientation.HORIZONTAL,
+			Orientation.EITHER
 	};
 
 	private static final Map<String, String> tileGroups = new HashMap<>();
@@ -78,9 +101,15 @@ public class MapDisplay {
 			int eventX = ((int) (event.getX() - 1) / 32);
 			int eventY = ((int) (event.getY() - 1) / 32);
 			//Current tool draw
-			//TODO Do this better
+			//TODO Do this much better, including updating orientation for surrounding tiles when re-drawn
 			if (currentTile.getID().startsWith("t")) {
 				map.terrain[eventX][eventY] = currentTile.getID();
+				if (currentTile.getID().endsWith("_v") || currentTile.getID().endsWith("_h")) {
+					System.out.println(currentTile.getID());
+					int bitwiseMapping = getBitwiseMapping(eventX, eventY, map.terrain);
+					map.terrain[eventX][eventY] = currentTile.getID().substring(0, currentTile.getID().lastIndexOf("_"));
+					map.terrain[eventX][eventY] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
+				}
 			} else {
 				map.furniture[eventX][eventY] = currentTile.getID();
 			}
@@ -210,19 +239,19 @@ public class MapDisplay {
 			return 0;
 		}
 
-		if (tileAt(x, y + 1, data) != null && tileAt(x, y + 1, data).equals(current)) {
+		if (tileAt(x, y + 1, data) != null && tilesConnect(tileAt(x, y + 1, data), current)) {
 			tilemap += 1;
 		}
 
-		if (tileAt(x + 1, y, data) != null && tileAt(x + 1, y, data).equals(current)) {
+		if (tileAt(x + 1, y, data) != null && tilesConnect(tileAt(x + 1, y, data), current)) {
 			tilemap += 2;
 		}
 
-		if (tileAt(x, y - 1, data) != null && tileAt(x, y - 1, data).equals(current)) {
+		if (tileAt(x, y - 1, data) != null && tilesConnect(tileAt(x, y - 1, data), current)) {
 			tilemap += 4;
 		}
 
-		if (tileAt(x - 1, y, data) != null && tileAt(x - 1, y, data).equals(current)) {
+		if (tileAt(x - 1, y, data) != null && tilesConnect(tileAt(x - 1, y, data), current)) {
 			tilemap += 8;
 		}
 
@@ -230,13 +259,23 @@ public class MapDisplay {
 
 	}
 
+	private boolean tilesConnect(final String tile1, final String tile2) {
+
+		if (tile1.equals(tile2)) {
+			return true;
+		}
+
+		if (tileGroups.containsKey(tile1) && tileGroups.containsKey(tile2)) {
+			return tileGroups.get(tile1).equals(tileGroups.get(tile2));
+		}
+
+		return (tile1.endsWith("_v") || tile1.endsWith("_h")) && tile1.startsWith(tile2.substring(0, tile2.lastIndexOf("_")));
+
+	}
+
 	private String tileAt(final int x, final int y, final String[][] data) {
 		if (x < 0 || y < 0 || x > 24 - 1 || y > 24 - 1) {
 			return "";
-		}
-		String tile = data[x][y];
-		if (tileGroups.containsKey(tile)) {
-			return tileGroups.get(tile);
 		}
 		return data[x][y];
 	}

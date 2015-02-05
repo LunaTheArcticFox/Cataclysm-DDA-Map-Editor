@@ -9,6 +9,7 @@
 		<MenuBar BorderPane.alignment="CENTER">
 			<Menu text="_File">
 				<MenuItem text="_Open" onAction="#openFile"/>
+				<MenuItem text="_Save" onAction="#saveFile"/>
 			</Menu>
 			<Menu mnemonicParsing="false" text="Edit">
 				<MenuItem mnemonicParsing="false" text="Delete"/>
