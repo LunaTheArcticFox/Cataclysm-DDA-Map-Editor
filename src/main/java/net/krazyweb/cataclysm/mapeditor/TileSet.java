@@ -128,7 +128,7 @@ public class TileSet {
 
 		if (backgroundImage != null) {
 			textures.put(id, SwingFXUtils.toFXImage(backgroundImage, null));
-		} else {
+		} else if (foregroundImage != null) {
 			textures.put(id, SwingFXUtils.toFXImage(foregroundImage, null));
 		}
 

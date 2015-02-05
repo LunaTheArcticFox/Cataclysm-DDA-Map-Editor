@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.ToolBar?>
-<?import javafx.scene.layout.BorderPane?>
-<?import javafx.scene.layout.TilePane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
 <VBox fx:controller="net.krazyweb.cataclysm.mapeditor.TilePicker" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 	<ToolBar prefHeight="30.0" prefWidth="200.0">
 		<Button mnemonicParsing="false" text="Button"/>
 	</ToolBar>
 	<ScrollPane focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0"
 				VBox.vgrow="ALWAYS" fitToWidth="true">
-		<TilePane prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer"/>
+		<Accordion>
+			<panes>
+				<TitledPane text="Terrain">
+					<content>
+						<TilePane prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer"/>
+					</content>
+				</TitledPane>
+			</panes>
+		</Accordion>
 	</ScrollPane>
 </VBox>

@@ -2,10 +2,12 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
@@ -71,7 +73,8 @@ public class MapDisplay {
 		root.setOnMouseMoved(event -> {
 			drawBox(event.getX(), event.getY());
 		});
-		root.setOnMousePressed(event -> {
+		EventHandler<MouseEvent> mouseListener = event -> {
+			drawBox(event.getX(), event.getY());
 			int eventX = ((int) (event.getX() - 1) / 32);
 			int eventY = ((int) (event.getY() - 1) / 32);
 			//Current tool draw
@@ -82,10 +85,15 @@ public class MapDisplay {
 			drawTile(eventX - 1, eventY);
 			drawTile(eventX, eventY + 1);
 			drawTile(eventX, eventY - 1);
-		});
+		};
+		root.setOnMousePressed(mouseListener);
+		root.setOnMouseDragged(mouseListener);
 		tileGroups.put("t_wall_h", "wallGroup");
 		tileGroups.put("t_wall_v", "wallGroup");
+		tileGroups.put("t_window_frame", "wallGroup");
 		tileGroups.put("t_window_boarded", "wallGroup");
+		tileGroups.put("t_window_empty", "wallGroup");
+		tileGroups.put("t_window_domestic", "wallGroup");
 		tileGroups.put("t_door_c", "wallGroup");
 		tileGroups.put("t_door_locked", "wallGroup");
 	}
