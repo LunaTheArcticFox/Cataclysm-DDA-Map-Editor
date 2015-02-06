@@ -108,15 +108,9 @@ public class MapDataFileReader extends Service<Boolean> {
 						Map.Entry<String, JsonNode> id = placeGroupDef.fields().next();
 						String type = id.getKey();
 						String group = id.getValue().asText();
-						PlaceGroup placeGroup;
-						if (type.equals("item")) {
-							placeGroup = new ItemGroup();
-						} else if (type.equals("monster")) {
-							placeGroup = new MonsterGroup();
-						} else {
-							return; //TODO Other types
-						}
-						placeGroup.name = group;
+						PlaceGroup placeGroup = new PlaceGroup();
+						placeGroup.type = type;
+						placeGroup.group = group;
 						PlaceGroupZone zone = new PlaceGroupZone(placeGroup);
 						placeGroupDef.fields().forEachRemaining(field -> {
 							switch (field.getKey()) {

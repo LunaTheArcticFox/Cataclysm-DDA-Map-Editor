@@ -204,7 +204,7 @@ public class MapDisplay {
 					.append(map.getFurnitureAt(eventX, eventY)).append(" | ");
 
 			List<PlaceGroupZone> zones = map.getPlaceGroupZonesAt(eventX, eventY);
-			zones.forEach(zone -> info.append(" (").append(zone.group.type).append(" ").append(zone.group.name).append(")"));
+			zones.forEach(zone -> info.append(" (").append(zone.group.type).append(" ").append(zone.group.group).append(")"));
 
 			eventBus.post(new TileHoverEvent(info.toString(), eventX, eventY));
 			lastHoverX = eventX;

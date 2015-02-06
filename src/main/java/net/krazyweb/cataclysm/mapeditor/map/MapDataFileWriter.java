@@ -111,7 +111,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 				generator.writeArrayFieldStart("place_groups");
 				for (PlaceGroupZone placeGroupZone : map.currentState.placeGroupZones) {
 					generator.writeStartObject();
-					generator.writeStringField(placeGroupZone.group.type, placeGroupZone.group.name);
+					generator.writeStringField(placeGroupZone.group.type, placeGroupZone.group.group);
 					generator.writeNumberField("chance", placeGroupZone.chance);
 					generator.writeArrayFieldStart("x");
 					generator.writeNumber(placeGroupZone.x);
