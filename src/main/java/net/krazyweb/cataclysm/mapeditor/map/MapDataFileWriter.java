@@ -103,6 +103,20 @@ public class MapDataFileWriter extends Service<Boolean> {
 			}
 			generator.writeEndObject();
 
+			generator.writeArrayFieldStart("place_specials");
+			for (int x = 0; x < CataclysmMap.SIZE; x++) {
+				for (int y = 0; y < CataclysmMap.SIZE; y++) {
+					if (map.currentState.furniture[x][y].equals("f_toilet")) {
+						generator.writeStartObject();
+						generator.writeStringField("type", "toilet");
+						generator.writeNumberField("x", x);
+						generator.writeNumberField("y", y);
+						generator.writeEndObject();
+					}
+				}
+			}
+			generator.writeEndArray();
+
 			generator.writeArrayFieldStart("set");
 			createRandomGrass(generator);
 			generator.writeEndArray();
@@ -205,7 +219,6 @@ public class MapDataFileWriter extends Service<Boolean> {
 			int area = (r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1);
 			int repeatMin = Math.max(Math.min((int) (area / 3.5) - 1, 8), 0);
 			int repeatMax = Math.min(Math.max((int) (area / 2.5) - 1, 1), 14);
-			System.out.println(area + " [" + repeatMin + ", " + repeatMax + "]");
 
 			generator.writeArrayFieldStart("repeat");
 			generator.writeNumber(repeatMin);
