@@ -38,7 +38,7 @@ public class EditorMain extends Application {
 		try {
 			Parent root = FXMLLoader.load(getClass().getResource("/fxml/editorMain.fxml"));
 			primaryStage.setTitle("Cataclysm Map Editor");
-			primaryStage.setScene(new Scene(root, 1600, 900));
+			primaryStage.setScene(new Scene(root, 1100, 900)); //TODO Fit to screen if need be and remember last size/position
 			primaryStage.setResizable(true);
 			//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
 			primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts

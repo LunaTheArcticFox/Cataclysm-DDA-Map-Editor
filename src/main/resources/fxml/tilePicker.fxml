@@ -6,7 +6,7 @@
 	<ToolBar prefHeight="30.0" prefWidth="200.0">
 		<Button mnemonicParsing="false" text="Button"/>
 	</ToolBar>
-	<ScrollPane focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS">
+	<ScrollPane focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS" fx:id="tilePaneContainer">
 		<TilePane prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer">
 			<ToolBar/>
 		</TilePane>

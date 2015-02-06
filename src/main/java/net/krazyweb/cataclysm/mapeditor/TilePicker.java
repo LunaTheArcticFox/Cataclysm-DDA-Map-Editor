@@ -5,7 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.TilePane;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
@@ -20,7 +22,21 @@ public class TilePicker {
 	@FXML
 	private TilePane tileContainer;
 
+	@FXML
+	private ScrollPane tilePaneContainer;
+
 	private EventBus eventBus;
+
+	@FXML
+	public void initialize() {
+		System.out.println("init?");
+		tilePaneContainer.addEventFilter(ScrollEvent.SCROLL, event -> {
+			double deltaY = event.getDeltaY() * 1.75;
+			double height = tilePaneContainer.getContent().getBoundsInLocal().getWidth();
+			double vValue = tilePaneContainer.getVvalue();
+			tilePaneContainer.setVvalue(vValue + -deltaY / height);
+		});
+	}
 
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
