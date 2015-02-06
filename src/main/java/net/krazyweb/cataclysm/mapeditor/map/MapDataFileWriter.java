@@ -126,15 +126,23 @@ public class MapDataFileWriter extends Service<Boolean> {
 				for (PlaceGroupZone placeGroupZone : map.currentState.placeGroupZones) {
 					generator.writeStartObject();
 					generator.writeStringField(placeGroupZone.group.type, placeGroupZone.group.group);
-					generator.writeNumberField("chance", placeGroupZone.chance);
-					generator.writeArrayFieldStart("x");
-					generator.writeNumber(placeGroupZone.x);
-					generator.writeNumber(placeGroupZone.x - 1 + placeGroupZone.w);
-					generator.writeEndArray();
-					generator.writeArrayFieldStart("y");
-					generator.writeNumber(placeGroupZone.y);
-					generator.writeNumber(placeGroupZone.y - 1 + placeGroupZone.h);
-					generator.writeEndArray();
+					generator.writeNumberField("chance", placeGroupZone.group.chance);
+					if (placeGroupZone.w != 1) {
+						generator.writeArrayFieldStart("x");
+						generator.writeNumber(placeGroupZone.x);
+						generator.writeNumber(placeGroupZone.x - 1 + placeGroupZone.w);
+						generator.writeEndArray();
+					} else {
+						generator.writeNumberField("x", placeGroupZone.x);
+					}
+					if (placeGroupZone.h != 1) {
+						generator.writeArrayFieldStart("y");
+						generator.writeNumber(placeGroupZone.y);
+						generator.writeNumber(placeGroupZone.y - 1 + placeGroupZone.h);
+						generator.writeEndArray();
+					} else {
+						generator.writeNumberField("y", placeGroupZone.x);
+					}
 					generator.writeEndObject();
 				}
 				generator.writeEndArray();

@@ -22,7 +22,7 @@ public class PlaceGroupZone {
 		}
 	}
 
-	public int x, y, w, h, chance;
+	public int x, y, w, h;
 	public Color fillColor;
 	public Color strokeColor;
 	public PlaceGroup group;
@@ -42,7 +42,6 @@ public class PlaceGroupZone {
 		this.y = y;
 		this.w = w;
 		this.h = h;
-		this.chance = 100; //TODO
 	}
 
 	public void rotate() {

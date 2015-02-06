@@ -133,7 +133,7 @@ public class MapDataFileReader extends Service<Boolean> {
 									}
 									break;
 								case "chance":
-									zone.chance = field.getValue().asInt();
+									zone.group.chance = field.getValue().asInt();
 									break;
 							}
 						});
