@@ -6,19 +6,25 @@ import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
-public class PlaceGroupTool extends Tool {
+public class CreatePlaceGroupTool extends Tool {
 
 	private int startX;
 	private int startY;
 
 	@Override
 	public void dragStart(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
-		startX = x;
-		startY = y;
+		if (mouseButton == MouseButton.PRIMARY) {
+			startX = x;
+			startY = y;
+		}
 	}
 
 	@Override
 	public void dragEnd(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
+
+		if (mouseButton != MouseButton.PRIMARY) {
+			return;
+		}
 
 		//TODO Pop up menu asking for placegroup
 

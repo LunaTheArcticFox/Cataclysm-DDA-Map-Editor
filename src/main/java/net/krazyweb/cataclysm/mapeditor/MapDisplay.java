@@ -17,6 +17,8 @@ import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
+import java.util.List;
+
 public class MapDisplay {
 
 	private static final Tile.AdditionalTileType[] BITWISE_TYPES = {
@@ -60,9 +62,20 @@ public class MapDisplay {
 
 		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
 		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
-		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		tool.click(eventX, eventY, currentTile, event.getButton(), map);
+		lastDrawX = eventX;
+		lastDrawY = eventY;
+
+	};
+	private final EventHandler<MouseEvent> releaseEvent = event -> {
+
+		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
+		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
+		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+
+		tool.release(eventX, eventY, currentTile, event.getButton(), map);
 		lastDrawX = eventX;
 		lastDrawY = eventY;
 
@@ -72,7 +85,7 @@ public class MapDisplay {
 
 		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
 		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
-		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		if (lastDrawX != eventX || lastDrawY != eventY) {
 			tool.drag(eventX, eventY, currentTile, event.getButton(), map);
@@ -86,7 +99,7 @@ public class MapDisplay {
 
 		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
 		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
-		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		tool.dragStart(eventX, eventY, currentTile, event.getButton(), map);
 		lastDrawX = eventX;
@@ -98,7 +111,7 @@ public class MapDisplay {
 
 		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
 		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
-		drawBox(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
+		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 
 		tool.dragEnd(eventX, eventY, currentTile, event.getButton(), map);
 		lastDrawX = eventX;
@@ -113,7 +126,7 @@ public class MapDisplay {
 	@FXML
 	private void initialize() {
 
-		root.setOnMouseMoved(event -> drawBox(event.getX(), event.getY()));
+		root.setOnMouseMoved(event -> updateInfo(event.getX(), event.getY()));
 
 		root.setOnMouseExited(event -> clearOverlay());
 
@@ -121,6 +134,8 @@ public class MapDisplay {
 			if (dragging) {
 				dragging = false;
 				dragFinishEvent.handle(event);
+			} else {
+				releaseEvent.handle(event);
 			}
 		});
 
@@ -168,7 +183,7 @@ public class MapDisplay {
 		overlays.getGraphicsContext2D().clearRect(lastHoverX  * 32 - 5, lastHoverY * 32 - 5, 42, 42); //TODO Use tileset size
 	}
 
-	private void drawBox(final int mouseX, final int mouseY) {
+	private void updateInfo(final int mouseX, final int mouseY) {
 
 		int eventX = (mouseX / 32); //TODO Use tileset size
 		int eventY = (mouseY / 32); //TODO Use tileset size
@@ -184,7 +199,14 @@ public class MapDisplay {
 
 			clearOverlay();
 
-			eventBus.post(new TileHoverEvent(map.getTerrainAt(eventX, eventY) + " | " + map.getFurnitureAt(eventX, eventY), eventX, eventY));
+			StringBuilder info = new StringBuilder()
+					.append(map.getTerrainAt(eventX, eventY)).append(" | ")
+					.append(map.getFurnitureAt(eventX, eventY)).append(" | ");
+
+			List<PlaceGroupZone> zones = map.getPlaceGroupZonesAt(eventX, eventY);
+			zones.forEach(zone -> info.append(" (").append(zone.group.type).append(" ").append(zone.group.name).append(")"));
+
+			eventBus.post(new TileHoverEvent(info.toString(), eventX, eventY));
 			lastHoverX = eventX;
 			lastHoverY = eventY;
 
@@ -195,8 +217,8 @@ public class MapDisplay {
 
 	}
 
-	private void drawBox(final double mouseX, final double mouseY) {
-		drawBox((int) mouseX, (int) mouseY);
+	private void updateInfo(final double mouseX, final double mouseY) {
+		updateInfo((int) mouseX, (int) mouseY);
 	}
 
 	@Subscribe
@@ -228,10 +250,12 @@ public class MapDisplay {
 	private void drawPlaceGroups() {
 		GraphicsContext graphicsContext = groups.getGraphicsContext2D();
 		graphicsContext.clearRect(0, 0, 768, 768); //TODO Use calculated size
-		graphicsContext.setFill(Color.color(0.2, 0.8, 0.7, 0.3)); //TODO Calculate other colors
-		graphicsContext.setStroke(Color.color(0.2, 0.8, 0.7, 0.7)); //TODO Calculate other colors
-		for (PlaceGroupZone placeGroupZone : map.getPlaceGroupZones()) {
-			graphicsContext.fillRect(placeGroupZone.x* 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
+		List<PlaceGroupZone> placeGroupZones = map.getPlaceGroupZones();
+		for (int i = placeGroupZones.size() - 1; i >= 0; i--) {
+			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
+			graphicsContext.setFill(placeGroupZone.fillColor);
+			graphicsContext.setStroke(placeGroupZone.strokeColor);
+			graphicsContext.fillRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
 			graphicsContext.strokeRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
 		}
 	}

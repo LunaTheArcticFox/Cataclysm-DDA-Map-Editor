@@ -7,6 +7,7 @@ import net.krazyweb.cataclysm.mapeditor.events.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class CataclysmMap {
 
@@ -79,9 +80,7 @@ public class CataclysmMap {
 		reverseColumns(currentState.terrain);
 		transposeArray(currentState.furniture);
 		reverseColumns(currentState.furniture);
-		for (PlaceGroupZone placeGroupZone : currentState.placeGroupZones) {
-			placeGroupZone.rotate();
-		}
+		currentState.placeGroupZones.forEach(net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone::rotate);
 		eventBus.post(new MapRedrawRequestEvent());
 	}
 
@@ -139,9 +138,32 @@ public class CataclysmMap {
 
 	}
 
+	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
+		currentState.placeGroupZones.add(index, zone);
+		eventBus.post(new PlaceGroupRedrawRequestEvent());
+	}
+
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
+	}
+
+	public void removePlaceGroupZone(final PlaceGroupZone zone) {
+		currentState.placeGroupZones.remove(zone);
+		eventBus.post(new PlaceGroupRedrawRequestEvent());
+	}
+
+	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
+		for (PlaceGroupZone zone : currentState.placeGroupZones) {
+			if (zone.contains(x, y)) {
+				return zone;
+			}
+		}
+		return null;
+	}
+
+	public List<PlaceGroupZone> getPlaceGroupZonesAt(final int x, final int y) {
+		return currentState.placeGroupZones.stream().filter(zone -> zone.contains(x, y)).collect(Collectors.toList());
 	}
 
 	public List<PlaceGroupZone> getPlaceGroupZones() {

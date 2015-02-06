@@ -111,6 +111,8 @@ public class MapDataFileReader extends Service<Boolean> {
 						PlaceGroup placeGroup;
 						if (type.equals("item")) {
 							placeGroup = new ItemGroup();
+						} else if (type.equals("monster")) {
+							placeGroup = new MonsterGroup();
 						} else {
 							return; //TODO Other types
 						}

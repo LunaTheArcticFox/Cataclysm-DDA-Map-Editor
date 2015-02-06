@@ -1,6 +1,18 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
+import javafx.scene.paint.Color;
+
 public class PlaceGroupZone {
+
+	//TODO More colors
+	private static final Color[][] ZONE_COLORS = new Color[][] {
+			new Color[] { Color.color(0.2, 0.8, 0.4, 0.3), Color.color(0.2, 0.8, 0.4, 0.85) },
+			new Color[] { Color.color(0.7, 0.8, 0.2, 0.3), Color.color(0.7, 0.8, 0.2, 0.85) },
+			new Color[] { Color.color(0.7, 0.2, 0.3, 0.3), Color.color(0.7, 0.2, 0.3, 0.85) },
+			new Color[] { Color.color(0.1, 0.2, 0.8, 0.3), Color.color(0.1, 0.2, 0.8, 0.85) },
+	};
+
+	private static int currentZoneColor = 0;
 
 	private class Point2D {
 		private int x, y;
@@ -11,19 +23,26 @@ public class PlaceGroupZone {
 	}
 
 	public int x, y, w, h, chance;
+	public Color fillColor;
+	public Color strokeColor;
 	public PlaceGroup group;
 
 	public PlaceGroupZone(final PlaceGroup group) {
 		this.group = group;
+		fillColor = ZONE_COLORS[currentZoneColor][0];
+		strokeColor = ZONE_COLORS[currentZoneColor][1];
+		if (++currentZoneColor >= ZONE_COLORS.length) {
+			currentZoneColor = 0;
+		}
 	}
 
 	public PlaceGroupZone(final int x, final int y, final int w, final int h, final PlaceGroup group) {
+		this(group);
 		this.x = x;
 		this.y = y;
 		this.w = w;
 		this.h = h;
 		this.chance = 100; //TODO
-		this.group = group;
 	}
 
 	public void rotate() {
@@ -71,6 +90,10 @@ public class PlaceGroupZone {
 					" Coordinates pre-rotation: [" + x + ", " + y + ", " + w + ", " + h + "]");
 		}
 
+	}
+
+	public boolean contains(final int x, final int y) {
+		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	}
 
 }

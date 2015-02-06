@@ -15,4 +15,7 @@
 	<Button mnemonicParsing="false" text="Rotate" onAction="#rotateMap"/>
 	<Separator orientation="VERTICAL"/>
 	<Button mnemonicParsing="false" text="PlaceGroups" onAction="#selectPlaceGroup"/>
+	<Separator orientation="VERTICAL"/>
+	<Button mnemonicParsing="false" fx:id="createPlaceGroupButton" visible="false" managed="false" text="Create" onAction="#selectCreatePlaceGroup"/>
+	<Button mnemonicParsing="false" fx:id="movePlaceGroupButton" visible="false" managed="false" text="Move" onAction="#selectMovePlaceGroup"/>
 </ToolBar>
