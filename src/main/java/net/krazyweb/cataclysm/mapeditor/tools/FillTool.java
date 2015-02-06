@@ -47,7 +47,7 @@ public class FillTool extends Tool {
 
 	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final CataclysmMap map) {
 		CataclysmMap.Layer layer = replacementTile.isFurniture() ? CataclysmMap.Layer.FURNITURE : CataclysmMap.Layer.TERRAIN;
-		return map.getTileAt(x, y, layer) != null && map.getTileAt(x, y, layer).equals(targetTile);
+		return !map.getTileAt(x, y, layer).equals(replacementTile.getID()) && map.getTileAt(x, y, layer) != null && map.getTileAt(x, y, layer).equals(targetTile);
 	}
 
 }
