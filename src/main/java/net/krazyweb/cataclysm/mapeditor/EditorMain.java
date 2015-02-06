@@ -86,7 +86,7 @@ public class EditorMain extends Application {
 			e.printStackTrace();
 		}
 		eventBus.register(statusBarLoader.<MapDisplay>getController());
-		statusBarLoader.<StatusBar>getController().setEventBus(eventBus);
+		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
 		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
 
 		//-> Canvasses

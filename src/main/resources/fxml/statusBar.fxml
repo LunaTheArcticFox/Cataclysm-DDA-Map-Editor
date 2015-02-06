@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
-<AnchorPane fx:controller="net.krazyweb.cataclysm.mapeditor.StatusBar" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="20.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-	<Label fx:id="mainTextArea" AnchorPane.leftAnchor="15"/>
-</AnchorPane>
+<?import org.controlsfx.control.StatusBar?>
+<StatusBar fx:controller="net.krazyweb.cataclysm.mapeditor.StatusBarController" fx:id="statusBar" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="20.0" prefWidth="200.0" BorderPane.alignment="CENTER"/>

@@ -3,13 +3,13 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
+import org.controlsfx.control.StatusBar;
 
-public class StatusBar {
+public class StatusBarController {
 
 	@FXML
-	private Label mainTextArea;
+	private StatusBar statusBar;
 
 	private EventBus eventBus;
 
@@ -19,7 +19,7 @@ public class StatusBar {
 
 	@Subscribe
 	public void tileHoverEventListener(final TileHoverEvent event) {
-		mainTextArea.setText(event.getX() + ", " + event.getY() + "\t\t" + event.getTileName());
+		statusBar.setText(event.getX() + ", " + event.getY() + "\t\t" + event.getTileName());
 	}
 
 }

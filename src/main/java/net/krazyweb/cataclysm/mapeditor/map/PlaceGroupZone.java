@@ -13,6 +13,10 @@ public class PlaceGroupZone {
 	public int x, y, w, h, chance;
 	public PlaceGroup group;
 
+	public PlaceGroupZone(final PlaceGroup group) {
+		this.group = group;
+	}
+
 	public PlaceGroupZone(final int x, final int y, final int w, final int h, final PlaceGroup group) {
 		this.x = x;
 		this.y = y;
