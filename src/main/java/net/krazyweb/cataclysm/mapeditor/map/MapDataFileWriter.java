@@ -110,11 +110,11 @@ public class MapDataFileWriter extends Service<Boolean> {
 					generator.writeNumberField("chance", placeGroupZone.chance);
 					generator.writeArrayFieldStart("x");
 					generator.writeNumber(placeGroupZone.x);
-					generator.writeNumber(placeGroupZone.x + placeGroupZone.w);
+					generator.writeNumber(placeGroupZone.x - 1 + placeGroupZone.w);
 					generator.writeEndArray();
 					generator.writeArrayFieldStart("y");
 					generator.writeNumber(placeGroupZone.y);
-					generator.writeNumber(placeGroupZone.y + placeGroupZone.h);
+					generator.writeNumber(placeGroupZone.y - 1 + placeGroupZone.h);
 					generator.writeEndArray();
 					generator.writeEndObject();
 				}

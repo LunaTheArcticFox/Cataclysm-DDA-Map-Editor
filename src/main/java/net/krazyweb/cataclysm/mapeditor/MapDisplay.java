@@ -231,7 +231,7 @@ public class MapDisplay {
 		graphicsContext.setFill(Color.color(0.2, 0.8, 0.7, 0.3)); //TODO Calculate other colors
 		graphicsContext.setStroke(Color.color(0.2, 0.8, 0.7, 0.7)); //TODO Calculate other colors
 		for (PlaceGroupZone placeGroupZone : map.getPlaceGroupZones()) {
-			graphicsContext.fillRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
+			graphicsContext.fillRect(placeGroupZone.x* 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
 			graphicsContext.strokeRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
 		}
 	}
