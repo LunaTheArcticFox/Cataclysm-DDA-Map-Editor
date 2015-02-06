@@ -44,4 +44,9 @@ public class MapToolbar {
 		eventBus.post(new RotateMapEvent());
 	}
 
+	@FXML
+	private void selectPlaceGroup() {
+		eventBus.post(new ToolSelectedEvent(new PlaceGroupTool()));
+	}
+
 }

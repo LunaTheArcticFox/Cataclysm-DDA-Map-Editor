@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.transform.Rotate;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
@@ -45,7 +46,7 @@ public class MapDisplay {
 	private StackPane root;
 
 	@FXML
-	private Canvas terrain, overlays;
+	private Canvas terrain, overlays, groups;
 
 	private int lastHoverX, lastHoverY, lastDrawX = -1, lastDrawY = -1;
 	private boolean dragging = false;
@@ -154,6 +155,11 @@ public class MapDisplay {
 	}
 
 	@Subscribe
+	public void placeGroupRedrawRequestEventListener(final PlaceGroupRedrawRequestEvent event) {
+		drawPlaceGroups();
+	}
+
+	@Subscribe
 	public void toolSelectedEventListener(final ToolSelectedEvent event) {
 		tool = event.getTool();
 	}
@@ -215,6 +221,18 @@ public class MapDisplay {
 			for (int y = 0; y < CataclysmMap.SIZE; y++) {
 				drawTile(x, y);
 			}
+		}
+		drawPlaceGroups();
+	}
+
+	private void drawPlaceGroups() {
+		GraphicsContext graphicsContext = groups.getGraphicsContext2D();
+		graphicsContext.clearRect(0, 0, 768, 768); //TODO Use calculated size
+		graphicsContext.setFill(Color.color(0.2, 0.8, 0.7, 0.3)); //TODO Calculate other colors
+		graphicsContext.setStroke(Color.color(0.2, 0.8, 0.7, 0.7)); //TODO Calculate other colors
+		for (PlaceGroupZone placeGroupZone : map.getPlaceGroupZones()) {
+			graphicsContext.fillRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
+			graphicsContext.strokeRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
 		}
 	}
 

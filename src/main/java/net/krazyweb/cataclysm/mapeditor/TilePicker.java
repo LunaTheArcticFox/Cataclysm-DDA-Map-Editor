@@ -29,7 +29,6 @@ public class TilePicker {
 
 	@FXML
 	public void initialize() {
-		System.out.println("init?");
 		tilePaneContainer.addEventFilter(ScrollEvent.SCROLL, event -> {
 			double deltaY = event.getDeltaY() * 1.75;
 			double height = tilePaneContainer.getContent().getBoundsInLocal().getWidth();

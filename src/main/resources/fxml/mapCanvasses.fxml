@@ -5,5 +5,6 @@
 
 <StackPane prefHeight="768.0" prefWidth="768.0" fx:controller="net.krazyweb.cataclysm.mapeditor.MapDisplay" fx:id="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<Canvas fx:id="terrain"  height="768.0" width="768.0"/>
+	<Canvas fx:id="groups" height="768.0" width="768.0"/>
 	<Canvas fx:id="overlays" height="768.0" width="768.0"/>
 </StackPane>

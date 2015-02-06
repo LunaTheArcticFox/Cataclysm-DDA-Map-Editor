@@ -102,6 +102,24 @@ public class MapDataFileWriter extends Service<Boolean> {
 			}
 			generator.writeEndObject();
 
+			if (!map.currentState.placeGroupZones.isEmpty()) {
+				generator.writeArrayFieldStart("place_groups");
+				for (PlaceGroupZone placeGroupZone : map.currentState.placeGroupZones) {
+					generator.writeStartObject();
+					generator.writeStringField(placeGroupZone.group.type, placeGroupZone.group.name);
+					generator.writeNumberField("chance", placeGroupZone.chance);
+					generator.writeArrayFieldStart("x");
+					generator.writeNumber(placeGroupZone.x);
+					generator.writeNumber(placeGroupZone.x + placeGroupZone.w);
+					generator.writeEndArray();
+					generator.writeArrayFieldStart("y");
+					generator.writeNumber(placeGroupZone.y);
+					generator.writeNumber(placeGroupZone.y + placeGroupZone.h);
+					generator.writeEndArray();
+					generator.writeEndObject();
+				}
+				generator.writeEndArray();
+			}
 
 			generator.writeEndObject();
 
@@ -125,36 +143,23 @@ public class MapDataFileWriter extends Service<Boolean> {
 		@Override
 		public boolean equals(Object object) {
 
-			if (!(object instanceof TerrainIdentifier)) {
-				return false;
-			}
+			if (this == object) return true;
+			if (object == null || getClass() != object.getClass()) return false;
 
 			TerrainIdentifier other = (TerrainIdentifier) object;
 
-			boolean different = false;
+			if (furniture != null ? !furniture.equals(other.furniture) : other.furniture != null) return false;
+			if (terrain != null ? !terrain.equals(other.terrain) : other.terrain != null) return false;
 
-			if (terrain != null && other.terrain != null) {
-				if (!terrain.equals(other.terrain)) {
-					different = true;
-				}
-			} else if (terrain == null && other.terrain == null) {
-				//Do nothing
-			} else {
-				different = true;
-			}
+			return true;
 
-			if (furniture != null && other.furniture != null) {
-				if (!furniture.equals(other.furniture)) {
-					different = true;
-				}
-			} else if (furniture == null && other.furniture == null) {
-				//Do nothing
-			} else {
-				different = true;
-			}
+		}
 
-			return !different;
-
+		@Override
+		public int hashCode() {
+			int result = terrain != null ? terrain.hashCode() : 0;
+			result = 31 * result + (furniture != null ? furniture.hashCode() : 0);
+			return result;
 		}
 
 	}

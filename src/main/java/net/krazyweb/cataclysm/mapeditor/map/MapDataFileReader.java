@@ -54,8 +54,6 @@ public class MapDataFileReader extends Service<Boolean> {
 				return;
 			}
 
-			System.out.println("type = " + root.get("type").asText());
-
 			JsonNode object = root.get("type").asText().equals("overmap_terrain") ? root.get("mapgen").get(0).get("object") : root.get("object");
 
 			Map<Character, String> terrainMap = new HashMap<>();

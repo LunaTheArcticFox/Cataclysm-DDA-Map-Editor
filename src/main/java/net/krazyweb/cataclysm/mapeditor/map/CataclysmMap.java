@@ -3,10 +3,10 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.events.MapRedrawRequestEvent;
-import net.krazyweb.cataclysm.mapeditor.events.RotateMapEvent;
-import net.krazyweb.cataclysm.mapeditor.events.SaveMapEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TileRedrawRequestEvent;
+import net.krazyweb.cataclysm.mapeditor.events.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class CataclysmMap {
 
@@ -38,6 +38,7 @@ public class CataclysmMap {
 	protected static class State {
 		protected String[][] terrain = new String[SIZE][SIZE];
 		protected String[][] furniture = new String[SIZE][SIZE];
+		protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 	}
 
 	public static enum Layer {
@@ -78,6 +79,9 @@ public class CataclysmMap {
 		reverseColumns(currentState.terrain);
 		transposeArray(currentState.furniture);
 		reverseColumns(currentState.furniture);
+		for (PlaceGroupZone placeGroupZone : currentState.placeGroupZones) {
+			placeGroupZone.rotate();
+		}
 		eventBus.post(new MapRedrawRequestEvent());
 	}
 
@@ -133,6 +137,15 @@ public class CataclysmMap {
 			eventBus.post(new TileRedrawRequestEvent(x, y));
 		}
 
+	}
+
+	public void addPlaceGroupZone(final PlaceGroupZone zone) {
+		currentState.placeGroupZones.add(zone);
+		eventBus.post(new PlaceGroupRedrawRequestEvent());
+	}
+
+	public List<PlaceGroupZone> getPlaceGroupZones() {
+		return new ArrayList<>(currentState.placeGroupZones);
 	}
 
 	private void updateTilesSurrounding(final int x, final int y) {

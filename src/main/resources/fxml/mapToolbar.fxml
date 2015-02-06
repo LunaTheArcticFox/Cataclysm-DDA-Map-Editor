@@ -13,4 +13,6 @@
 	<Button mnemonicParsing="false" text="Eraser" onAction="#selectEraser"/>
 	<Separator orientation="VERTICAL"/>
 	<Button mnemonicParsing="false" text="Rotate" onAction="#rotateMap"/>
+	<Separator orientation="VERTICAL"/>
+	<Button mnemonicParsing="false" text="PlaceGroups" onAction="#selectPlaceGroup"/>
 </ToolBar>
