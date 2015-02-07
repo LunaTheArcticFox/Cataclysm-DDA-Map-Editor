@@ -97,7 +97,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 
 			generator.writeObjectFieldStart("furniture");
 			for (TerrainIdentifier id : terrainIDs) {
-				if (id.furniture != null) {
+				if (id.furniture != null && !id.furniture.equals("f_null")) {
 					generator.writeStringField(id.symbol + "", id.furniture);
 				}
 			}
@@ -141,7 +141,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 						generator.writeNumber(placeGroupZone.y - 1 + placeGroupZone.h);
 						generator.writeEndArray();
 					} else {
-						generator.writeNumberField("y", placeGroupZone.x);
+						generator.writeNumberField("y", placeGroupZone.y);
 					}
 					generator.writeEndObject();
 				}
