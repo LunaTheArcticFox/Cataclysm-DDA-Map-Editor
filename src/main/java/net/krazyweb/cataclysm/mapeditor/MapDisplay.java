@@ -123,33 +123,6 @@ public class MapDisplay {
 		this.eventBus = eventBus;
 	}
 
-	@FXML
-	private void initialize() {
-
-		root.setOnMouseMoved(event -> updateInfo(event.getX(), event.getY()));
-
-		root.setOnMouseExited(event -> clearOverlay());
-
-		root.setOnMouseReleased(event -> {
-			if (dragging) {
-				dragging = false;
-				dragFinishEvent.handle(event);
-			} else {
-				releaseEvent.handle(event);
-			}
-		});
-
-		root.setOnMousePressed(clickEvent);
-		root.setOnMouseDragged(event -> {
-			if (!dragging) {
-				dragging = true;
-				dragStartEvent.handle(event);
-			}
-			dragEvent.handle(event);
-		});
-
-	}
-
 	@Subscribe
 	public void tilePickedEventListener(final TilePickedEvent event) {
 		currentTile = event.getTile();
@@ -235,6 +208,28 @@ public class MapDisplay {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		root.setOnMouseMoved(mouseEvent -> updateInfo(mouseEvent.getX(), mouseEvent.getY()));
+
+		root.setOnMouseExited(mouseEvent -> clearOverlay());
+
+		root.setOnMouseReleased(mouseEvent -> {
+			if (dragging) {
+				dragging = false;
+				dragFinishEvent.handle(mouseEvent);
+			} else {
+				releaseEvent.handle(mouseEvent);
+			}
+		});
+
+		root.setOnMousePressed(clickEvent);
+		root.setOnMouseDragged(mouseEvent -> {
+			if (!dragging) {
+				dragging = true;
+				dragStartEvent.handle(mouseEvent);
+			}
+			dragEvent.handle(mouseEvent);
+		});
 
 	}
 

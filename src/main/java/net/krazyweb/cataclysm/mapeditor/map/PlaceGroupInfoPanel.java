@@ -59,6 +59,7 @@ public class PlaceGroupInfoPanel {
 	}
 
 	public int getChance() {
+		//TODO Validate input
 		return Integer.parseInt(chance.getText());
 	}
 
