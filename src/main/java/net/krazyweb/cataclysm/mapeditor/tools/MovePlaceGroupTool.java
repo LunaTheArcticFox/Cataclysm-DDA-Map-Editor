@@ -1,8 +1,10 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
+import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseButton;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
 public class MovePlaceGroupTool extends Tool {
@@ -15,17 +17,26 @@ public class MovePlaceGroupTool extends Tool {
 	@Override
 	public void release(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
 		if (mouseButton != MouseButton.PRIMARY) {
-			return;
-		}
-		PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
-		if (zone != null) {
-			map.removePlaceGroupZone(zone);
-			if (zone == placeGroupZone) {
-				map.addPlaceGroupZone(zone);
-				placeGroupZone = map.getPlaceGroupZoneAt(x, y);
-			} else {
-				map.addPlaceGroupZone(0, zone);
-				placeGroupZone = zone;
+			PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
+			PlaceGroupInfoPanel infoPanel = new PlaceGroupInfoPanel("Edit PlaceGroup", zone.group);
+			infoPanel.showAndWait().ifPresent(result -> {
+				if (result == ButtonType.FINISH) {
+					zone.group.type = infoPanel.getType();
+					zone.group.group = infoPanel.getGroup();
+					zone.group.chance = infoPanel.getChance();
+				}
+			});
+		} else {
+			PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
+			if (zone != null) {
+				map.removePlaceGroupZone(zone);
+				if (zone == placeGroupZone) {
+					map.addPlaceGroupZone(zone);
+					placeGroupZone = map.getPlaceGroupZoneAt(x, y);
+				} else {
+					map.addPlaceGroupZone(0, zone);
+					placeGroupZone = zone;
+				}
 			}
 		}
 	}
