@@ -6,10 +6,13 @@ public class PlaceGroupZone {
 
 	//TODO More colors
 	private static final Color[][] ZONE_COLORS = new Color[][] {
-			new Color[] { Color.color(0.2, 0.8, 0.4, 0.3), Color.color(0.2, 0.8, 0.4, 0.85) },
-			new Color[] { Color.color(0.7, 0.8, 0.2, 0.3), Color.color(0.7, 0.8, 0.2, 0.85) },
-			new Color[] { Color.color(0.7, 0.2, 0.3, 0.3), Color.color(0.7, 0.2, 0.3, 0.85) },
-			new Color[] { Color.color(0.1, 0.2, 0.8, 0.3), Color.color(0.1, 0.2, 0.8, 0.85) },
+			new Color[] { Color.rgb(225, 50,  50,  0.3), Color.rgb(225, 50,  50,  0.85)},
+			new Color[] { Color.rgb(225, 50,  225, 0.3), Color.rgb(225, 50,  225, 0.85)},
+			new Color[] { Color.rgb(50,  100, 225, 0.3), Color.rgb(50,  100, 225, 0.85)},
+			new Color[] { Color.rgb(50,  225, 225, 0.3), Color.rgb(50,  225, 225, 0.85)},
+			new Color[] { Color.rgb(50,  225, 50,  0.3), Color.rgb(50,  225, 50,  0.85)},
+			new Color[] { Color.rgb(225, 225, 50,  0.3), Color.rgb(225, 225, 50,  0.85)},
+			new Color[] { Color.rgb(225, 125, 50,  0.3), Color.rgb(225, 125, 50,  0.85)},
 	};
 
 	private static int currentZoneColor = 0;
