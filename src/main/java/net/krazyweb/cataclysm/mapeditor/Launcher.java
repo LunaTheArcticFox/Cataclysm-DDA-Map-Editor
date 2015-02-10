@@ -1,7 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor;
 
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -20,7 +19,7 @@ public class Launcher extends Application {
 			primaryStage.setScene(new Scene(root, 1100, 900)); //TODO Fit to screen if need be and remember last size/position
 			primaryStage.setResizable(true);
 			//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
-			primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
+			primaryStage.setOnCloseRequest(event -> loader.<EditorMain>getController().requestClose()); //TODO Save on exit prompts
 			primaryStage.show();
 		} catch (Exception e) {
 			e.printStackTrace();

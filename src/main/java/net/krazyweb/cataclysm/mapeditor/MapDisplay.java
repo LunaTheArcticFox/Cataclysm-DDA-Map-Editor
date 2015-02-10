@@ -58,6 +58,7 @@ public class MapDisplay {
 	private Tile currentTile;
 
 	//TODO Condense these handlers
+	//TODO Refactor to allow tools to individually handle events (straight passthrough); add helper methods to Tool base class
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 
 		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size

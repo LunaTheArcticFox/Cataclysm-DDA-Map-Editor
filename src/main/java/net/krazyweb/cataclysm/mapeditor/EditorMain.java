@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ScrollPane;
@@ -142,28 +143,37 @@ public class EditorMain {
 	}
 
 	@FXML
-	private void saveFile() {
+	private void save() {
 
 		if (map.getPath() == null) {
-
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.setTitle("Save File");
-			fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
-
-			File selectedFile = fileChooser.showSaveDialog(null);
-			if (selectedFile != null) {
-				eventBus.post(new RequestSaveMapEvent(selectedFile.toPath()));
-			}
-
+			saveAs();
 		} else {
 			eventBus.post(new RequestSaveMapEvent(map.getPath()));
 		}
 
+	}
+
+	@FXML
+	private void saveAs() {
+
+		FileChooser fileChooser = new FileChooser();
+		fileChooser.setTitle("Save As");
+		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+
+		File selectedFile = fileChooser.showSaveDialog(null);
+		if (selectedFile != null) {
+			eventBus.post(new RequestSaveMapEvent(selectedFile.toPath()));
+		}
 
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {
 		this.primaryStage = primaryStage;
+	}
+
+	public void requestClose() {
+		//TODO Create modal dialogue class to ask for save on exit
+		Platform.exit();
 	}
 
 }
