@@ -2,11 +2,11 @@ package net.krazyweb.cataclysm.mapeditor.events;
 
 import java.nio.file.Path;
 
-public class LoadMapEvent {
+public class RequestLoadMapEvent {
 
 	private final Path map;
 
-	public LoadMapEvent(final Path map) {
+	public RequestLoadMapEvent(final Path map) {
 		this.map = map;
 	}
 

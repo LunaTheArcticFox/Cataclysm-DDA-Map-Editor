@@ -45,10 +45,6 @@ public class MapDataFileWriter extends Service<Boolean> {
 		return map;
 	}
 
-	private class Value<T> {
-		T value;
-	}
-
 	private void save() throws IOException {
 
 		try {
@@ -154,6 +150,9 @@ public class MapDataFileWriter extends Service<Boolean> {
 			generator.writeEndArray();
 
 			generator.close();
+
+			map.path = path;
+			map.saved = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,6 +48,8 @@ public class CataclysmMap {
 	}
 
 	protected State currentState = new State();
+	protected Path path = null;
+	protected boolean saved = false;
 
 	private boolean locked = false;
 	private boolean editing = false;
@@ -59,12 +62,14 @@ public class CataclysmMap {
 	}
 
 	@Subscribe
-	public void saveMapEventListener(final SaveMapEvent event) {
+	public void requestSaveMapEventListener(final RequestSaveMapEvent event) {
 
 		MapDataFileWriter writer = new MapDataFileWriter(event.getPath(), this, eventBus);
-		writer.setOnSucceeded(e -> System.out.println("File saved to " + event.getPath()));
+		writer.setOnSucceeded(e -> {
+			eventBus.post(new MapSavedEvent(this));
+		});
 
-		//TODO Lock editing while saving (or copy state to save so editing can continue
+		//TODO Lock editing while saving (or copy state to save so editing can continue)
 		writer.start();
 
 	}
@@ -72,6 +77,8 @@ public class CataclysmMap {
 	@Subscribe
 	public void rotateMapEventListener(final RotateMapEvent event) {
 		rotateMapClockwise();
+		saved = false;
+		eventBus.post(new MapChangedEvent());
 	}
 
 	private void rotateMapClockwise() {
@@ -136,21 +143,30 @@ public class CataclysmMap {
 			eventBus.post(new TileRedrawRequestEvent(x, y));
 		}
 
+		saved = false;
+		eventBus.post(new MapChangedEvent());
+
 	}
 
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(index, zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		saved = false;
+		eventBus.post(new MapChangedEvent());
 	}
 
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		saved = false;
+		eventBus.post(new MapChangedEvent());
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.remove(zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		saved = false;
+		eventBus.post(new MapChangedEvent());
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
@@ -186,6 +202,9 @@ public class CataclysmMap {
 			currentState.terrain[x][y] = tile.substring(0, tile.lastIndexOf("_"));
 			currentState.terrain[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
 		}
+
+		saved = false;
+		eventBus.post(new MapChangedEvent());
 
 	}
 
@@ -242,6 +261,14 @@ public class CataclysmMap {
 
 	public String getFurnitureAt(final int x, final int y) {
 		return getTileAt(x, y, Layer.FURNITURE);
+	}
+
+	public Path getPath() {
+		return path;
+	}
+
+	public boolean isSaved() {
+		return saved;
 	}
 
 	/**

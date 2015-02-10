@@ -1,26 +1,23 @@
 package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
-import javafx.application.Application;
-import javafx.application.Platform;
+import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import net.krazyweb.cataclysm.mapeditor.events.LoadMapEvent;
-import net.krazyweb.cataclysm.mapeditor.events.SaveMapEvent;
+import net.krazyweb.cataclysm.mapeditor.events.*;
+import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
-public class EditorMain extends Application {
+public class EditorMain {
 
 	@FXML
 	private BorderPane root;
@@ -32,21 +29,8 @@ public class EditorMain extends Application {
 	private VBox tilePickerPanel, toolbarPanel;
 
 	private EventBus eventBus = new EventBus();
-
-	@Override
-	public void start(Stage primaryStage) throws Exception {
-		try {
-			Parent root = FXMLLoader.load(getClass().getResource("/fxml/editorMain.fxml"));
-			primaryStage.setTitle("Cataclysm Map Editor");
-			primaryStage.setScene(new Scene(root, 1100, 900)); //TODO Fit to screen if need be and remember last size/position
-			primaryStage.setResizable(true);
-			//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
-			primaryStage.setOnCloseRequest(event -> Platform.exit()); //TODO Save on exit prompts
-			primaryStage.show();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	private Stage primaryStage;
+	private CataclysmMap map;
 
 	@FXML
 	private void initialize() {
@@ -106,9 +90,41 @@ public class EditorMain extends Application {
 
 	}
 
+	@Subscribe
+	public void mapSavedEventListener(final MapSavedEvent event) {
+		refreshTitle();
+	}
+
+	@Subscribe
+	public void mapLoadedEventListener(final MapLoadedEvent event) {
+		map = event.getMap();
+		refreshTitle();
+	}
+
+	@Subscribe
+	public void mapChangedEventListener(final MapChangedEvent event) {
+		refreshTitle();
+	}
+
+	private void refreshTitle() {
+
+		String title = "Cataclysm Map Editor - ";
+
+		if (map.getPath() != null) {
+			title += map.getPath().getFileName();
+		} else {
+			title += "Untitled";
+		}
+
+		title += map.isSaved() ? "" : "*";
+
+		primaryStage.setTitle(title);
+
+	}
+
 	@FXML
 	private void newFile() {
-		eventBus.post(new LoadMapEvent(Paths.get("templates").resolve("default.json")));
+		eventBus.post(new RequestLoadMapEvent(Paths.get("templates").resolve("default.json")));
 	}
 
 	@FXML
@@ -120,14 +136,34 @@ public class EditorMain extends Application {
 
 		File selectedFile = fileChooser.showOpenDialog(null);
 		if (selectedFile != null) {
-			eventBus.post(new LoadMapEvent(selectedFile.toPath()));
+			eventBus.post(new RequestLoadMapEvent(selectedFile.toPath()));
 		}
 
 	}
 
 	@FXML
 	private void saveFile() {
-		eventBus.post(new SaveMapEvent(Paths.get("Sample Data").resolve("temp.json")));
+
+		if (map.getPath() == null) {
+
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Save File");
+			fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+
+			File selectedFile = fileChooser.showSaveDialog(null);
+			if (selectedFile != null) {
+				eventBus.post(new RequestSaveMapEvent(selectedFile.toPath()));
+			}
+
+		} else {
+			eventBus.post(new RequestSaveMapEvent(map.getPath()));
+		}
+
+
+	}
+
+	public void setPrimaryStage(final Stage primaryStage) {
+		this.primaryStage = primaryStage;
 	}
 
 }

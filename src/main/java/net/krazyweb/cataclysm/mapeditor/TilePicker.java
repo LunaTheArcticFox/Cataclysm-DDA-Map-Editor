@@ -76,7 +76,7 @@ public class TilePicker {
 					eventBus.post(new TilePickedEvent(tile));
 				});
 				view.setOnMouseMoved(mouseEvent -> {
-					eventBus.post(new TileHoverEvent(node.get("name").asText(), 0, 0));
+					eventBus.post(new TileHoverEvent(node.get("id").asText() + " (" + node.get("name").asText() + ")", 0, 0));
 				});
 				tileContainer.getChildren().add(view);
 

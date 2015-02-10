@@ -3,6 +3,7 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
+import net.krazyweb.cataclysm.mapeditor.events.MapSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import org.controlsfx.control.StatusBar;
 
@@ -20,6 +21,11 @@ public class StatusBarController {
 	@Subscribe
 	public void tileHoverEventListener(final TileHoverEvent event) {
 		statusBar.setText(event.getX() + ", " + event.getY() + "\t\t" + event.getTileName());
+	}
+
+	@Subscribe
+	public void mapSavedEventListener(final MapSavedEvent event) {
+		statusBar.setText("File Saved Successfully");
 	}
 
 }

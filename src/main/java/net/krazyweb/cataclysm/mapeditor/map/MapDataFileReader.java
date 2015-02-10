@@ -7,7 +7,9 @@ import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,6 +49,11 @@ public class MapDataFileReader extends Service<Boolean> {
 	private void load() throws IOException {
 
 		map = new CataclysmMap(eventBus);
+
+		if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
+			map.path = path;
+			map.saved = true;
+		}
 
 		OBJECT_MAPPER.readTree(path.toFile()).forEach(root -> {
 
