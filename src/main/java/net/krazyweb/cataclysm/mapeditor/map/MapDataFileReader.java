@@ -49,10 +49,10 @@ public class MapDataFileReader extends Service<Boolean> {
 	private void load() throws IOException {
 
 		map = new CataclysmMap(eventBus);
+		map.saved = true;
 
 		if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
 			map.path = path;
-			map.saved = true;
 		}
 
 		OBJECT_MAPPER.readTree(path.toFile()).forEach(root -> {
