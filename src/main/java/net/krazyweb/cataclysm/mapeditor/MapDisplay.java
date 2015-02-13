@@ -50,7 +50,7 @@ public class MapDisplay {
 	@FXML
 	private Canvas terrain, overlays, groups;
 
-	private int lastHoverX, lastHoverY, lastDrawX = -1, lastDrawY = -1;
+	private int lastHoverX, lastHoverY;
 	private boolean dragging = false;
 	private CataclysmMap map;
 	private EventBus eventBus;
@@ -58,66 +58,29 @@ public class MapDisplay {
 	private Tile currentTile;
 
 	//TODO Condense these handlers
-	//TODO Refactor to allow tools to individually handle events (straight passthrough); add helper methods to Tool base class
 	private final EventHandler<MouseEvent> clickEvent = event -> {
-
-		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
-
-		tool.click(eventX, eventY, currentTile, event.getButton(), map);
-		lastDrawX = eventX;
-		lastDrawY = eventY;
-
+		tool.click(event, currentTile, groups, map);
 	};
+
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
-
-		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
-
-		tool.release(eventX, eventY, currentTile, event.getButton(), map);
-		lastDrawX = eventX;
-		lastDrawY = eventY;
-
+		tool.release(event, currentTile, groups, map);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
-
-		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
-
-		if (lastDrawX != eventX || lastDrawY != eventY) {
-			tool.drag(eventX, eventY, currentTile, event.getButton(), map);
-			lastDrawX = eventX;
-			lastDrawY = eventY;
-		}
-
+		tool.drag(event, currentTile, groups, map);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
-
-		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
-
-		tool.dragStart(eventX, eventY, currentTile, event.getButton(), map);
-		lastDrawX = eventX;
-		lastDrawY = eventY;
-
+		tool.dragStart(event, currentTile, groups, map);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
-
-		int eventX = ((int) (event.getX()) / 32); //TODO Use tileset size
-		int eventY = ((int) (event.getY()) / 32); //TODO Use tileset size
 		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
-
-		tool.dragEnd(eventX, eventY, currentTile, event.getButton(), map);
-		lastDrawX = eventX;
-		lastDrawY = eventY;
-
+		tool.dragEnd(event, currentTile, groups, map);
 	};
 
 	public void setEventBus(final EventBus eventBus) {
@@ -180,7 +143,7 @@ public class MapDisplay {
 			List<PlaceGroupZone> zones = map.getPlaceGroupZonesAt(eventX, eventY);
 			zones.forEach(zone -> info.append(" (").append(zone.group.type).append(" ").append(zone.group.group).append(")"));
 
-			eventBus.post(new TileHoverEvent(info.toString(), eventX, eventY));
+			eventBus.post(new TileHoverEvent(info.toString(), eventX, eventY)); //TODO Pass tiles to event-not formatting; have the consumers format the text instead
 			lastHoverX = eventX;
 			lastHoverY = eventY;
 

@@ -83,7 +83,7 @@ public class MapToolbar {
 
 	@FXML
 	private void selectMovePlaceGroup() {
-		eventBus.post(new ToolSelectedEvent(new MovePlaceGroupTool()));
+		eventBus.post(new ToolSelectedEvent(new EditPlaceGroupTool()));
 	}
 
 }

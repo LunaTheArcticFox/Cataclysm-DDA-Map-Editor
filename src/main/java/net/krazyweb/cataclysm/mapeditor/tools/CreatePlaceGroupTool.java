@@ -1,7 +1,9 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
+import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroup;
@@ -14,26 +16,26 @@ public class CreatePlaceGroupTool extends Tool {
 	private int startY;
 
 	@Override
-	public void release(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
-		if (mouseButton == MouseButton.PRIMARY) {
-			startX = x;
-			startY = y;
-			createPlaceGroupZone(x, y, map);
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		if (event.getButton() == MouseButton.PRIMARY) {
+			startX = convertCoord(event.getX());
+			startY = convertCoord(event.getY());
+			createPlaceGroupZone(convertCoord(event.getX()), convertCoord(event.getY()), map);
 		}
 	}
 
 	@Override
-	public void dragStart(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
-		if (mouseButton == MouseButton.PRIMARY) {
-			startX = x;
-			startY = y;
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		if (event.getButton() == MouseButton.PRIMARY) {
+			startX = convertCoord(event.getX());
+			startY = convertCoord(event.getY());
 		}
 	}
 
 	@Override
-	public void dragEnd(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
-		if (mouseButton == MouseButton.PRIMARY) {
-			createPlaceGroupZone(x, y, map);
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		if (event.getButton() == MouseButton.PRIMARY) {
+			createPlaceGroupZone(convertCoord(event.getX()), convertCoord(event.getY()), map);
 		}
 	}
 

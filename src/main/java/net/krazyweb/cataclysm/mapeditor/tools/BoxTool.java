@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
-import javafx.scene.input.MouseButton;
+import javafx.scene.Node;
+import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
@@ -10,13 +11,16 @@ public class BoxTool extends Tool {
 	private int startY;
 
 	@Override
-	public void dragStart(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
-		startX = x;
-		startY = y;
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		startX = convertCoord(event.getX());
+		startY = convertCoord(event.getY());
 	}
 
 	@Override
-	public void dragEnd(final int x, final int y, final Tile tile, final MouseButton mouseButton, final CataclysmMap map) {
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+
+		int x = convertCoord(event.getX());
+		int y = convertCoord(event.getY());
 
 		int xDirection = x > startX ? -1 : 1;
 		int yDirection = y > startY ? -1 : 1;
