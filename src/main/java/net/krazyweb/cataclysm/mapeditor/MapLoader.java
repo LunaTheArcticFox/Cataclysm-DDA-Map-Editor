@@ -2,9 +2,11 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import net.krazyweb.cataclysm.mapeditor.events.RequestLoadMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.RequestLoadMapEvent;
 import net.krazyweb.cataclysm.mapeditor.map.MapDataFileReader;
+
+import java.nio.file.Path;
 
 public class MapLoader {
 
@@ -16,12 +18,14 @@ public class MapLoader {
 
 	@Subscribe
 	public void loadMapEventListener(final RequestLoadMapEvent event) {
+		loadMap(event.getPath());
+	}
 
-		MapDataFileReader reader = new MapDataFileReader(event.getPath(), eventBus);
+	private void loadMap(final Path path) {
 
-		reader.setOnSucceeded(value -> {
-			eventBus.post(new MapLoadedEvent(reader.getMap()));
-		});
+		MapDataFileReader reader = new MapDataFileReader(path, eventBus);
+
+		reader.setOnSucceeded(value -> eventBus.post(new MapLoadedEvent(reader.getMap())));
 
 		reader.start();
 

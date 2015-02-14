@@ -6,6 +6,7 @@ import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,14 +65,22 @@ public class CataclysmMap {
 	@Subscribe
 	public void requestSaveMapEventListener(final RequestSaveMapEvent event) {
 
+		//TODO Thread this; copy state so editing may continue on long saves
 		MapDataFileWriter writer = new MapDataFileWriter(event.getPath(), this, eventBus);
-		writer.setOnSucceeded(e -> {
-			eventBus.post(new MapSavedEvent(this));
-		});
+		writer.setOnSucceeded(e -> eventBus.post(new MapSavedEvent(this)));
 
 		//TODO Lock editing while saving (or copy state to save so editing can continue)
 		writer.start();
 
+	}
+
+	@Subscribe
+	public void revertMapEventListener(final RequestRevertMapEvent event) {
+		if (path == null) {
+			eventBus.post(new RequestLoadMapEvent(Paths.get("templates").resolve("default.json")));
+		} else {
+			eventBus.post(new RequestLoadMapEvent(path));
+		}
 	}
 
 	@Subscribe

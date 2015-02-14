@@ -146,10 +146,10 @@ public class EditorMain {
 	}
 
 	@FXML
-	private void save() {
+	private void saveFile() {
 
 		if (map.getPath() == null) {
-			saveAs();
+			saveFileAs();
 		} else {
 			eventBus.post(new RequestSaveMapEvent(map.getPath()));
 		}
@@ -157,7 +157,7 @@ public class EditorMain {
 	}
 
 	@FXML
-	private void saveAs() {
+	private void saveFileAs() {
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save As");
@@ -168,6 +168,16 @@ public class EditorMain {
 			eventBus.post(new RequestSaveMapEvent(selectedFile.toPath()));
 		}
 
+	}
+
+	@FXML
+	private void revertFile() {
+		eventBus.post(new RequestRevertMapEvent());
+	}
+
+	@FXML
+	private void exit() {
+		requestClose();
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {

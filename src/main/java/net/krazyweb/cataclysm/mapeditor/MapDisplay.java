@@ -67,26 +67,31 @@ public class MapDisplay {
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
 		tool.release(event, currentTile, groups, map);
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 		tool.drag(event, currentTile, groups, map);
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 		tool.dragStart(event, currentTile, groups, map);
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 		tool.dragEnd(event, currentTile, groups, map);
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	public void setEventBus(final EventBus eventBus) {
@@ -125,6 +130,13 @@ public class MapDisplay {
 	private void clearOverlay() {
 		if (bounds != null) {
 			overlays.getGraphicsContext2D().clearRect(bounds.getMinX() - 1, bounds.getMinY() - 1, bounds.getWidth() + 2, bounds.getHeight() + 2);
+		}
+	}
+
+	private void updateStatus(final int x, final int y) {
+		//TODO Delegate String responsibility to StatusBarController
+		if (x >= 0 && y >= 0 && x < CataclysmMap.SIZE && y < CataclysmMap.SIZE) {
+			eventBus.post(new TileHoverEvent(map.getTerrainAt(x, y) + " | " + map.getFurnitureAt(x, y), x, y));
 		}
 	}
 
@@ -173,7 +185,10 @@ public class MapDisplay {
 
 		overlays.getGraphicsContext2D().save();
 
-		root.setOnMouseMoved(mouseEvent -> updateInfo(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map)));
+		root.setOnMouseMoved(mouseEvent -> {
+			updateInfo(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
+			updateStatus((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32);
+		});
 
 		root.setOnMouseExited(mouseEvent -> clearOverlay());
 
