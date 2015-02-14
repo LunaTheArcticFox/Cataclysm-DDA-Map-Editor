@@ -11,9 +11,9 @@
 				<MenuItem text="_New" onAction="#newFile"/>
 				<MenuItem text="_Open" onAction="#openFile"/>
 				<MenuItem text="_Save" onAction="#saveFile"/>
-				<MenuItem text="_Save As" onAction="#saveFileAs"/>
+				<MenuItem text="S_ave As" onAction="#saveFileAs"/>
 				<MenuItem text="_Revert" onAction="#revertFile"/>
-				<MenuItem text="_Exit" onAction="#exit"/>
+				<MenuItem text="E_xit" onAction="#exit"/>
 			</Menu>
 			<Menu text="_Edit">
 				<MenuItem text="_Undo"/>
@@ -23,7 +23,6 @@
 				<MenuItem text="_Paste"/>
 			</Menu>
 			<Menu text="_Tools">
-				<MenuItem text="_Randomize Dirt and Grass"/>
 			</Menu>
 			<Menu text="_Help">
 				<MenuItem mnemonicParsing="false" text="About"/>
