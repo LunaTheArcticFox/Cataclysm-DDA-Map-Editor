@@ -79,10 +79,14 @@ public class FillTool extends Tool {
 
 	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final CataclysmMap map, final List<Point2D> toFill) {
 		CataclysmMap.Layer layer = replacementTile.isFurniture() ? CataclysmMap.Layer.FURNITURE : CataclysmMap.Layer.TERRAIN;
-		if (toFill.contains(new Point2D(x, y))) {
-			return false;
+		return !toFill.contains(new Point2D(x, y)) && !isSameTile(map.getTileAt(x, y, layer), replacementTile.getID()) && map.getTileAt(x, y, layer) != null && isSameTile(map.getTileAt(x, y, layer), targetTile);
+	}
+
+	private boolean isSameTile(final String tile1, final String tile2) {
+		if ((tile1.endsWith("_v") || tile1.endsWith("_h")) && (tile2.endsWith("_v") || tile2.endsWith("_h"))) {
+			return tile1.substring(0, tile1.lastIndexOf("_")).equals(tile2.substring(0, tile2.lastIndexOf("_")));
 		}
-		return !map.getTileAt(x, y, layer).equals(replacementTile.getID()) && map.getTileAt(x, y, layer) != null && map.getTileAt(x, y, layer).equals(targetTile);
+		return tile1.equals(tile2);
 	}
 
 }
