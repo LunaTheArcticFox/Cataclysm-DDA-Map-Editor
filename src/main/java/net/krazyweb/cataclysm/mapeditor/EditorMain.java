@@ -5,11 +5,10 @@ import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
+import javafx.geometry.HPos;
+import javafx.geometry.VPos;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
@@ -87,12 +86,23 @@ public class EditorMain {
 		}
 		eventBus.register(loader.<MapDisplay>getController());
 		loader.<MapDisplay>getController().setEventBus(eventBus);
-		loader.<MapDisplay>getController().setParent(mapPanel);
 
-		Group group = new Group();
-		group.getChildren().add(loader.<ScrollPane>getRoot());
+		GridPane centeredContentPane = new GridPane();
+		centeredContentPane.add(loader.<ScrollPane>getRoot(), 0, 0);
 
-		mapPanel.setContent(group);
+		RowConstraints row = new RowConstraints();
+		row.setPercentHeight(100);
+		row.setFillHeight(false);
+		row.setValignment(VPos.CENTER);
+		centeredContentPane.getRowConstraints().add(row);
+
+		ColumnConstraints column = new ColumnConstraints();
+		column.setPercentWidth(100);
+		column.setFillWidth(false);
+		column.setHalignment(HPos.CENTER);
+		centeredContentPane.getColumnConstraints().add(column);
+
+		mapPanel.setContent(centeredContentPane);
 
 		newFile();
 

@@ -33,7 +33,7 @@
 		<SplitPane dividerPositions="0.25" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="tilePickerPanel"/>
 			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="toolbarPanel">
-				<ScrollPane focusTraversable="false" prefHeight="100.0" prefWidth="100.0" hbarPolicy="ALWAYS" vbarPolicy="ALWAYS" VBox.vgrow="ALWAYS" fx:id="mapPanel"/>
+				<ScrollPane focusTraversable="false" prefHeight="100.0" prefWidth="100.0" VBox.vgrow="ALWAYS" fitToWidth="true" fitToHeight="true" fx:id="mapPanel"/>
 			</VBox>
 		</SplitPane>
 	</center>

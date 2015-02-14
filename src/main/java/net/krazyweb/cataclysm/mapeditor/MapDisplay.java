@@ -11,7 +11,6 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -133,34 +132,26 @@ public class MapDisplay {
 		tool = event.getTool();
 	}
 
-	public void setParent(final ScrollPane parent) {
-		parent.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
-			root.setMinSize(newValue.getWidth(), newValue.getHeight());
-		});
-		root.setMinSize(parent.viewportBoundsProperty().get().getWidth(), parent.viewportBoundsProperty().get().getHeight());
-		root.setPrefSize(parent.viewportBoundsProperty().get().getWidth(), parent.viewportBoundsProperty().get().getHeight());
-	}
-
 	@Subscribe
 	public void zoomChangeEventListener(final ZoomChangeEvent event) {
 
 		KeyValue scaleTerrainX = new KeyValue(terrain.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleTerrainXFrame = new KeyFrame(Duration.millis(200), scaleTerrainX);
+		KeyFrame scaleTerrainXFrame = new KeyFrame(Duration.millis(150), scaleTerrainX);
 
 		KeyValue scaleTerrainY = new KeyValue(terrain.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleTerrainYFrame = new KeyFrame(Duration.millis(200), scaleTerrainY);
+		KeyFrame scaleTerrainYFrame = new KeyFrame(Duration.millis(150), scaleTerrainY);
 
 		KeyValue scaleOverlaysX = new KeyValue(overlays.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleOverlaysXFrame = new KeyFrame(Duration.millis(200), scaleOverlaysX);
+		KeyFrame scaleOverlaysXFrame = new KeyFrame(Duration.millis(150), scaleOverlaysX);
 
 		KeyValue scaleOverlaysY = new KeyValue(overlays.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleOverlaysYFrame = new KeyFrame(Duration.millis(200), scaleOverlaysY);
+		KeyFrame scaleOverlaysYFrame = new KeyFrame(Duration.millis(150), scaleOverlaysY);
 
 		KeyValue scaleGroupsX = new KeyValue(groups.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleGroupsXFrame = new KeyFrame(Duration.millis(200), scaleGroupsX);
+		KeyFrame scaleGroupsXFrame = new KeyFrame(Duration.millis(150), scaleGroupsX);
 
 		KeyValue scaleGroupsY = new KeyValue(groups.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
-		KeyFrame scaleGroupsYFrame = new KeyFrame(Duration.millis(200), scaleGroupsY);
+		KeyFrame scaleGroupsYFrame = new KeyFrame(Duration.millis(150), scaleGroupsY);
 
 		Timeline scaleAnimation = new Timeline();
 		scaleAnimation.getKeyFrames().add(scaleTerrainXFrame);
