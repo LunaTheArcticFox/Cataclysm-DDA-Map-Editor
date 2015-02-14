@@ -28,6 +28,9 @@ public class MapDataFileWriter extends Service<Boolean> {
 		this.path = path;
 		this.map = map;
 		this.eventBus = eventBus;
+		if (!this.path.getFileName().endsWith(".json")) {
+			this.path = this.path.resolveSibling(path.getFileName() + ".json");
+		}
 	}
 
 	@Override
@@ -318,7 +321,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 					currentIDs.add(id);
 				}
 			}
-		};
+		}
 
 		for (int i = 0; i < currentIDs.size(); i++) {
 			currentIDs.get(i).symbol = SYMBOLS[i];
