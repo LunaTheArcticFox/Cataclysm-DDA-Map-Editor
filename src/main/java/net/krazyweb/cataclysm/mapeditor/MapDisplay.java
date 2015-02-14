@@ -4,17 +4,23 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
+import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
+import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
 import java.util.List;
@@ -50,37 +56,37 @@ public class MapDisplay {
 	@FXML
 	private Canvas terrain, overlays, groups;
 
-	private int lastHoverX, lastHoverY;
+	private Bounds bounds;
 	private boolean dragging = false;
 	private CataclysmMap map;
 	private EventBus eventBus;
 	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
-	private Tile currentTile = Tile.tiles.get("t_grass");
+	private Tile currentTile = Tile.tiles.get("t_grass"); //TODO Set to last tile used on startup
 
-	//TODO Condense these handlers
+	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
-		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 		tool.click(event, currentTile, groups, map);
+		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
-		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 		tool.release(event, currentTile, groups, map);
+		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
-		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 		tool.drag(event, currentTile, groups, map);
+		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
-		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 		tool.dragStart(event, currentTile, groups, map);
+		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
-		updateInfo(event.getX(), event.getY()); //TODO Let the tool define where to draw the overlays
 		tool.dragEnd(event, currentTile, groups, map);
+		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 	};
 
 	public void setEventBus(final EventBus eventBus) {
@@ -117,45 +123,37 @@ public class MapDisplay {
 	}
 
 	private void clearOverlay() {
-		overlays.getGraphicsContext2D().clearRect(lastHoverX  * 32 - 5, lastHoverY * 32 - 5, 42, 42); //TODO Use tileset size
+		if (bounds != null) {
+			overlays.getGraphicsContext2D().clearRect(bounds.getMinX() - 1, bounds.getMinY() - 1, bounds.getWidth() + 2, bounds.getHeight() + 2);
+		}
 	}
 
-	private void updateInfo(final int mouseX, final int mouseY) {
+	//TODO Attempt optimization
+	private void updateInfo(final List<Point> highlight) {
 
-		int eventX = (mouseX / 32); //TODO Use tileset size
-		int eventY = (mouseY / 32); //TODO Use tileset size
+		clearOverlay();
 
-		if (eventX < 0 || eventY < 0 || eventX >= CataclysmMap.SIZE || eventY >= CataclysmMap.SIZE) {
-			clearOverlay();
-			lastHoverX = eventX;
-			lastHoverY = eventY;
-			return;
+		Shape path = new Path();
+
+		for (Point point : highlight) {
+			Rectangle r = new Rectangle(point.x * 32, point.y * 32, 32, 32); //TODO Use tileset size
+			r.setFill(Color.WHITE);
+			path = Shape.union(path, r);
 		}
 
-		if (eventX != lastHoverX || eventY != lastHoverY) {
+		bounds = path.getBoundsInLocal();
 
-			clearOverlay();
+		GraphicsContext context = overlays.getGraphicsContext2D();
 
-			StringBuilder info = new StringBuilder()
-					.append(map.getTerrainAt(eventX, eventY)).append(" | ")
-					.append(map.getFurnitureAt(eventX, eventY)).append(" | ");
+		context.setFill(new Color(1, 1, 1, 0.25));
+		context.setStroke(Color.WHITE);
 
-			List<PlaceGroupZone> zones = map.getPlaceGroupZonesAt(eventX, eventY);
-			zones.forEach(zone -> info.append(" (").append(zone.group.type).append(" ").append(zone.group.group).append(")"));
+		context.beginPath();
+		context.appendSVGPath(ShapeConverter.shapeToSvgString(path));
+		context.closePath();
+		context.stroke();
+		context.fill();
 
-			eventBus.post(new TileHoverEvent(info.toString(), eventX, eventY)); //TODO Pass tiles to event-not formatting; have the consumers format the text instead
-			lastHoverX = eventX;
-			lastHoverY = eventY;
-
-			overlays.getGraphicsContext2D().setStroke(Color.WHITE);
-			overlays.getGraphicsContext2D().strokeRect(lastHoverX * 32, lastHoverY * 32, 32, 32); //TODO Use tileset size
-
-		}
-
-	}
-
-	private void updateInfo(final double mouseX, final double mouseY) {
-		updateInfo((int) mouseX, (int) mouseY);
 	}
 
 	@Subscribe
@@ -173,7 +171,9 @@ public class MapDisplay {
 			e.printStackTrace();
 		}
 
-		root.setOnMouseMoved(mouseEvent -> updateInfo(mouseEvent.getX(), mouseEvent.getY()));
+		overlays.getGraphicsContext2D().save();
+
+		root.setOnMouseMoved(mouseEvent -> updateInfo(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map)));
 
 		root.setOnMouseExited(mouseEvent -> clearOverlay());
 

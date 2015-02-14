@@ -5,22 +5,42 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LineTool extends Tool {
 
 	private int startX;
 	private int startY;
 
+	private boolean dragging = false;
+
+	@Override
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
+	}
+
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
+		dragging = true;
 	}
 
 	@Override
 	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
+		for (Point point : getLine(convertCoord(event.getX()), convertCoord(event.getY()))) {
+			map.setTile(point.x, point.y, tile);
+		}
+	}
 
-		int x = convertCoord(event.getX());
-		int y = convertCoord(event.getY());
+	@Override
+	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		return dragging ? getLine(x, y) : super.getHighlight(x, y, tile, map);
+	}
+
+	private List<Point> getLine(int x, int y) {
 
 		int delta = 0;
 
@@ -33,33 +53,40 @@ public class LineTool extends Tool {
 		int ix = startX < x ? 1 : -1;
 		int iy = startY < y ? 1 : -1;
 
+		int lineX = startX;
+		int lineY = startY;
+
+		List<Point> line = new ArrayList<>();
+
 		if (dirY <= dirX) {
 			while (true) {
-				map.setTile(startX, startY, tile);
-				if (startX == x) {
+				line.add(new Point(lineX, lineY));
+				if (lineX == x) {
 					break;
 				}
-				startX += ix;
+				lineX += ix;
 				delta += dirY2;
 				if (delta > dirX) {
-					startY += iy;
+					lineY += iy;
 					delta -= dirX2;
 				}
 			}
 		} else {
 			while (true) {
-				map.setTile(startX, startY, tile);
-				if (startY == y) {
+				line.add(new Point(lineX, lineY));
+				if (lineY == y) {
 					break;
 				}
-				startY += iy;
+				lineY += iy;
 				delta += dirX2;
 				if (delta > dirY) {
-					startX += ix;
+					lineX += ix;
 					delta -= dirY2;
 				}
 			}
 		}
+
+		return line;
 
 	}
 

@@ -13,6 +13,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +36,8 @@ public class EditorMain {
 
 	@FXML
 	private void initialize() {
+
+		Tool.setEventBus(eventBus);
 
 		//-> Tile picker
 		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));

@@ -5,22 +5,44 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class BoxTool extends Tool {
 
 	private int startX;
 	private int startY;
 
+	private boolean dragging = false;
+
+	@Override
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
+	}
+
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = true;
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
 	}
 
 	@Override
 	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
+		for (Point point : getBox(convertCoord(event.getX()), convertCoord(event.getY()))) {
+			map.setTile(point.x, point.y, tile);
+		}
+	}
 
-		int x = convertCoord(event.getX());
-		int y = convertCoord(event.getY());
+	@Override
+	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		return dragging ? getBox(x, y) : super.getHighlight(x, y, tile, map);
+	}
+
+	private List<Point> getBox(final int x, final int y) {
+
+		List<Point> box = new ArrayList<>();
 
 		int xDirection = x > startX ? -1 : 1;
 		int yDirection = y > startY ? -1 : 1;
@@ -29,14 +51,16 @@ public class BoxTool extends Tool {
 		int yAmount = Math.abs(y - startY);
 
 		for (int lineX = 0; lineX <= xAmount; lineX++) {
-			map.setTile(x + xDirection * lineX, startY, tile);
-			map.setTile(x + xDirection * lineX, y, tile);
+			box.add(new Point(x + xDirection * lineX, startY));
+			box.add(new Point(x + xDirection * lineX, y));
 		}
 
 		for (int lineY = 0; lineY <= yAmount; lineY++) {
-			map.setTile(startX, y + yDirection * lineY, tile);
-			map.setTile(x, y + yDirection * lineY, tile);
+			box.add(new Point(startX, y + yDirection * lineY));
+			box.add(new Point(x, y + yDirection * lineY));
 		}
+
+		return box;
 
 	}
 

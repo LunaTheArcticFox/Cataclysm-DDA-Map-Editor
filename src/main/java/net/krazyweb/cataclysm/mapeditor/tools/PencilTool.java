@@ -4,6 +4,7 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
 public class PencilTool extends Tool {
@@ -11,7 +12,15 @@ public class PencilTool extends Tool {
 	@Override
 	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		if (event.getButton() == MouseButton.PRIMARY) {
-			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), tile);
+			if (event.isAltDown()) {
+				CataclysmMap.Layer layer = CataclysmMap.Layer.FURNITURE;
+				if (map.getFurnitureAt(convertCoord(event.getX()), convertCoord(event.getY())).equals("f_null")) {
+					layer = CataclysmMap.Layer.TERRAIN;
+				}
+				eventBus.post(new TilePickedEvent(Tile.tiles.get(map.getTileAt(convertCoord(event.getX()), convertCoord(event.getY()), layer))));
+			} else {
+				map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), tile);
+			}
 		}
 	}
 
