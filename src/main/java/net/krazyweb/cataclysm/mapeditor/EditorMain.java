@@ -5,6 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -86,7 +87,12 @@ public class EditorMain {
 		}
 		eventBus.register(loader.<MapDisplay>getController());
 		loader.<MapDisplay>getController().setEventBus(eventBus);
-		mapPanel.setContent(loader.<ScrollPane>getRoot());
+		loader.<MapDisplay>getController().setParent(mapPanel);
+
+		Group group = new Group();
+		group.getChildren().add(loader.<ScrollPane>getRoot());
+
+		mapPanel.setContent(group);
 
 		newFile();
 

@@ -2,11 +2,16 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import javafx.animation.Interpolator;
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -15,6 +20,7 @@ import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Rotate;
+import javafx.util.Duration;
 import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
@@ -127,6 +133,47 @@ public class MapDisplay {
 		tool = event.getTool();
 	}
 
+	public void setParent(final ScrollPane parent) {
+		parent.viewportBoundsProperty().addListener((observable, oldValue, newValue) -> {
+			root.setMinSize(newValue.getWidth(), newValue.getHeight());
+		});
+		root.setMinSize(parent.viewportBoundsProperty().get().getWidth(), parent.viewportBoundsProperty().get().getHeight());
+		root.setPrefSize(parent.viewportBoundsProperty().get().getWidth(), parent.viewportBoundsProperty().get().getHeight());
+	}
+
+	@Subscribe
+	public void zoomChangeEventListener(final ZoomChangeEvent event) {
+
+		KeyValue scaleTerrainX = new KeyValue(terrain.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleTerrainXFrame = new KeyFrame(Duration.millis(200), scaleTerrainX);
+
+		KeyValue scaleTerrainY = new KeyValue(terrain.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleTerrainYFrame = new KeyFrame(Duration.millis(200), scaleTerrainY);
+
+		KeyValue scaleOverlaysX = new KeyValue(overlays.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleOverlaysXFrame = new KeyFrame(Duration.millis(200), scaleOverlaysX);
+
+		KeyValue scaleOverlaysY = new KeyValue(overlays.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleOverlaysYFrame = new KeyFrame(Duration.millis(200), scaleOverlaysY);
+
+		KeyValue scaleGroupsX = new KeyValue(groups.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleGroupsXFrame = new KeyFrame(Duration.millis(200), scaleGroupsX);
+
+		KeyValue scaleGroupsY = new KeyValue(groups.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleGroupsYFrame = new KeyFrame(Duration.millis(200), scaleGroupsY);
+
+		Timeline scaleAnimation = new Timeline();
+		scaleAnimation.getKeyFrames().add(scaleTerrainXFrame);
+		scaleAnimation.getKeyFrames().add(scaleTerrainYFrame);
+		scaleAnimation.getKeyFrames().add(scaleOverlaysXFrame);
+		scaleAnimation.getKeyFrames().add(scaleOverlaysYFrame);
+		scaleAnimation.getKeyFrames().add(scaleGroupsXFrame);
+		scaleAnimation.getKeyFrames().add(scaleGroupsYFrame);
+
+		scaleAnimation.play();
+
+	}
+
 	private void clearOverlay() {
 		if (bounds != null) {
 			overlays.getGraphicsContext2D().clearRect(bounds.getMinX() - 1, bounds.getMinY() - 1, bounds.getWidth() + 2, bounds.getHeight() + 2);
@@ -183,16 +230,14 @@ public class MapDisplay {
 			e.printStackTrace();
 		}
 
-		overlays.getGraphicsContext2D().save();
-
-		root.setOnMouseMoved(mouseEvent -> {
+		overlays.setOnMouseMoved(mouseEvent -> {
 			updateInfo(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
 			updateStatus((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32);
 		});
 
-		root.setOnMouseExited(mouseEvent -> clearOverlay());
+		overlays.setOnMouseExited(mouseEvent -> clearOverlay());
 
-		root.setOnMouseReleased(mouseEvent -> {
+		overlays.setOnMouseReleased(mouseEvent -> {
 			if (dragging) {
 				dragging = false;
 				dragFinishEvent.handle(mouseEvent);
@@ -201,8 +246,8 @@ public class MapDisplay {
 			}
 		});
 
-		root.setOnMousePressed(clickEvent);
-		root.setOnMouseDragged(mouseEvent -> {
+		overlays.setOnMousePressed(clickEvent);
+		overlays.setOnMouseDragged(mouseEvent -> {
 			if (!dragging) {
 				dragging = true;
 				dragStartEvent.handle(mouseEvent);
