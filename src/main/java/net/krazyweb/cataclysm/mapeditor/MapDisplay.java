@@ -55,7 +55,7 @@ public class MapDisplay {
 	private CataclysmMap map;
 	private EventBus eventBus;
 	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
-	private Tile currentTile;
+	private Tile currentTile = Tile.tiles.get("t_grass");
 
 	//TODO Condense these handlers
 	private final EventHandler<MouseEvent> clickEvent = event -> {
