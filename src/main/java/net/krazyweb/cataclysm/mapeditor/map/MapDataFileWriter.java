@@ -28,9 +28,6 @@ public class MapDataFileWriter extends Service<Boolean> {
 		this.path = path;
 		this.map = map;
 		this.eventBus = eventBus;
-		if (!this.path.getFileName().endsWith(".json")) {
-			this.path = this.path.resolveSibling(path.getFileName() + ".json");
-		}
 	}
 
 	@Override

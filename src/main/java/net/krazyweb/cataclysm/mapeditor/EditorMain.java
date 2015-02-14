@@ -154,6 +154,10 @@ public class EditorMain {
 		fileChooser.setTitle("Pick Json File");
 		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
 
+		FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Cataclysm JSON File", "*.json");
+		fileChooser.getExtensionFilters().add(filter);
+		fileChooser.setSelectedExtensionFilter(filter);
+
 		File selectedFile = fileChooser.showOpenDialog(null);
 		if (selectedFile != null) {
 			eventBus.post(new RequestLoadMapEvent(selectedFile.toPath()));
@@ -178,6 +182,10 @@ public class EditorMain {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save As");
 		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+
+		FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Cataclysm JSON File", "*.json");
+		fileChooser.getExtensionFilters().add(filter);
+		fileChooser.setSelectedExtensionFilter(filter);
 
 		File selectedFile = fileChooser.showSaveDialog(null);
 		if (selectedFile != null) {
