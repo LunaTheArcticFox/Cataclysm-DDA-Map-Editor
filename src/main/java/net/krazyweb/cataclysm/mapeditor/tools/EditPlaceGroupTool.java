@@ -12,6 +12,9 @@ import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class EditPlaceGroupTool extends Tool {
 
 	private int lastX;
@@ -106,6 +109,26 @@ public class EditPlaceGroupTool extends Tool {
 
 		drag(event, tile, rootNode, map);
 		//TODO Crop zone to map boundaries (only on drag end)
+	}
+
+	@Override
+	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+
+		List<Point> area = new ArrayList<>();
+
+		PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
+		if (zone != null) {
+			for (int ix = zone.x; ix < zone.x + zone.w; ix++) {
+				for (int iy = zone.y; iy < zone.y + zone.h; iy++) {
+					area.add(new Point(ix, iy));
+				}
+			}
+		} else {
+			area = super.getHighlight(x, y, tile, map);
+		}
+
+		return area;
+
 	}
 
 	private void editPlaceGroupZone(final PlaceGroupZone zone) {

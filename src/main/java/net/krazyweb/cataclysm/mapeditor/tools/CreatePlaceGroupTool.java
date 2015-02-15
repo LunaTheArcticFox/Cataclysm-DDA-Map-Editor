@@ -10,13 +10,19 @@ import net.krazyweb.cataclysm.mapeditor.map.PlaceGroup;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class CreatePlaceGroupTool extends Tool {
 
 	private int startX;
 	private int startY;
 
+	private boolean dragging = false;
+
 	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
 		if (event.getButton() == MouseButton.PRIMARY) {
 			startX = convertCoord(event.getX());
 			startY = convertCoord(event.getY());
@@ -27,6 +33,7 @@ public class CreatePlaceGroupTool extends Tool {
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		if (event.getButton() == MouseButton.PRIMARY) {
+			dragging = true;
 			startX = convertCoord(event.getX());
 			startY = convertCoord(event.getY());
 		}
@@ -34,9 +41,35 @@ public class CreatePlaceGroupTool extends Tool {
 
 	@Override
 	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		dragging = false;
 		if (event.getButton() == MouseButton.PRIMARY) {
 			createPlaceGroupZone(convertCoord(event.getX()), convertCoord(event.getY()), map);
 		}
+	}
+
+	@Override
+	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+		return dragging ? getArea(x, y) : super.getHighlight(x, y, tile, map);
+	}
+
+	private List<Point> getArea(final int x, final int y) {
+
+		List<Point> area = new ArrayList<>();
+
+		int xDirection = x > startX ? -1 : 1;
+		int yDirection = y > startY ? -1 : 1;
+
+		int xAmount = Math.abs(x - startX);
+		int yAmount = Math.abs(y - startY);
+
+		for (int lineX = 0; lineX <= xAmount; lineX++) {
+			for (int lineY = 0; lineY <= yAmount; lineY++) {
+				area.add(new Point(x + xDirection * lineX, y + yDirection * lineY));
+			}
+		}
+
+		return area;
+
 	}
 
 	private void createPlaceGroupZone(final int x, final int y, final CataclysmMap map) {
