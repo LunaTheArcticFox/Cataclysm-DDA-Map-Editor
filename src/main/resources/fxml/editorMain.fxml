@@ -1,26 +1,44 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+
 <?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.*?>
-
-
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
 			<Menu text="_File">
-				<MenuItem text="_New" onAction="#newFile"/>
-				<MenuItem text="_Open" onAction="#openFile"/>
-				<MenuItem text="_Save" onAction="#saveFile"/>
-				<MenuItem text="S_ave As" onAction="#saveFileAs"/>
+				<MenuItem text="_New" onAction="#newFile">
+					<accelerator><KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Open" onAction="#openFile">
+					<accelerator><KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Save" onAction="#saveFile">
+					<accelerator><KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="S_ave As" onAction="#saveFileAs">
+					<accelerator><KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/></accelerator>
+				</MenuItem>
 				<MenuItem text="_Revert" onAction="#revertFile"/>
 				<MenuItem text="E_xit" onAction="#exit"/>
 			</Menu>
 			<Menu text="_Edit">
-				<MenuItem text="_Undo"/>
-				<MenuItem text="_Redo"/>
-				<MenuItem text="_Cut"/>
-				<MenuItem text="_Copy"/>
-				<MenuItem text="_Paste"/>
+				<MenuItem text="_Undo">
+					<accelerator><KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Redo">
+					<accelerator><KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Cut">
+					<accelerator><KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Copy">
+					<accelerator><KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_Paste">
+					<accelerator><KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
+				</MenuItem>
 			</Menu>
 			<Menu text="_Tools">
 			</Menu>

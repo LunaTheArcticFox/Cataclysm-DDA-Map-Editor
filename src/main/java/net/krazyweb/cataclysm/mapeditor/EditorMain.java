@@ -106,8 +106,6 @@ public class EditorMain {
 
 		newFile();
 
-		//Bind listeners for things such as hotkeys
-
 	}
 
 	@Subscribe
