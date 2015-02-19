@@ -10,4 +10,3 @@
 		<Canvas fx:id="overlays" height="768.0" width="768.0"/>
 	</Group>
 </StackPane>
-

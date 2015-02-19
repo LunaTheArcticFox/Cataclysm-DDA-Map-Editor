@@ -5,6 +5,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
@@ -12,8 +13,8 @@ import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class EditPlaceGroupTool extends Tool {
 
@@ -112,9 +113,9 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
 
-		List<Point> area = new ArrayList<>();
+		Set<Point> area = new HashSet<>();
 
 		PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
 		if (zone != null) {
@@ -129,6 +130,11 @@ public class EditPlaceGroupTool extends Tool {
 
 		return area;
 
+	}
+
+	@Override
+	public Image getHighlightTile(final Tile tile) {
+		return null;
 	}
 
 	private void editPlaceGroupZone(final PlaceGroupZone zone) {

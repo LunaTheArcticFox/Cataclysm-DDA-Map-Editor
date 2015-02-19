@@ -5,9 +5,7 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 public class FillTool extends Tool {
 
@@ -21,11 +19,11 @@ public class FillTool extends Tool {
 	}
 
 	@Override
-	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
 		return getFill(x, y, tile, map);
 	}
 
-	private List<Point> getFill(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	private Set<Point> getFill(final int x, final int y, final Tile tile, final CataclysmMap map) {
 
 		CataclysmMap.Layer layer = tile.isFurniture() ? CataclysmMap.Layer.FURNITURE : CataclysmMap.Layer.TERRAIN;
 
@@ -34,7 +32,7 @@ public class FillTool extends Tool {
 		Stack<Point> fillQueue = new Stack<>();
 		fillQueue.push(new Point(x, y));
 
-		List<Point> toFill = new ArrayList<>();
+		Set<Point> toFill = new HashSet<>();
 
 		while (!fillQueue.isEmpty()) {
 			Point point = fillQueue.pop();
@@ -57,7 +55,7 @@ public class FillTool extends Tool {
 
 	}
 
-	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final CataclysmMap map, final List<Point> toFill) {
+	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final CataclysmMap map, final Set<Point> toFill) {
 		if (x < 0 || y < 0 || x >= CataclysmMap.SIZE || y >= CataclysmMap.SIZE) {
 			return false;
 		}

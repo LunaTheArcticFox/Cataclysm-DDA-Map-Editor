@@ -5,8 +5,8 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class BoxTool extends Tool {
 
@@ -36,13 +36,13 @@ public class BoxTool extends Tool {
 	}
 
 	@Override
-	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
 		return dragging ? getBox(x, y) : super.getHighlight(x, y, tile, map);
 	}
 
-	private List<Point> getBox(final int x, final int y) {
+	private Set<Point> getBox(final int x, final int y) {
 
-		List<Point> box = new ArrayList<>();
+		Set<Point> box = new HashSet<>();
 
 		int xDirection = x > startX ? -1 : 1;
 		int yDirection = y > startY ? -1 : 1;

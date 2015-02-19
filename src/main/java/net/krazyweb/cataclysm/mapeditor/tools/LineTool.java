@@ -5,8 +5,8 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LineTool extends Tool {
 
@@ -36,11 +36,11 @@ public class LineTool extends Tool {
 	}
 
 	@Override
-	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
 		return dragging ? getLine(x, y) : super.getHighlight(x, y, tile, map);
 	}
 
-	private List<Point> getLine(int x, int y) {
+	private Set<Point> getLine(int x, int y) {
 
 		int delta = 0;
 
@@ -56,7 +56,7 @@ public class LineTool extends Tool {
 		int lineX = startX;
 		int lineY = startY;
 
-		List<Point> line = new ArrayList<>();
+		Set<Point> line = new HashSet<>();
 
 		if (dirY <= dirX) {
 			while (true) {

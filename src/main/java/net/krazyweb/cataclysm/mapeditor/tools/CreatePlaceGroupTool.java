@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor.tools;
 
 import javafx.scene.Node;
 import javafx.scene.control.ButtonType;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
@@ -10,8 +11,8 @@ import net.krazyweb.cataclysm.mapeditor.map.PlaceGroup;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CreatePlaceGroupTool extends Tool {
 
@@ -48,13 +49,18 @@ public class CreatePlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public List<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
 		return dragging ? getArea(x, y) : super.getHighlight(x, y, tile, map);
 	}
 
-	private List<Point> getArea(final int x, final int y) {
+	@Override
+	public Image getHighlightTile(final Tile tile) {
+		return null;
+	}
 
-		List<Point> area = new ArrayList<>();
+	private Set<Point> getArea(final int x, final int y) {
+
+		Set<Point> area = new HashSet<>();
 
 		int xDirection = x > startX ? -1 : 1;
 		int yDirection = y > startY ? -1 : 1;

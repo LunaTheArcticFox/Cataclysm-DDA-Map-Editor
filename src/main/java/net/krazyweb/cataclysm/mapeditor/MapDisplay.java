@@ -30,6 +30,7 @@ import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
 import java.util.List;
+import java.util.Set;
 
 public class MapDisplay {
 
@@ -72,31 +73,31 @@ public class MapDisplay {
 	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
-		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
 		tool.release(event, currentTile, groups, map);
-		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 		tool.drag(event, currentTile, groups, map);
-		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 		tool.dragStart(event, currentTile, groups, map);
-		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 		tool.dragEnd(event, currentTile, groups, map);
-		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
 
@@ -185,23 +186,26 @@ public class MapDisplay {
 	}
 
 	//TODO Attempt optimization
-	private void updateInfo(final List<Point> highlight) {
+	private void updateOverlays(final Set<Point> highlight) {
 
 		clearOverlay();
 
 		Shape path = new Path();
 
+		GraphicsContext context = overlays.getGraphicsContext2D();
+
+		context.setGlobalAlpha(0.75);
 		for (Point point : highlight) {
 			Rectangle r = new Rectangle(point.x * 32, point.y * 32, 32, 32); //TODO Use tileset size
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
+			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32);
 		}
+		context.setGlobalAlpha(1.0);
 
 		bounds = path.getBoundsInLocal();
 
-		GraphicsContext context = overlays.getGraphicsContext2D();
-
-		context.setFill(new Color(1, 1, 1, 0.25));
+		context.setFill(new Color(1, 1, 1, 0.20));
 		context.setStroke(new Color(1, 1, 1, 0.75));
 		context.setLineWidth(2);
 
@@ -229,7 +233,7 @@ public class MapDisplay {
 		}
 
 		overlays.setOnMouseMoved(mouseEvent -> {
-			updateInfo(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
+			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
 			updateStatus((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32);
 		});
 

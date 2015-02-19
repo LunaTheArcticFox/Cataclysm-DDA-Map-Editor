@@ -1,9 +1,11 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
 import javafx.scene.Node;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 
 public class EraserTool extends Tool {
@@ -13,7 +15,6 @@ public class EraserTool extends Tool {
 		//TODO Pick tiles better
 		if (event.getButton() == MouseButton.PRIMARY) {
 			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), Tile.tiles.get("t_grass"));
-		} else {
 			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), Tile.tiles.get("f_null"));
 		}
 	}
@@ -21,6 +22,11 @@ public class EraserTool extends Tool {
 	@Override
 	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		click(event, tile, rootNode, map);
+	}
+
+	@Override
+	public Image getHighlightTile(final Tile tile) {
+		return TileSet.textures.get("t_grass");
 	}
 
 }
