@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
@@ -98,6 +99,11 @@ public class MapDisplay {
 		updateInfo(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
 		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
 	};
+
+	@FXML
+	private void initialize() {
+		root.setEffect(new DropShadow(5, 0, 3, new Color(0, 0, 0, 0.2)));
+	}
 
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
@@ -196,7 +202,8 @@ public class MapDisplay {
 		GraphicsContext context = overlays.getGraphicsContext2D();
 
 		context.setFill(new Color(1, 1, 1, 0.25));
-		context.setStroke(Color.WHITE);
+		context.setStroke(new Color(1, 1, 1, 0.75));
+		context.setLineWidth(2);
 
 		context.beginPath();
 		context.appendSVGPath(ShapeConverter.shapeToSvgString(path));
