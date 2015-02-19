@@ -1,0 +1,668 @@
+- t_wall_h
+| t_wall_v
++ t_door_c
+. t_grass
+  t_floor
+@ t_floor f_bed
+: t_floor f_dresser
+F t_floor f_fridge
+? t_floor f_sofa
+G t_floor f_oven
+6 t_floor f_table
+A t_floor f_sink
+E t_floor f_cupboard
+D t_floor f_trashcan
+S t_sidewalk
+B t_floor f_chair
+7 t_floor f_bookcase
+> t_floor f_counter
+; t_floor f_toilet
+3 t_door_locked
+C t_floor f_desk
+8 t_floor f_bathtub
+9 t_floor f_rack
+^ t_tree
+z t_shrub
+_ t_pavement
+= t_floor f_fireplace
+[ t_fence_v
+, t_pavement_y
+2 t_window_domestic
+~ t_fence_h
+{ t_door_glass_c
+s t_sidewalk
+r t_floor f_rack
+H t_floor f_armchair
+x t_console_broken
+M t_door_metal_locked
+O t_window
+# t_floor f_counter
+t t_floor f_table
+c t_floor f_chair
+l t_floor f_vending_c
+S t_floor f_sink
+^ t_floor f_indoor_plant
+c t_floor f_counter
+w t_gates_mech_control
+T t_floor f_toilet
++ t_door_glass_c
+L t_door_locked_alarm
+B t_palisade
+= t_floor
+# t_shrub
+G t_floor f_desk
+. t_floor
+* t_door_locked
+h t_floor f_chair
+f t_floor f_glass_fridge
+t t_floor f_toilet
+l t_linoleum_gray
+L t_floor f_locker
+a t_grass
+X t_gates_mech_control
+n t_floor f_table
+d t_pavement f_dumpster
+o t_floor f_bookcase
+2 t_window_boarded
+f t_floor
+b t_wall_v
+= t_door_metal_locked
+P t_floor f_indoor_plant
+S t_linoleum_white f_sink
+8 t_chainfence_v
+L t_door_locked
+% t_shrub
+6 t_console_broken
+| t_chainfence_v
+I t_column
+V t_wall_glass_v
+; t_door_locked
+v t_wall_glass_v
+d t_floor f_dresser
+z t_floor f_crate_c
+u t_floor
+D t_door_c
+O t_floor f_oven
+- t_chainfence_h
+# t_wall_log
+T f_table
+P t_linoleum_white f_toilet
+# t_linoleum_white f_counter
+5 t_wall_glass_h
+D t_dirt f_trashcan
+k t_floor f_desk
+E t_elevator
+w t_linoleum_white
+B f_bench
+W t_window
+f t_floor f_fridge
+& t_door_metal_locked f_counter
+{ t_floor f_rubble
+5 t_chainfence_h
+} t_manhole_cover
+c t_window_domestic
+e t_gates_mech_control
+@ t_floor
++ t_chaingate_c
+H f_chair
+I t_door_locked_interior
+S t_linoleum_gray f_sink
+F t_sidewalk
+> t_stairs_down
+^ t_chaingate_l
+M t_dirt
+B t_floor f_bathtub
+v t_window_domestic
+A t_railing_h
+f t_pavement f_trashcan
+D t_door_locked
+l t_floor f_locker
+& t_door_locked
+[ t_door_glass_c
+F t_floor f_arcade_machine
+# t_linoleum_gray f_counter
+O t_linoleum_white f_oven
+= t_rock_floor f_woodstove
+  t_concrete
+1 t_floor f_toilet
+^ f_indoor_plant
+F t_linoleum_gray f_fridge
+) t_floor f_wreckage
+1 t_column
+@ t_console_broken
+T t_tree
+* t_floor
+a t_railing_v
+M t_floor f_anvil
+H t_wall_glass_h
+h t_wall_glass_h
+x t_chainfence_posts
+b t_floor f_bench
+d t_wall_h
+T t_linoleum_gray f_toilet
+e t_wall_h
+_ t_rock_floor
+w t_window
+r t_linoleum_gray f_rack
+a t_linoleum_gray f_sink
+8 t_potential_trans
+j t_floor f_trashcan
+C t_curtains
+z t_floor f_table
+Q t_fence_h
+R t_linoleum_white f_woodstove
+W t_water_dp
+B t_oil_circ_brkr_l
+x t_shrub
+% t_wall_glass_v
+s t_linoleum_gray f_sink
+C t_floor
+L t_door_metal_pickable
+s t_switchgear_s
++ t_door_metal_pickable
+7 t_chainfence_h
+n t_floor f_bed
+l t_linoleum_gray f_locker
+x t_wall_v
+q t_wall_h
+2 t_window
+y t_floor f_sofa
+e t_linoleum_white f_fridge
+{ t_linoleum_white f_rack
+- t_pavement
+r t_railing_h
+5 t_floor f_counter
+Z t_floor f_crate_o
+g t_wall_glass_v
+v t_wall_v
+d t_door_locked
+v t_floor f_table
+5 t_window_bars_alarm
+C t_console_broken
+T t_linoleum_white f_toilet
+! t_bars
+4 t_floor f_bathtub
+; t_linoleum_gray f_toilet
+G t_wall_metal_h
+O t_linoleum_white f_woodstove
+e t_floor f_indoor_plant
+8 t_window_bars_alarm
+F t_linoleum_white f_fridge
+W t_curtains
+3 t_floor f_washer
+] f_ash
+8 t_wall_glass_v
+p t_floor f_sink
+# t_rock
+t t_linoleum_gray f_trashcan
+8 t_linoleum_gray f_bathtub
+9 t_chaingate_l
+q t_fence_v
+X t_floor f_rack
+{ t_linoleum_gray f_rack
+* t_door_bar_locked
+4 t_floor f_dryer
+l t_floor f_sofa
+, t_sidewalk
+r t_floor f_toilet
+c t_linoleum_white f_counter
+D t_floor f_desk
+S t_floor f_shower
+G t_wall_glass_h
+{ t_current_trans
+g t_wall_glass_h
+2 t_sewage_pipe
+} t_lgtn_arrest
+y t_linoleum_gray f_dryer
+W t_floor f_washer
+x t_grass f_bluebell
+  t_grass
+* t_grass f_dahlia
+w t_linoleum_gray f_washer
+' t_door_c
+U f_statue
+Y t_floor f_dryer
+w t_sidewalk
+4 t_water_pump
+^ t_linoleum_gray f_indoor_plant
+E t_linoleum_gray f_desk
+: t_door_locked_interior
+T t_support_l
+C t_linoleum_gray f_displaycase
+. t_linoleum_gray
+w t_wall_h
+x t_floor f_pinball_machine
+o t_column
+B t_floor f_bench
+0 t_curtains
+h t_station_disc
+p t_floor f_cupboard
+g t_wall_metal_v
+l t_floor f_bookcase
+H t_window
+t t_linoleum_gray f_toilet
+S t_switchgear_l
+l t_linoleum_white f_locker
+' t_window
+i t_floor f_armchair
+x t_fencegate_c
+R t_railing_v
+c t_linoleum_gray f_chair
+T t_floor f_safe_l
+f t_fencegate_c
+R t_hole
+r t_linoleum_white f_rack
+C t_floor f_chair
+B t_carpet_red f_chair
+w t_water_sh
+~ t_floor f_shower
+9 t_floor f_trashcan
+w t_grass f_washer
+c t_sidewalk
+x t_floor f_oven
+2 t_fence_h
+4 t_window_reinforced
+% t_console_broken
+= t_wall_glass_h
+o t_floor f_bathtub
+/ t_dirt
+_ t_pavement_y
+5 t_water_sh
+t t_curtains
+b t_utility_light
+z t_door_locked
+7 t_floor f_oven
+5 t_gas_pump
+d t_gates_mech_control
+  t_linoleum_white
+9 t_pavement f_aut_gas_console
+[ t_chainfence_v
+= t_floor f_ball_mach
+P t_grass f_sign
+2 t_linoleum_gray
+5 t_slide
+. t_dirt
+C t_floor f_sofa
+o t_window_open
+y t_floor f_counter
+r t_floor f_dresser
+V t_reinforced_glass_v
+r t_floor f_washer
+t t_floor f_armchair
+2 t_utility_light
+# t_dirtmound
+< t_stairs_down
+L t_dirtfloor f_locker
+1 t_linoleum_white
+s t_underbrush
+n t_floor f_sink
+; t_linoleum_white f_toilet
+z t_floor f_fireplace
+S t_shrub_strawberry
+! t_linoleum_white
+H t_console_broken
+y t_floor f_fridge
+8 t_floor f_fridge
+6 t_carpet_red f_table
+^ t_dirt
+F t_carpet_red f_fridge
+% t_linoleum_white f_trashcan
+: t_wall_wood f_dresser
+K t_floor f_dryer
+W t_chainfence_h
+S t_floor_waxed
+q t_floor f_bathtub
+  t_carpet_red
+Z t_sidewalk f_chair
+p t_window_domestic
+j t_floor f_glass_fridge
+1 t_curtains
+b t_linoleum_gray
+S t_dirtfloor f_sink
+q t_door_c
+I t_floor f_indoor_plant
+* t_floor f_shower
+& f_trashcan
+5 t_wall_glass_v
+l t_floor f_dryer
+g f_trashcan
+z t_dirt f_crate_c
+c t_linoleum_white
+p t_sidewalk
+D t_carpet_red f_trashcan
+v t_floor f_locker
+R t_carpet_red
+4 t_tree_pine
+B t_floor
+E t_floor f_exercise
+& t_linoleum_white f_trashcan
+$ t_fence_rope
+R t_dirtmound
+, t_dirt
+U t_dirt f_statue
+C t_dirtfloor f_desk
+] t_floor f_rack
+V t_floor f_exercise
+p t_floor f_pool_table
+# t_sai_box
+3 t_concrete f_chair
+J t_monkey_bars
+c t_fence_h
+] t_door_glass_o
+3 t_door_metal_c
+& t_gas_pump
+r t_carpet_red
+, t_pavement
+G t_door_glass_c
+c t_dirtfloor f_counter
+k t_floor f_counter
+u t_floor f_oven
+s t_shrub_blueberry
+q t_floor f_bookcase
+: t_floor f_locker
+s t_floor f_bed
+r t_dirtfloor f_rack
+/ t_sidewalk f_chair
+2 t_floor f_bed
+y t_window_boarded
+o t_fence_h
+. t_carpet_green
+E t_dirtfloor f_cupboard
+L t_linoleum_white
+v t_floor f_trashcan
+U t_floor
+2 t_floor f_bathtub
+H t_floor f_sofa
+& f_counter
+f t_grass f_bluebell
+W t_window_bars_alarm
+f t_floor f_trashcan
+f t_window_domestic
+x t_palisade_pulley
+f t_linoleum_white f_fridge
+w t_floor f_cupboard
+E t_carpet_red f_cupboard
+n t_door_locked_peep
+g t_floor f_dresser
+2 t_floor f_sink
+s t_floor f_sink
+b t_grass f_bench
+7 t_dirtfloor f_bookcase
+d t_wall_v
+l t_floor f_oven
+4 t_floor f_indoor_plant
+H t_dirtfloor f_hay
+5 t_door_boarded
+I t_shrub_blueberry
+w t_window_bars_alarm
+K t_dirtfloor f_wood_keg
+v t_floor f_dresser
+? t_chainfence_posts
+g t_linoleum_gray
+= t_linoleum_white
+. t_pavement
+e t_floor
+B t_floor f_bookcase
+z t_sidewalk f_table
+x t_grass f_dryer
+1 t_generator_broken
+3 t_carpet_red
+p t_palisade_gate
+q t_floor f_dryer
+f t_door_c
+3 t_door_locked_interior
+@ t_dirtfloor f_bed
+& t_floor f_trashcan
+u t_door_locked
+3 t_sewage
+m t_sidewalk
+y t_pavement_y
+6 t_floor f_treadmill
+^ t_tree_young
+3 t_door_b
+G t_floor
+w t_floor f_sofa
+G t_carpet_red f_oven
+m t_floor f_fridge
+X t_grass f_dahlia
+G t_dirtfloor f_oven
+# t_console_broken
+P t_palisade
+l t_floor f_chair
+| t_wall_h
+u t_floor f_table
+# t_floor f_table
+x t_floor f_counter
+h t_floor
+i t_floor f_dresser
+2 t_wall_glass_h
+o t_floor f_shower
+; t_dirtfloor f_toilet
+x t_door_locked
+t t_window_domestic
+9 t_floor f_locker
+{ t_pavement f_vending_c
+Q t_pavement
+m t_floor f_toilet
+# t_ladder_up
+' t_pavement_y
+, t_grass
+& t_linoleum_gray f_trashcan
+  t_pavement
+k t_floor f_chair
+C t_concrete
+1 t_floor f_armchair
+c t_concrete
+# t_floor f_tatami
+] t_dirt f_ash
+4 t_concrete f_bench
+q t_shrub_strawberry
+d f_dumpster
+t t_door_c
+5 t_fence_v
+h t_floor f_dresser
+v t_floor f_cupboard
+G t_linoleum_gray f_oven
+w t_door_locked
+5 t_floor f_gunsafe_ml
+u t_floor f_bookcase
+U t_linoleum_white f_sink
+r t_linoleum_gray f_oven
+# t_sidewalk f_table
+$ t_carpet_red f_bed
+s t_floor f_fridge
+h t_dirtfloor f_chair
+g t_floor f_bed
+P f_indoor_plant
+< t_stairs_up
+# t_wall_wood
+A f_statue
+k t_floor f_dresser
+{ t_pavement f_dumpster
+X t_grate
+z t_shrub_strawberry
+^ t_linoleum_white f_indoor_plant
+y t_floor f_washer
+= t_carpet_red f_fireplace
+~ t_water_sh
+@ t_dirtfloor f_makeshift_bed
+x f_pool_table
+m t_dirtmound
+0 t_sidewalk f_dive_block
+~ t_chainfence_h
+g t_floor f_desk
+t f_table
+t t_linoleum_gray f_table
+L t_linoleum_white f_locker
+H t_floor
+3 t_floor f_fridge
+M t_door_metal_c
+1 t_concrete
+0 t_floor f_floor_canvas
+C f_chair
+E t_floor f_desk
+O t_floor f_locker
+c t_linoleum_gray f_counter
+h t_floor f_bed
+? t_floor f_statue
+k t_window_domestic
+i t_floor
+  t_dirtfloor
+M t_door_glass_c
+# f_table
+p t_shrub
+D t_floor f_displaycase
+^ t_tree_pine
+j t_floor f_washer
+= t_door_glass_c
+J t_shrub_strawberry
+h t_floor f_bookcase
+6 t_dirtfloor f_table
+T t_floor f_displaycase
+w t_dirtfloor f_groundsheet
+8 t_grass f_bluebell
+c t_shrub
+w t_chainfence_v
+H t_reinforced_glass_h
+w t_floor f_washer
+z t_curtains
+= t_sidewalk
+t t_floor f_counter
+C t_carpet_red f_desk
+0 t_door_locked_interior
+i t_door_c
+X t_floor f_safe_l
+2 t_floor f_shower
+. t_rock
+! t_floor f_ergometer
+& t_linoleum_gray f_fridge
+Z t_sidewalk f_crate_o
+@ t_thconc_floor
+z t_underbrush
+3 t_floor f_desk
+; t_metal_floor
+9 t_floor f_sofa
+A t_atm
+X t_floor f_pool_table
+9 t_grass f_counter
+p t_concrete
+o t_floor f_chair
+r t_floor f_fridge
+D t_dirtfloor f_trashcan
+u t_floor f_trashcan
+s t_little_column
++ t_door_metal_c
+b t_shrub
+d t_dirtfloor f_dresser
+: t_carpet_red f_dresser
+0 t_window_empty
+7 t_carpet_red f_bookcase
+8 t_floor f_bookcase
+t t_floor f_sink
+d t_floor f_desk
+r t_shrub
+y t_floor f_indoor_plant_y
+h t_door_c
+l t_linoleum_white
+b t_fence_v
+C t_grass f_mutpoppy
+T t_dirt
+1 t_floor f_crate_c
+m t_door_locked
+9 t_dirtfloor f_rack
+b t_dirtfloor f_bench
+9 t_carpet_red f_rack
+T t_tree_young
+@ t_floor f_treadmill
+q t_floor f_sofa
+8 t_dirtfloor f_bathtub
+Z t_floor f_bookcase
+f t_pavement
+A t_linoleum_white f_sink
+g t_door_metal_locked
+m t_floor f_washer
+8 t_wall_glass_h
+8 t_linoleum_white f_bathtub
+N t_sandbox
+6 t_floor f_chair
+k t_door_locked_interior
+7 t_gates_mech_control
+z t_floor f_bookcase
+o t_floor f_cupboard
+8 t_floor f_shower
+f t_linoleum_white f_glass_fridge
+c t_floor f_bench
+? t_carpet_red f_sofa
+- t_wall_v
+1 t_window_boarded
+b t_dirt f_bench
+H t_linoleum_white f_sofa
+7 t_linoleum_white f_bookcase
+3 t_recycler
+  t_rock_floor
+? t_dirtfloor f_sofa
+X t_floor f_shower
+n t_dirtfloor f_table
+V t_floor f_vending_c
+G t_floor f_lane
+d t_shrub
++ t_chaingate_l
+& t_atm
+T t_floor f_locker
+n t_door_c
+s t_floor f_oven
+2 t_floor f_oven
+P t_pavement f_sign
+x t_bridge
+{ t_floor f_bookcase
+j t_floor f_desk
+o t_dirtfloor f_bookcase
+W t_floor f_dryer
+y t_floor f_sink
+n t_floor f_indoor_plant
+= t_linoleum_gray
+  t_sidewalk
+C t_floor f_crate_c
+T t_dirtfloor f_toilet
+C f_trashcan
+W t_fencegate_c
+4 t_carpet_green
+e t_floor f_fridge
+> t_dirtfloor f_counter
+p t_floor
+u t_pavement f_barricade_road
+t t_linoleum_white f_table
+l t_sidewalk f_vending_c
+> t_carpet_red f_counter
+u t_floor f_chair
+j t_concrete
+x t_floor f_dryer
+g t_shrub
+m t_door_c
+F t_dirtfloor f_fridge
+1 t_wall_glass_v
+P t_tree_peach
+B t_dirtfloor f_chair
+U f_chair
+@ t_floor f_trashcan
+T t_linoleum_white f_table
+. t_rock_floor
+9 t_carpet_red f_table
+t t_sidewalk
+  t_dirt
+4 t_floor f_toilet
+7 t_floor f_desk
+i t_window_stained_green
+A t_dirtfloor f_locker
+g t_floor f_fireplace
+s t_floor f_chair
+w t_water_pool
+T f_trashcan
+o t_floor f_counter
+k t_floor f_table
+g t_window
+i t_floor f_rack
+5 t_floor f_canvas_floor
+j t_floor f_armchair
+W t_dirt f_canvas_wall
+h t_floor f_desk

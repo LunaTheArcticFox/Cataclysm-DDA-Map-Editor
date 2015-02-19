@@ -3,14 +3,23 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
 import com.google.common.eventbus.EventBus;
+import com.google.common.io.Resources;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class MapDataFileWriter extends Service<Boolean> {
 
@@ -52,7 +61,6 @@ public class MapDataFileWriter extends Service<Boolean> {
 
 		try {
 
-			//ObjectMapper objectMapper = new ObjectMapper();
 			JsonGenerator generator = new JsonFactory().createGenerator(path.toFile(), JsonEncoding.UTF8);
 			generator.useDefaultPrettyPrinter();
 
@@ -72,34 +80,38 @@ public class MapDataFileWriter extends Service<Boolean> {
 			generator.writeObjectFieldStart("object");
 
 			generator.writeArrayFieldStart("rows");
-			List<TerrainIdentifier> terrainIDs = getTerrainIDs();
+			Map<MapTile, Character> mappings = mapSymbols();
 			for (int y = 0; y < CataclysmMap.SIZE; y++) {
 				String row = "";
 				for (int x = 0; x < CataclysmMap.SIZE; x++) {
-					TerrainIdentifier id = new TerrainIdentifier();
-					id.terrain = map.currentState.terrain[x][y];
-					id.furniture = map.currentState.furniture[x][y];
-					//A slightly hackish way of getting the right symbol for the tile TODO fix this?
-					row += terrainIDs.get(terrainIDs.indexOf(id)).symbol;
+					row += mappings.get(new MapTile(map.currentState.terrain[x][y], map.currentState.furniture[x][y]));
 				}
 				generator.writeString(row);
 			}
 			generator.writeEndArray();
 
 			generator.writeObjectFieldStart("terrain");
-			for (TerrainIdentifier id : terrainIDs) {
-				if (id.terrain != null) {
-					generator.writeStringField(id.symbol + "", id.terrain);
+			mappings.entrySet().forEach(entry -> {
+				if (entry.getKey().terrain != null) {
+					try {
+						generator.writeStringField(entry.getValue() + "", entry.getKey().terrain);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			}
+			});
 			generator.writeEndObject();
 
 			generator.writeObjectFieldStart("furniture");
-			for (TerrainIdentifier id : terrainIDs) {
-				if (id.furniture != null && !id.furniture.equals("f_null")) {
-					generator.writeStringField(id.symbol + "", id.furniture);
+			mappings.entrySet().forEach(entry -> {
+				if (entry.getKey().furniture != null) {
+					try {
+						generator.writeStringField(entry.getValue() + "", entry.getKey().furniture);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 				}
-			}
+			});
 			generator.writeEndObject();
 
 			generator.writeArrayFieldStart("place_specials");
@@ -227,7 +239,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 			}
 
 			int area = (r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1);
-			int repeatMin = Math.max(Math.min((int) (area / 3.5) - 1, 8), 0);
+			int repeatMin = Math.max(Math.min((int) (area / 3.5) - 1, 8), 0); //TODO Remove the off-by-one error
 			int repeatMax = Math.min(Math.max((int) (area / 2.5) - 1, 1), 14);
 
 			generator.writeArrayFieldStart("repeat");
@@ -278,56 +290,74 @@ public class MapDataFileWriter extends Service<Boolean> {
 		}
 	}
 
-	private static class TerrainIdentifier {
+	//TODO Clean this all up
+	private Map<MapTile, Character> mapSymbols() {
 
-		private char symbol;
-		private String terrain;
-		private String furniture;
+		Multimap<MapTile, Character> commonMappings = ArrayListMultimap.create();
 
-		@Override
-		public boolean equals(Object object) {
+		try (BufferedReader reader = Files.newBufferedReader(Paths.get(Resources.getResource("tileSymbolMap.txt").toURI()))) {
 
-			if (this == object) return true;
-			if (object == null || getClass() != object.getClass()) return false;
+			String line;
 
-			TerrainIdentifier other = (TerrainIdentifier) object;
+			while ((line = reader.readLine()) != null) {
 
-			if (furniture != null ? !furniture.equals(other.furniture) : other.furniture != null) return false;
-			if (terrain != null ? !terrain.equals(other.terrain) : other.terrain != null) return false;
+				String[] mapping = line.split("(?<=[ \\S]) ");
+				MapTile tile = new MapTile();
 
-			return true;
+				if (mapping.length == 3) {
+					tile.terrain = mapping[1];
+					tile.furniture = mapping[2];
+				} else {
+					if (mapping[1].startsWith("t_")) {
+						tile.terrain = mapping[1];
+					} else {
+						tile.furniture = mapping[1];
+					}
+				}
 
+				commonMappings.put(tile, mapping[0].charAt(0));
+
+			}
+
+			reader.close();
+
+		} catch (IOException | URISyntaxException e) {
+			e.printStackTrace();
 		}
 
-		@Override
-		public int hashCode() {
-			int result = terrain != null ? terrain.hashCode() : 0;
-			result = 31 * result + (furniture != null ? furniture.hashCode() : 0);
-			return result;
-		}
-
-	}
-
-	private List<TerrainIdentifier> getTerrainIDs() {
-
-		List<TerrainIdentifier> currentIDs = new ArrayList<>();
+		List<Character> usedSymbols = new ArrayList<>();
+		List<MapTile> resolveLater = new ArrayList<>();
+		Map<MapTile, Character> mappings = new HashMap<>();
 
 		for (int x = 0; x < CataclysmMap.SIZE; x++) {
 			for (int y = 0; y < CataclysmMap.SIZE; y++) {
-				TerrainIdentifier id = new TerrainIdentifier();
-				id.terrain = map.currentState.terrain[x][y];
-				id.furniture = map.currentState.furniture[x][y];
-				if (!currentIDs.contains(id)) {
-					currentIDs.add(id);
+				MapTile tile = new MapTile(map.currentState.terrain[x][y], map.currentState.furniture[x][y]);
+				if (!mappings.containsKey(tile)) {
+					if (commonMappings.containsKey(tile)) {
+						for (Character symbol : commonMappings.get(tile)) {
+							if (!usedSymbols.contains(symbol)) {
+								usedSymbols.add(symbol);
+								mappings.put(tile, symbol);
+								break;
+							}
+						}
+					} else {
+						resolveLater.add(tile);
+					}
 				}
 			}
 		}
 
-		for (int i = 0; i < currentIDs.size(); i++) {
-			currentIDs.get(i).symbol = SYMBOLS[i];
-		}
+		resolveLater.forEach(tile -> {
+			for (char symbol : SYMBOLS) {
+				if (!usedSymbols.contains(symbol)) {
+					mappings.put(tile, symbol);
+					break;
+				}
+			}
+		});
 
-		return currentIDs;
+		return mappings;
 
 	}
 
