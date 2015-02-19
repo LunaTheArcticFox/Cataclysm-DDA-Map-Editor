@@ -199,7 +199,7 @@ public class MapDisplay {
 			Rectangle r = new Rectangle(point.x * 32, point.y * 32, 32, 32); //TODO Use tileset size
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
-			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32);
+			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32); //TODO Bitwise map tile previews
 		}
 		context.setGlobalAlpha(1.0);
 
