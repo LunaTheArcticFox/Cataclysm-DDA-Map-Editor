@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
@@ -33,6 +34,9 @@ public class EditorMain {
 
 	@FXML
 	private MenuItem undoButton, redoButton;
+
+	@FXML
+	private CheckMenuItem showGridButton;
 
 	private EventBus eventBus = new EventBus();
 	private Stage primaryStage;
@@ -228,6 +232,11 @@ public class EditorMain {
 	@FXML
 	private void redo() {
 		eventBus.post(new RequestRedoEvent());
+	}
+
+	@FXML
+	private void toggleGrid() {
+		eventBus.post(new ShowGridEvent(showGridButton.isSelected()));
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {

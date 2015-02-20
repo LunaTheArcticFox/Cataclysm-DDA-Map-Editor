@@ -61,7 +61,7 @@ public class MapDisplay {
 	private StackPane root;
 
 	@FXML
-	private Canvas terrain, overlays, groups;
+	private Canvas terrain, overlays, grid, groups;
 
 	private Bounds bounds;
 	private boolean dragging = false;
@@ -104,6 +104,9 @@ public class MapDisplay {
 	@FXML
 	private void initialize() {
 		root.setEffect(new DropShadow(5, 0, 3, new Color(0, 0, 0, 0.2)));
+		grid.setManaged(false); //TODO Use setting as of last run, default to hidden
+		grid.setVisible(false); //TODO Use setting as of last run, default to hidden
+		drawGrid();
 	}
 
 	public void setEventBus(final EventBus eventBus) {
@@ -160,6 +163,12 @@ public class MapDisplay {
 		KeyValue scaleGroupsY = new KeyValue(groups.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
 		KeyFrame scaleGroupsYFrame = new KeyFrame(Duration.millis(150), scaleGroupsY);
 
+		KeyValue scaleGridX = new KeyValue(grid.scaleXProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleGridXFrame = new KeyFrame(Duration.millis(150), scaleGridX);
+
+		KeyValue scaleGridY = new KeyValue(grid.scaleYProperty(), event.getZoomLevel(), Interpolator.EASE_BOTH);
+		KeyFrame scaleGridYFrame = new KeyFrame(Duration.millis(150), scaleGridY);
+
 		Timeline scaleAnimation = new Timeline();
 		scaleAnimation.getKeyFrames().add(scaleTerrainXFrame);
 		scaleAnimation.getKeyFrames().add(scaleTerrainYFrame);
@@ -167,6 +176,8 @@ public class MapDisplay {
 		scaleAnimation.getKeyFrames().add(scaleOverlaysYFrame);
 		scaleAnimation.getKeyFrames().add(scaleGroupsXFrame);
 		scaleAnimation.getKeyFrames().add(scaleGroupsYFrame);
+		scaleAnimation.getKeyFrames().add(scaleGridXFrame);
+		scaleAnimation.getKeyFrames().add(scaleGridYFrame);
 
 		scaleAnimation.play();
 
@@ -205,7 +216,7 @@ public class MapDisplay {
 
 		bounds = path.getBoundsInLocal();
 
-		context.setFill(new Color(1, 1, 1, 0.20));
+		context.setFill(new Color(1, 1, 1, 0.2));
 		context.setStroke(new Color(1, 1, 1, 0.75));
 		context.setLineWidth(2);
 
@@ -215,6 +226,26 @@ public class MapDisplay {
 		context.stroke();
 		context.fill();
 
+	}
+
+	private void drawGrid() {
+
+		GraphicsContext context = grid.getGraphicsContext2D();
+
+		context.setStroke(new Color(1, 1, 1, 0.8));
+		context.setLineWidth(0.5);
+
+		for (int i = 0; i < CataclysmMap.SIZE; i++) {
+			context.strokeLine(i * 32, 0, i * 32, 768);
+			context.strokeLine(0, i * 32, 768, i * 32);
+		}
+
+	}
+
+	@Subscribe
+	public void toggleGridEventListener(final ShowGridEvent event) {
+		grid.setManaged(event.showGrid());
+		grid.setVisible(event.showGrid());
 	}
 
 	@Subscribe

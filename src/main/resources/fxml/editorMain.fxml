@@ -42,6 +42,9 @@
 			</Menu>
 			<Menu text="_Tools">
 			</Menu>
+			<Menu text="_View">
+				<CheckMenuItem text="_Grid" fx:id="showGridButton" onAction="#toggleGrid"/>
+			</Menu>
 			<Menu text="_Help">
 				<MenuItem mnemonicParsing="false" text="About"/>
 			</Menu>
