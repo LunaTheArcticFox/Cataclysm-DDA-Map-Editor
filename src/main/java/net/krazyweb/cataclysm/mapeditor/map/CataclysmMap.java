@@ -46,15 +46,6 @@ public class CataclysmMap {
 		protected String[][] furniture = new String[SIZE][SIZE];
 		protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 
-		public State() {
-			for (int x = 0; x < SIZE; x++) {
-				for (int y = 0; y < SIZE; y++) {
-					terrain[x][y] = "t_grass";
-					furniture[x][y] = "f_null";
-				}
-			}
-		}
-
 		@SuppressWarnings("CloneDoesntCallSuperClone")
 		@Override
 		protected State clone() throws CloneNotSupportedException {
