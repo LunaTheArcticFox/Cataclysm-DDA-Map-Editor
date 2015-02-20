@@ -7,6 +7,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
@@ -29,6 +30,9 @@ public class EditorMain {
 
 	@FXML
 	private VBox tilePickerPanel, toolbarPanel;
+
+	@FXML
+	private MenuItem undoButton, redoButton;
 
 	private EventBus eventBus = new EventBus();
 	private Stage primaryStage;
@@ -124,6 +128,18 @@ public class EditorMain {
 		refreshTitle();
 	}
 
+	@Subscribe
+	public void updateUndoTextEventListener(final UpdateUndoTextEvent event) {
+		undoButton.setText("_Undo " + event.getText());
+		undoButton.setDisable(event.getText().isEmpty());
+	}
+
+	@Subscribe
+	public void updateRedoTextEventListener(final UpdateRedoTextEvent event) {
+		redoButton.setText("_Redo " + event.getText());
+		redoButton.setDisable(event.getText().isEmpty());
+	}
+
 	private void refreshTitle() {
 
 		String title = "Cataclysm Map Editor - ";
@@ -200,6 +216,16 @@ public class EditorMain {
 	@FXML
 	private void exit() {
 		requestClose();
+	}
+
+	@FXML
+	private void undo() {
+		eventBus.post(new RequestUndoEvent());
+	}
+
+	@FXML
+	private void redo() {
+		eventBus.post(new RequestRedoEvent());
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {

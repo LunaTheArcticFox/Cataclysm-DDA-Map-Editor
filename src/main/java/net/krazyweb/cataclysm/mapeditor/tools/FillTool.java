@@ -16,6 +16,8 @@ public class FillTool extends Tool {
 			map.setTile(point.x, point.y, tile);
 		}
 
+		map.finishEdit("Fill");
+
 	}
 
 	@Override

@@ -20,6 +20,16 @@ public class EraserTool extends Tool {
 	}
 
 	@Override
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		map.finishEdit("Eraser");
+	}
+
+	@Override
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		map.finishEdit("Eraser");
+	}
+
+	@Override
 	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		click(event, tile, rootNode, map);
 	}

@@ -51,7 +51,7 @@ public class EditPlaceGroupTool extends Tool {
 				ContextMenu menu = new ContextMenu(edit, new SeparatorMenuItem(), cancel);
 				menu.setAutoHide(true);
 
-				edit.setOnAction(action -> editPlaceGroupZone(map.getPlaceGroupZoneAt(x, y)));
+				edit.setOnAction(action -> editPlaceGroupZone(map.getPlaceGroupZoneAt(x, y), map));
 				cancel.setOnAction(action -> menu.hide());
 
 				menu.show(rootNode, event.getScreenX(), event.getScreenY());
@@ -137,13 +137,14 @@ public class EditPlaceGroupTool extends Tool {
 		return null;
 	}
 
-	private void editPlaceGroupZone(final PlaceGroupZone zone) {
+	private void editPlaceGroupZone(final PlaceGroupZone zone, final CataclysmMap map) {
 		PlaceGroupInfoPanel infoPanel = new PlaceGroupInfoPanel("Edit PlaceGroup", zone.group);
 		infoPanel.showAndWait().ifPresent(result -> {
 			if (result == ButtonType.FINISH) {
 				zone.group.type = infoPanel.getType();
 				zone.group.group = infoPanel.getGroup();
 				zone.group.chance = infoPanel.getChance();
+				map.finishEdit("Edit PlaceGroup");
 			}
 		});
 	}

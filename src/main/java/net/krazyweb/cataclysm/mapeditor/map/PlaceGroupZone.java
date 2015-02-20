@@ -30,6 +30,14 @@ public class PlaceGroupZone {
 	public Color strokeColor;
 	public PlaceGroup group;
 
+	public PlaceGroupZone(final PlaceGroupZone zone) {
+		this.x = zone.x;
+		this.y = zone.y;
+		this.fillColor = zone.fillColor;
+		this.strokeColor = zone.strokeColor;
+		this.group = new PlaceGroup(zone.group);
+	}
+
 	public PlaceGroupZone(final PlaceGroup group) {
 		this.group = group;
 		fillColor = ZONE_COLORS[currentZoneColor][0];

@@ -18,6 +18,9 @@ public class BoxTool extends Tool {
 	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		dragging = false;
+		startX = convertCoord(event.getX());
+		startY = convertCoord(event.getY());
+		dragEnd(event, tile, rootNode, map);
 	}
 
 	@Override
@@ -33,6 +36,7 @@ public class BoxTool extends Tool {
 		for (Point point : getBox(convertCoord(event.getX()), convertCoord(event.getY()))) {
 			map.setTile(point.x, point.y, tile);
 		}
+		map.finishEdit("Box");
 	}
 
 	@Override

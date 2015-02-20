@@ -102,6 +102,7 @@ public class CreatePlaceGroupTool extends Tool {
 				}
 
 				map.addPlaceGroupZone(new PlaceGroupZone(startX, startY, width, height, placeGroup));
+				map.finishEdit("Create PlaceGroup");
 
 			}
 

@@ -49,7 +49,7 @@ public class MapDataFileReader extends Service<Boolean> {
 	private void load() throws IOException {
 
 		map = new CataclysmMap(eventBus);
-		map.saved = true;
+		map.currentState.saved = true;
 
 		if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
 			map.path = path;
@@ -151,6 +151,8 @@ public class MapDataFileReader extends Service<Boolean> {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+
+			map.saveUndoState();
 
 		});
 

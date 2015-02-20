@@ -24,10 +24,10 @@
 				<MenuItem text="E_xit" onAction="#exit"/>
 			</Menu>
 			<Menu text="_Edit">
-				<MenuItem text="_Undo">
+				<MenuItem text="_Undo" fx:id="undoButton" onAction="#undo" disable="true">
 					<accelerator><KeyCodeCombination alt="UP" code="Z" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
-				<MenuItem text="_Redo">
+				<MenuItem text="_Redo" fx:id="redoButton" onAction="#redo" disable="true">
 					<accelerator><KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
 				<MenuItem text="_Cut">

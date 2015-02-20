@@ -39,21 +39,39 @@ public class CataclysmMap {
 	};
 
 	protected static class State {
+
+		protected boolean saved = false;
+		protected String lastOperation = "";
 		protected String[][] terrain = new String[SIZE][SIZE];
 		protected String[][] furniture = new String[SIZE][SIZE];
 		protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
+
+		@SuppressWarnings("CloneDoesntCallSuperClone")
+		@Override
+		protected State clone() throws CloneNotSupportedException {
+			State state = new State();
+			state.lastOperation = lastOperation;
+			for (int x = 0; x < SIZE; x++) {
+				for (int y = 0; y < SIZE; y++) {
+					state.terrain[x][y] = terrain[x][y];
+					state.furniture[x][y] = furniture[x][y];
+				}
+			}
+			placeGroupZones.forEach(zone -> state.placeGroupZones.add(new PlaceGroupZone(zone)));
+			state.saved = saved;
+			return state;
+		}
+
 	}
 
 	public static enum Layer {
 		TERRAIN, FURNITURE
 	}
 
+	protected UndoBuffer undoBuffer = new UndoBuffer();
+
 	protected State currentState = new State();
 	protected Path path = null;
-	protected boolean saved = false;
-
-	private boolean locked = false;
-	private boolean editing = false;
 
 	private EventBus eventBus;
 
@@ -86,12 +104,54 @@ public class CataclysmMap {
 	@Subscribe
 	public void rotateMapEventListener(final RotateMapEvent event) {
 		rotateMapClockwise();
-		saved = false;
+		finishEdit("Rotate");
+	}
+
+	@Subscribe
+	public void requestUndoEventListener(final RequestUndoEvent event) {
+		undo();
+	}
+
+	@Subscribe
+	public void requestRedoEventListener(final RequestRedoEvent event) {
+		redo();
+	}
+
+	private void undo() {
+		if (!undoBuffer.hasPreviousEvent()) {
+			return;
+		}
+		eventBus.post(new UpdateRedoTextEvent(currentState.lastOperation));
+		try {
+			currentState = undoBuffer.undoLastEvent().clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		eventBus.post(new UpdateUndoTextEvent(currentState.lastOperation));
 		eventBus.post(new MapChangedEvent());
+		eventBus.post(new MapRedrawRequestEvent());
+	}
+
+	private void redo() {
+		if (!undoBuffer.hasNextEvent()) {
+			return;
+		}
+		try {
+			currentState = undoBuffer.getNextEvent().clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+		if (undoBuffer.hasNextEvent()) {
+			eventBus.post(new UpdateRedoTextEvent(undoBuffer.getNextEvent().lastOperation));
+		} else {
+			eventBus.post(new UpdateRedoTextEvent(""));
+		}
+		eventBus.post(new UpdateUndoTextEvent(currentState.lastOperation));
+		eventBus.post(new MapChangedEvent());
+		eventBus.post(new MapRedrawRequestEvent());
 	}
 
 	private void rotateMapClockwise() {
-		//TODO Allow undo/redo
 		transposeArray(currentState.terrain);
 		reverseColumns(currentState.terrain);
 		transposeArray(currentState.furniture);
@@ -120,13 +180,13 @@ public class CataclysmMap {
 		}
 	}
 
-	public void startEdit() {
-		editing = true;
+	public void finishEdit(final String operationName) {
+		currentState.saved = false;
+		currentState.lastOperation = operationName;
 		saveUndoState();
-	}
-
-	public void finishEdit() {
-		editing = false;
+		eventBus.post(new MapChangedEvent());
+		eventBus.post(new UpdateUndoTextEvent(operationName));
+		eventBus.post(new UpdateRedoTextEvent(""));
 	}
 
 	public void setTile(final int x, final int y, final Tile tile) {
@@ -152,30 +212,21 @@ public class CataclysmMap {
 			eventBus.post(new TileRedrawRequestEvent(x, y));
 		}
 
-		saved = false;
-		eventBus.post(new MapChangedEvent());
-
 	}
 
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(index, zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
-		saved = false;
-		eventBus.post(new MapChangedEvent());
 	}
 
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
-		saved = false;
-		eventBus.post(new MapChangedEvent());
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.remove(zone);
 		eventBus.post(new PlaceGroupRedrawRequestEvent());
-		saved = false;
-		eventBus.post(new MapChangedEvent());
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
@@ -211,9 +262,6 @@ public class CataclysmMap {
 			currentState.terrain[x][y] = tile.substring(0, tile.lastIndexOf("_"));
 			currentState.terrain[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
 		}
-
-		saved = false;
-		eventBus.post(new MapChangedEvent());
 
 	}
 
@@ -277,18 +325,16 @@ public class CataclysmMap {
 	}
 
 	public boolean isSaved() {
-		return saved;
+		return currentState.saved;
 	}
 
-	/**
-	 * Saves the current state in the undo buffer
-	 */
-	private void saveUndoState() {
-		//TODO Clone and add state to undo buffer
-	}
-
-	private void cloneArray(final String[][] source, final String[][] destination) {
-
+	protected void saveUndoState() {
+		try {
+			undoBuffer.addState(currentState);
+			currentState = currentState.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

@@ -167,7 +167,7 @@ public class MapDataFileWriter extends Service<Boolean> {
 			generator.close();
 
 			map.path = path;
-			map.saved = true;
+			map.currentState.saved = true;
 
 		} catch (Exception e) {
 			e.printStackTrace();
