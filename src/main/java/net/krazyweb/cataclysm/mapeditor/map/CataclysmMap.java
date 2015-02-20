@@ -8,6 +8,7 @@ import net.krazyweb.cataclysm.mapeditor.events.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,11 +41,19 @@ public class CataclysmMap {
 
 	protected static class State {
 
-		protected boolean saved = false;
 		protected String lastOperation = "";
 		protected String[][] terrain = new String[SIZE][SIZE];
 		protected String[][] furniture = new String[SIZE][SIZE];
 		protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
+
+		public State() {
+			for (int x = 0; x < SIZE; x++) {
+				for (int y = 0; y < SIZE; y++) {
+					terrain[x][y] = "t_grass";
+					furniture[x][y] = "f_null";
+				}
+			}
+		}
 
 		@SuppressWarnings("CloneDoesntCallSuperClone")
 		@Override
@@ -58,8 +67,43 @@ public class CataclysmMap {
 				}
 			}
 			placeGroupZones.forEach(zone -> state.placeGroupZones.add(new PlaceGroupZone(zone)));
-			state.saved = saved;
 			return state;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			State state = (State) o;
+
+			if (lastOperation != null ? !lastOperation.equals(state.lastOperation) : state.lastOperation != null) {
+				return false;
+			}
+			if (placeGroupZones != null ? !placeGroupZones.equals(state.placeGroupZones) : state.placeGroupZones != null) {
+				return false;
+			}
+
+			for (int x = 0; x < SIZE; x++) {
+				for (int y = 0; y < SIZE; y++) {
+					if (!state.terrain[x][y].equals(terrain[x][y]) || !state.furniture[x][y].equals(furniture[x][y])) {
+						return false;
+					}
+				}
+			}
+
+			return true;
+
+		}
+
+		@Override
+		public int hashCode() {
+			int result = lastOperation != null ? lastOperation.hashCode() : 0;
+			result = 31 * result + (placeGroupZones != null ? placeGroupZones.hashCode() : 0);
+			result = 31 * result + Arrays.deepHashCode(terrain);
+			result = 31 * result + Arrays.deepHashCode(furniture);
+			return result;
 		}
 
 	}
@@ -70,6 +114,7 @@ public class CataclysmMap {
 
 	protected UndoBuffer undoBuffer = new UndoBuffer();
 
+	protected State lastSavedState = null;
 	protected State currentState = new State();
 	protected Path path = null;
 
@@ -181,7 +226,6 @@ public class CataclysmMap {
 	}
 
 	public void finishEdit(final String operationName) {
-		currentState.saved = false;
 		currentState.lastOperation = operationName;
 		saveUndoState();
 		eventBus.post(new MapChangedEvent());
@@ -325,7 +369,7 @@ public class CataclysmMap {
 	}
 
 	public boolean isSaved() {
-		return currentState.saved;
+		return lastSavedState == null || currentState.equals(lastSavedState);
 	}
 
 	protected void saveUndoState() {

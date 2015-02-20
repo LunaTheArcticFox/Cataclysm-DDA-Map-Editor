@@ -108,4 +108,30 @@ public class PlaceGroupZone {
 		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		PlaceGroupZone that = (PlaceGroupZone) o;
+
+		if (h != that.h) return false;
+		if (w != that.w) return false;
+		if (x != that.x) return false;
+		if (y != that.y) return false;
+		if (group != null ? !group.equals(that.group) : that.group != null) return false;
+
+		return true;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = x;
+		result = 31 * result + y;
+		result = 31 * result + w;
+		result = 31 * result + h;
+		result = 31 * result + (group != null ? group.hashCode() : 0);
+		return result;
+	}
+
 }

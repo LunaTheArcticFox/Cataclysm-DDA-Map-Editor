@@ -119,8 +119,12 @@ public class EditorMain {
 
 	@Subscribe
 	public void mapLoadedEventListener(final MapLoadedEvent event) {
-		map = event.getMap();
-		refreshTitle();
+		try {
+			map = event.getMap();
+			refreshTitle();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Subscribe

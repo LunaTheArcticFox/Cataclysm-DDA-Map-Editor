@@ -49,7 +49,11 @@ public class MapDataFileReader extends Service<Boolean> {
 	private void load() throws IOException {
 
 		map = new CataclysmMap(eventBus);
-		map.currentState.saved = true;
+		try {
+			map.lastSavedState = map.currentState.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
 
 		if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
 			map.path = path;
