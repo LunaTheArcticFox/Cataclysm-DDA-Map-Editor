@@ -129,7 +129,7 @@ public class MapDisplay {
 		drawTile(event.getX() + 1, event.getY());
 		drawTile(event.getX() - 1, event.getY());
 		drawTile(event.getX(),     event.getY() + 1);
-		drawTile(event.getX(),     event.getY() - 1);
+		drawTile(event.getX(), event.getY() - 1);
 	}
 
 	@Subscribe
@@ -243,9 +243,15 @@ public class MapDisplay {
 	}
 
 	@Subscribe
-	public void toggleGridEventListener(final ShowGridEvent event) {
+	public void showGridEventListener(final ShowGridEvent event) {
 		grid.setManaged(event.showGrid());
 		grid.setVisible(event.showGrid());
+	}
+
+	@Subscribe
+	public void showGroupsEventListener(final ShowGroupsEvent event) {
+		groups.setManaged(event.showGroups());
+		groups.setVisible(event.showGroups());
 	}
 
 	@Subscribe

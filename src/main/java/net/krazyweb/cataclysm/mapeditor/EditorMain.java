@@ -36,7 +36,7 @@ public class EditorMain {
 	private MenuItem undoButton, redoButton;
 
 	@FXML
-	private CheckMenuItem showGridButton;
+	private CheckMenuItem showGridButton, showGroupsButton;
 
 	private EventBus eventBus = new EventBus();
 	private Stage primaryStage;
@@ -237,6 +237,11 @@ public class EditorMain {
 	@FXML
 	private void toggleGrid() {
 		eventBus.post(new ShowGridEvent(showGridButton.isSelected()));
+	}
+
+	@FXML
+	private void toggleGroups() {
+		eventBus.post(new ShowGroupsEvent(showGroupsButton.isSelected()));
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {
