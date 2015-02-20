@@ -29,6 +29,10 @@ public class UndoBuffer {
 		return eventLinkedList.get(++currentIndex);
 	}
 
+	public CataclysmMap.State peekAtNextEvent() {
+		return eventLinkedList.get(currentIndex + 1);
+	}
+
 	public CataclysmMap.State getCurrentEvent() {
 		return eventLinkedList.get(currentIndex);
 	}

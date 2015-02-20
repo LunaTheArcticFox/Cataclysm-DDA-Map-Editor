@@ -109,6 +109,7 @@ public class EditPlaceGroupTool extends Tool {
 		}
 
 		drag(event, tile, rootNode, map);
+		map.finishEdit("Move PlaceGroup");
 		//TODO Crop zone to map boundaries (only on drag end)
 	}
 

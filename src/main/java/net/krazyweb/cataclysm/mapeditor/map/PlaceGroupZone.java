@@ -33,6 +33,8 @@ public class PlaceGroupZone {
 	public PlaceGroupZone(final PlaceGroupZone zone) {
 		this.x = zone.x;
 		this.y = zone.y;
+		this.w = zone.w;
+		this.h = zone.h;
 		this.fillColor = zone.fillColor;
 		this.strokeColor = zone.strokeColor;
 		this.group = new PlaceGroup(zone.group);

@@ -142,7 +142,7 @@ public class CataclysmMap {
 			e.printStackTrace();
 		}
 		if (undoBuffer.hasNextEvent()) {
-			eventBus.post(new UpdateRedoTextEvent(undoBuffer.getNextEvent().lastOperation));
+			eventBus.post(new UpdateRedoTextEvent(undoBuffer.peekAtNextEvent().lastOperation));
 		} else {
 			eventBus.post(new UpdateRedoTextEvent(""));
 		}
