@@ -48,6 +48,7 @@ public class TilePicker {
 
 		try {
 			loadTiles(Paths.get("Sample Data").resolve("terrain.json"));
+			loadTiles(Paths.get("Sample Data").resolve("ags_terrain.json"));
 			loadTiles(Paths.get("Sample Data").resolve("furniture.json"));
 		} catch (IOException e) {
 			e.printStackTrace();

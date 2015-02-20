@@ -63,16 +63,6 @@ public class TileSet {
 
 			createTileImage(tile.getID(), foreground, background);
 
-			/*if (tileDef.has("fg")) {
-				int tileNumber = tileDef.get("fg").asInt();
-				loadImageFromNumber(tileNumber);
-				tile.setForeground(tileNumber);
-			}
-			if (tileDef.has("bg")) {
-				int tileNumber = tileDef.get("bg").asInt();
-				loadImageFromNumber(tileNumber);
-				tile.setBackground(tileNumber);
-			}*/
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
 				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
 
