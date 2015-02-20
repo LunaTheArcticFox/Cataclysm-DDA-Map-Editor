@@ -119,12 +119,10 @@ public class EditorMain {
 
 	@Subscribe
 	public void mapLoadedEventListener(final MapLoadedEvent event) {
-		try {
-			map = event.getMap();
-			refreshTitle();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		map = event.getMap();
+		refreshTitle();
+		undoButton.setText("_Undo");
+		redoButton.setText("_Redo");
 	}
 
 	@Subscribe

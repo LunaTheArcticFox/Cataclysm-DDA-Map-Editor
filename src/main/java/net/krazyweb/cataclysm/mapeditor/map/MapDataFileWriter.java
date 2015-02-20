@@ -338,12 +338,17 @@ public class MapDataFileWriter extends Service<Boolean> {
 				MapTile tile = new MapTile(map.currentState.terrain[x][y], map.currentState.furniture[x][y]);
 				if (!mappings.containsKey(tile)) {
 					if (commonMappings.containsKey(tile)) {
+						boolean found = false;
 						for (Character symbol : commonMappings.get(tile)) {
 							if (!usedSymbols.contains(symbol)) {
 								usedSymbols.add(symbol);
 								mappings.put(tile, symbol);
+								found = true;
 								break;
 							}
+						}
+						if (!found) {
+							resolveLater.add(tile);
 						}
 					} else {
 						resolveLater.add(tile);
