@@ -329,9 +329,17 @@ public class MapRenderer {
 			return;
 		}
 
+		//TODO Use tileset fallback if configured
 		//Fallback for tiles not supported by tileset
 		if (Tile.tiles.get(map.getTerrainAt(x, y)) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
+			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
+			return;
+		}
+
+		//TODO Use tileset fallback if configured
+		if (Tile.tiles.get(map.getFurnitureAt(x, y)) == null) {
+			graphicsContext.setFill(new Color(0.8, 0.2, 0.6, 0.5));
 			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
 			return;
 		}
