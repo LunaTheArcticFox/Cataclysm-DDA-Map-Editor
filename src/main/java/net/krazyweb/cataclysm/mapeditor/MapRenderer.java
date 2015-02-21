@@ -118,21 +118,19 @@ public class MapRenderer {
 		currentTile = event.getTile();
 	}
 
-	/*@Subscribe
-	public void mapRedrawRequestEventListener(final MapRedrawRequestEvent event) {
+	public void redraw() {
 		drawMap();
 	}
 
-	@Subscribe
-	public void tileRedrawRequestEventListener(final TileRedrawRequestEvent event) {
-		drawTile(event.getX(),     event.getY());
-		drawTile(event.getX() + 1, event.getY());
-		drawTile(event.getX() - 1, event.getY());
-		drawTile(event.getX(),     event.getY() + 1);
-		drawTile(event.getX(), event.getY() - 1);
+	public void redraw(final int x, final int y) {
+		drawTile(x,     y);
+		drawTile(x + 1, y);
+		drawTile(x - 1, y);
+		drawTile(x,     y + 1);
+		drawTile(x,     y - 1);
 	}
 
-	@Subscribe
+	/*@Subscribe
 	public void placeGroupRedrawRequestEventListener(final PlaceGroupRedrawRequestEvent event) {
 		drawPlaceGroups();
 	}*/

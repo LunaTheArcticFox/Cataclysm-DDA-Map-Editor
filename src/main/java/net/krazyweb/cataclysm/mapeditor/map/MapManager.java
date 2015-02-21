@@ -44,6 +44,7 @@ public class MapManager {
 			e.printStackTrace(); //TODO Proper logging
 		}
 
+		//TODO Unregister old maps
 		root.getTabs().clear();
 
 		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
@@ -51,20 +52,6 @@ public class MapManager {
 
 		dataFileReader.start();
 
-		/* EACH MAP
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mapCanvas.fxml"));
-		try {
-			loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		eventBus.register(loader.<MapDisplay>getController());
-		loader.<MapDisplay>getController().setEventBus(eventBus);
-
-
-
-		mapPanel.setContent(centeredContentPane);
-		 */
 	}
 
 	private void loadMap(final CataclysmMap map) {
@@ -73,11 +60,12 @@ public class MapManager {
 		try {
 			loader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			e.printStackTrace(); //TODO Proper logging
 		}
 		eventBus.register(loader.<MapRenderer>getController());
 		loader.<MapRenderer>getController().setEventBus(eventBus);
 		loader.<MapRenderer>getController().setMap(map);
+		map.setRenderer(loader.<MapRenderer>getController());
 
 		GridPane centeredContentPane = new GridPane();
 		centeredContentPane.add(loader.<ScrollPane>getRoot(), 0, 0);

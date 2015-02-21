@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
+import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.RedoPerformedEvent;
@@ -45,10 +46,15 @@ public class CataclysmMap {
 	protected MapState currentState = new MapState();
 
 	private EventBus eventBus;
+	private MapRenderer renderer;
 
-	public CataclysmMap(final EventBus eventBus/*, final MapRenderer renderer*/) {
+	protected CataclysmMap(final EventBus eventBus/*, final MapRenderer renderer*/) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
+	}
+
+	protected void setRenderer(final MapRenderer renderer) {
+		this.renderer = renderer;
 	}
 
 	/*@Subscribe
@@ -108,6 +114,7 @@ public class CataclysmMap {
 		transposeArray(currentState.furniture);
 		reverseColumns(currentState.furniture);
 		currentState.placeGroupZones.forEach(net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone::rotate);
+		renderer.redraw();
 		//eventBus.post(new MapRedrawRequestEvent());
 	}
 
@@ -158,7 +165,7 @@ public class CataclysmMap {
 		updateTilesSurrounding(x, y);
 
 		if (!getTerrainAt(x, y).equals(terrainBefore) || !getFurnitureAt(x, y).equals(furnitureBefore)) {
-			//eventBus.post(new TileRedrawRequestEvent(x, y));
+			renderer.redraw(x, y);
 		}
 
 	}
