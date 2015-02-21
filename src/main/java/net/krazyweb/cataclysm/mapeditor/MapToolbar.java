@@ -3,19 +3,23 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import net.krazyweb.cataclysm.mapeditor.events.RotateMapEvent;
 import net.krazyweb.cataclysm.mapeditor.events.ToolSelectedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.*;
 
 public class MapToolbar {
 
 	private EventBus eventBus;
+	private MapManager mapManager;
 
 	@FXML
 	private Button createPlaceGroupButton, movePlaceGroupButton;
 
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+	public void setMapManager(final MapManager mapManager) {
+		this.mapManager = mapManager;
 	}
 
 	@FXML
@@ -65,7 +69,7 @@ public class MapToolbar {
 
 	@FXML
 	private void rotateMap() {
-		eventBus.post(new RotateMapEvent());
+		mapManager.rotateMap();
 	}
 
 	@FXML

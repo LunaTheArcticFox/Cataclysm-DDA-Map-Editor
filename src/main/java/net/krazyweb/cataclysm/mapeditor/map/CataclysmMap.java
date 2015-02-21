@@ -1,14 +1,12 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.events.*;
+import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.RedoPerformedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.UndoPerformedEvent;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,110 +37,27 @@ public class CataclysmMap {
 			Orientation.EITHER
 	};
 
-	protected static class State {
-
-		protected String lastOperation = "";
-		protected String[][] terrain = new String[SIZE][SIZE];
-		protected String[][] furniture = new String[SIZE][SIZE];
-		protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
-
-		@SuppressWarnings("CloneDoesntCallSuperClone")
-		@Override
-		protected State clone() throws CloneNotSupportedException {
-			State state = new State();
-			state.lastOperation = lastOperation;
-			for (int x = 0; x < SIZE; x++) {
-				for (int y = 0; y < SIZE; y++) {
-					state.terrain[x][y] = terrain[x][y];
-					state.furniture[x][y] = furniture[x][y];
-				}
-			}
-			placeGroupZones.forEach(zone -> state.placeGroupZones.add(new PlaceGroupZone(zone)));
-			return state;
-		}
-
-		@Override
-		public boolean equals(Object o) {
-
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			State state = (State) o;
-
-			if (lastOperation != null ? !lastOperation.equals(state.lastOperation) : state.lastOperation != null) {
-				return false;
-			}
-			if (placeGroupZones != null ? !placeGroupZones.equals(state.placeGroupZones) : state.placeGroupZones != null) {
-				return false;
-			}
-
-			for (int x = 0; x < SIZE; x++) {
-				for (int y = 0; y < SIZE; y++) {
-					if (!state.terrain[x][y].equals(terrain[x][y]) || !state.furniture[x][y].equals(furniture[x][y])) {
-						return false;
-					}
-				}
-			}
-
-			return true;
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = lastOperation != null ? lastOperation.hashCode() : 0;
-			result = 31 * result + (placeGroupZones != null ? placeGroupZones.hashCode() : 0);
-			result = 31 * result + Arrays.deepHashCode(terrain);
-			result = 31 * result + Arrays.deepHashCode(furniture);
-			return result;
-		}
-
-	}
-
 	public static enum Layer {
 		TERRAIN, FURNITURE
 	}
 
-	protected UndoBuffer undoBuffer = new UndoBuffer();
-
-	protected State lastSavedState = null;
-	protected State currentState = new State();
-	protected Path path = null;
+	protected MapState lastSavedState = null;
+	protected MapState currentState = new MapState();
 
 	private EventBus eventBus;
 
-	public CataclysmMap(final EventBus eventBus) {
+	public CataclysmMap(final EventBus eventBus/*, final MapRenderer renderer*/) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
 	}
 
-	@Subscribe
-	public void requestSaveMapEventListener(final RequestSaveMapEvent event) {
-
-		//TODO Thread this; copy state so editing may continue on long saves
-		MapDataFileWriter writer = new MapDataFileWriter(event.getPath(), this, eventBus);
-		writer.setOnSucceeded(e -> eventBus.post(new MapSavedEvent(this)));
-
-		//TODO Lock editing while saving (or copy state to save so editing can continue)
-		writer.start();
-
-	}
-
-	@Subscribe
-	public void revertMapEventListener(final RequestRevertMapEvent event) {
-		if (path == null) {
-			eventBus.post(new RequestLoadMapEvent(Paths.get("templates").resolve("default.json")));
-		} else {
-			eventBus.post(new RequestLoadMapEvent(path));
-		}
-	}
-
-	@Subscribe
+	/*@Subscribe
 	public void rotateMapEventListener(final RotateMapEvent event) {
 		rotateMapClockwise();
 		finishEdit("Rotate");
-	}
+	}*/
 
+	/*TODO REMOVE
 	@Subscribe
 	public void requestUndoEventListener(final RequestUndoEvent event) {
 		undo();
@@ -185,7 +100,7 @@ public class CataclysmMap {
 		eventBus.post(new UpdateUndoTextEvent(currentState.lastOperation));
 		eventBus.post(new MapChangedEvent());
 		eventBus.post(new MapRedrawRequestEvent());
-	}
+	}*/
 
 	private void rotateMapClockwise() {
 		transposeArray(currentState.terrain);
@@ -193,7 +108,7 @@ public class CataclysmMap {
 		transposeArray(currentState.furniture);
 		reverseColumns(currentState.furniture);
 		currentState.placeGroupZones.forEach(net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone::rotate);
-		eventBus.post(new MapRedrawRequestEvent());
+		//eventBus.post(new MapRedrawRequestEvent());
 	}
 
 	private void transposeArray(final String[][] array) {
@@ -217,11 +132,10 @@ public class CataclysmMap {
 	}
 
 	public void finishEdit(final String operationName) {
-		currentState.lastOperation = operationName;
 		saveUndoState();
 		eventBus.post(new MapChangedEvent());
-		eventBus.post(new UpdateUndoTextEvent(operationName));
-		eventBus.post(new UpdateRedoTextEvent(""));
+		eventBus.post(new UndoPerformedEvent(operationName));
+		eventBus.post(new RedoPerformedEvent(""));
 	}
 
 	public void setTile(final int x, final int y, final Tile tile) {
@@ -244,24 +158,24 @@ public class CataclysmMap {
 		updateTilesSurrounding(x, y);
 
 		if (!getTerrainAt(x, y).equals(terrainBefore) || !getFurnitureAt(x, y).equals(furnitureBefore)) {
-			eventBus.post(new TileRedrawRequestEvent(x, y));
+			//eventBus.post(new TileRedrawRequestEvent(x, y));
 		}
 
 	}
 
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(index, zone);
-		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		//eventBus.post(new PlaceGroupRedrawRequestEvent());
 	}
 
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(zone);
-		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		//eventBus.post(new PlaceGroupRedrawRequestEvent());
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.remove(zone);
-		eventBus.post(new PlaceGroupRedrawRequestEvent());
+		//eventBus.post(new PlaceGroupRedrawRequestEvent());
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
@@ -355,21 +269,12 @@ public class CataclysmMap {
 		return getTileAt(x, y, Layer.FURNITURE);
 	}
 
-	public Path getPath() {
-		return path;
-	}
-
-	public boolean isSaved() {
+	protected boolean isSaved() {
 		return lastSavedState == null || currentState.equals(lastSavedState);
 	}
 
 	protected void saveUndoState() {
-		try {
-			undoBuffer.addState(currentState);
-			currentState = currentState.clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
+		System.err.println("IMPLEMENT UNDO STATES");
 	}
 
 }

@@ -4,14 +4,14 @@ import java.util.LinkedList;
 
 public class UndoBuffer {
 
-	private LinkedList<CataclysmMap.State> eventLinkedList = new LinkedList<>();
+	private LinkedList<UndoState> eventLinkedList = new LinkedList<>();
 	private int currentIndex = -1; //Since the first event added will increment this to the index 0, it needs to be -1.
 
 	/**
 	 * WARNING: Removes the end of the queue -- the current index is the new last index
 	 * @param state The state to add to the queue
 	 */
-	public void addState(final CataclysmMap.State state) {
+	public void addState(final UndoState state) {
 		removeEnd();
 		currentIndex++;
 		eventLinkedList.add(state);
@@ -25,23 +25,23 @@ public class UndoBuffer {
 		return currentIndex > 0;
 	}
 
-	public CataclysmMap.State getNextEvent() {
+	public UndoState getNextEvent() {
 		return eventLinkedList.get(++currentIndex);
 	}
 
-	public CataclysmMap.State peekAtNextEvent() {
+	public UndoState peekAtNextEvent() {
 		return eventLinkedList.get(currentIndex + 1);
 	}
 
-	public CataclysmMap.State getCurrentEvent() {
+	public UndoState getCurrentEvent() {
 		return eventLinkedList.get(currentIndex);
 	}
 
-	public CataclysmMap.State undoLastEvent() {
+	public UndoState undoLastEvent() {
 		return eventLinkedList.get(--currentIndex);
 	}
 
-	public CataclysmMap.State removeLastEvent() {
+	public UndoState removeLastEvent() {
 		currentIndex--;
 		return eventLinkedList.removeLast();
 	}
