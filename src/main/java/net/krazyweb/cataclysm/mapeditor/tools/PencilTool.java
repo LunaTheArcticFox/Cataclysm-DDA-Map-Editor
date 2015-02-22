@@ -36,7 +36,7 @@ public class PencilTool extends Tool {
 
 	@Override
 	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
-		click(event, tile, rootNode, map);
+		map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), tile);
 	}
 
 }

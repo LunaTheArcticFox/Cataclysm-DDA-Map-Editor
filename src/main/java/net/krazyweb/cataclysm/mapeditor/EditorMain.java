@@ -17,12 +17,16 @@ import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
 import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Paths;
 
 public class EditorMain {
+
+	private static Logger log = LogManager.getLogger(EditorMain.class);
 
 	@FXML
 	private BorderPane root;
@@ -51,7 +55,7 @@ public class EditorMain {
 		try {
 			tilePickerLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
 		}
 		eventBus.register(tilePickerLoader.getController());
 		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
@@ -65,7 +69,7 @@ public class EditorMain {
 		try {
 			mapManagerLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
 		}
 		eventBus.register(mapManagerLoader.<MapManager>getController());
 		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
@@ -77,7 +81,7 @@ public class EditorMain {
 		try {
 			mapToolbarLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
 		}
 		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
 		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
@@ -89,7 +93,7 @@ public class EditorMain {
 		try {
 			statusBarLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
 		}
 		eventBus.register(statusBarLoader.<MapRenderer>getController());
 		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
@@ -118,15 +122,11 @@ public class EditorMain {
 	}
 
 	@Subscribe
-	public void updateUndoTextEventListener(final UndoPerformedEvent event) {
-		undoButton.setText("_Undo " + event.getText());
-		undoButton.setDisable(event.getText().isEmpty());
-	}
-
-	@Subscribe
-	public void updateRedoTextEventListener(final RedoPerformedEvent event) {
-		redoButton.setText("_Redo " + event.getText());
-		redoButton.setDisable(event.getText().isEmpty());
+	public void undoRedoPerformedEventListener(final UndoBufferChangedEvent event) {
+		undoButton.setText("_Undo " + event.getUndoText());
+		undoButton.setDisable(event.getUndoText().isEmpty());
+		redoButton.setText("_Redo " + event.getRedoText());
+		redoButton.setDisable(event.getRedoText().isEmpty());
 	}
 
 	private void refreshTitle() {

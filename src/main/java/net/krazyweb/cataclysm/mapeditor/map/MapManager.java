@@ -10,6 +10,11 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
+import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBuffer;
+import net.krazyweb.cataclysm.mapeditor.map.undo.UndoEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,11 +23,14 @@ import java.nio.file.Paths;
 
 public class MapManager {
 
+	private static Logger log = LogManager.getLogger(MapManager.class);
+
 	@FXML
 	private TabPane root;
 
 	private Path path;
 	private EventBus eventBus;
+	private UndoBuffer undoBuffer = new UndoBuffer();
 
 	@FXML
 	public void initialize() {
@@ -41,7 +49,7 @@ public class MapManager {
 				this.path = path;
 			}
 		} catch (IOException e) {
-			e.printStackTrace(); //TODO Proper logging
+			log.error("An error occurred while attempting to determine if '" + path.toAbsolutePath() + "' is the same file as the default template.", e);
 		}
 
 		//TODO Unregister old maps
@@ -56,11 +64,13 @@ public class MapManager {
 
 	private void loadMap(final CataclysmMap map) {
 
+		map.setManager(this);
+
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mapCanvas.fxml"));
 		try {
 			loader.load();
 		} catch (IOException e) {
-			e.printStackTrace(); //TODO Proper logging
+			log.error("Error while attempting to load '/fxml/mapCanvas.fxml':", e);
 		}
 		eventBus.register(loader.<MapRenderer>getController());
 		loader.<MapRenderer>getController().setEventBus(eventBus);
@@ -111,9 +121,23 @@ public class MapManager {
 
 	public void undo() {
 
+		if (!undoBuffer.hasPreviousEvent()) {
+			return;
+		}
+
+		undoBuffer.undoLastEvent();
+		updateUndoRedoText();
+
 	}
 
 	public void redo() {
+
+		if (!undoBuffer.hasNextEvent()) {
+			return;
+		}
+
+		undoBuffer.redoNextEvent();
+		updateUndoRedoText();
 
 	}
 
@@ -121,7 +145,25 @@ public class MapManager {
 
 	}
 
-	protected void addUndoState(final MapState mapState, final CataclysmMap map) {
+	protected void addUndoEvent(final UndoEvent event) {
+		undoBuffer.addEvent(event);
+		updateUndoRedoText();
+	}
+
+	private void updateUndoRedoText() {
+
+		String undoText = "";
+		String redoText = "";
+
+		if (undoBuffer.hasPreviousEvent()) {
+			undoText = undoBuffer.getCurrentEvent().getName();
+		}
+
+		if (undoBuffer.hasNextEvent()) {
+			redoText = undoBuffer.peekAtNextEvent().getName();
+		}
+
+		eventBus.post(new UndoBufferChangedEvent(undoText, redoText));
 
 	}
 

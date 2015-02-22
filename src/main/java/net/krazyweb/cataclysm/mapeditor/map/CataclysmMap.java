@@ -3,12 +3,14 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.google.common.eventbus.EventBus;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.RedoPerformedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.UndoPerformedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.undo.TileChangeAction;
+import net.krazyweb.cataclysm.mapeditor.map.undo.UndoEvent;
+import net.krazyweb.cataclysm.mapeditor.tools.Point;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CataclysmMap {
@@ -45,77 +47,31 @@ public class CataclysmMap {
 	protected MapState lastSavedState = null;
 	protected MapState currentState = new MapState();
 
+	private Set<Point> changedTiles = new HashSet<>();
+
 	private EventBus eventBus;
+	private MapManager manager;
 	private MapRenderer renderer;
 
-	protected CataclysmMap(final EventBus eventBus/*, final MapRenderer renderer*/) {
+	protected CataclysmMap(final EventBus eventBus) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
 	}
 
+	protected void setManager(final MapManager manager) {
+		this.manager = manager;
+	}
 	protected void setRenderer(final MapRenderer renderer) {
 		this.renderer = renderer;
 	}
-
-	/*@Subscribe
-	public void rotateMapEventListener(final RotateMapEvent event) {
-		rotateMapClockwise();
-		finishEdit("Rotate");
-	}*/
-
-	/*TODO REMOVE
-	@Subscribe
-	public void requestUndoEventListener(final RequestUndoEvent event) {
-		undo();
-	}
-
-	@Subscribe
-	public void requestRedoEventListener(final RequestRedoEvent event) {
-		redo();
-	}
-
-	private void undo() {
-		if (!undoBuffer.hasPreviousEvent()) {
-			return;
-		}
-		eventBus.post(new UpdateRedoTextEvent(currentState.lastOperation));
-		try {
-			currentState = undoBuffer.undoLastEvent().clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		eventBus.post(new UpdateUndoTextEvent(currentState.lastOperation));
-		eventBus.post(new MapChangedEvent());
-		eventBus.post(new MapRedrawRequestEvent());
-	}
-
-	private void redo() {
-		if (!undoBuffer.hasNextEvent()) {
-			return;
-		}
-		try {
-			currentState = undoBuffer.getNextEvent().clone();
-		} catch (CloneNotSupportedException e) {
-			e.printStackTrace();
-		}
-		if (undoBuffer.hasNextEvent()) {
-			eventBus.post(new UpdateRedoTextEvent(undoBuffer.peekAtNextEvent().lastOperation));
-		} else {
-			eventBus.post(new UpdateRedoTextEvent(""));
-		}
-		eventBus.post(new UpdateUndoTextEvent(currentState.lastOperation));
-		eventBus.post(new MapChangedEvent());
-		eventBus.post(new MapRedrawRequestEvent());
-	}*/
 
 	private void rotateMapClockwise() {
 		transposeArray(currentState.terrain);
 		reverseColumns(currentState.terrain);
 		transposeArray(currentState.furniture);
 		reverseColumns(currentState.furniture);
-		currentState.placeGroupZones.forEach(net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone::rotate);
+		currentState.placeGroupZones.forEach(PlaceGroupZone::rotate);
 		renderer.redraw();
-		//eventBus.post(new MapRedrawRequestEvent());
 	}
 
 	private void transposeArray(final String[][] array) {
@@ -138,11 +94,13 @@ public class CataclysmMap {
 		}
 	}
 
+	private UndoEvent undoEvent = new UndoEvent();
+
 	public void finishEdit(final String operationName) {
-		saveUndoState();
-		eventBus.post(new MapChangedEvent());
-		eventBus.post(new UndoPerformedEvent(operationName));
-		eventBus.post(new RedoPerformedEvent(""));
+		undoEvent.setName(operationName);
+		manager.addUndoEvent(undoEvent);
+		undoEvent = new UndoEvent();
+		changedTiles.clear();
 	}
 
 	public void setTile(final int x, final int y, final Tile tile) {
@@ -156,8 +114,16 @@ public class CataclysmMap {
 
 		//TODO get terrain type instead of just checking if furniture for things like items (?)
 		if (tile.isFurniture()) {
+			if (!changedTiles.contains(new Point(x, y))) {
+				undoEvent.addAction(new TileChangeAction(this, Layer.FURNITURE, new Point(x, y), furnitureBefore, tile.getID()));
+				changedTiles.add(new Point(x, y));
+			}
 			currentState.furniture[x][y] = tile.getID();
 		} else {
+			if (!changedTiles.contains(new Point(x, y))) {
+				undoEvent.addAction(new TileChangeAction(this, Layer.TERRAIN, new Point(x, y), terrainBefore, tile.getID()));
+				changedTiles.add(new Point(x, y));
+			}
 			currentState.terrain[x][y] = tile.getID();
 		}
 
@@ -170,19 +136,36 @@ public class CataclysmMap {
 
 	}
 
+	public void setTile(final Point location, final Layer layer, final String tile) {
+
+		String terrainBefore = getTerrainAt(location.x, location.y);
+		String furnitureBefore = getFurnitureAt(location.x, location.y);
+
+		if (layer == Layer.TERRAIN) {
+			currentState.terrain[location.x][location.y] = tile;
+		} else {
+			currentState.furniture[location.x][location.y] = tile;
+		}
+
+		if (!getTerrainAt(location.x, location.y).equals(terrainBefore) || !getFurnitureAt(location.x, location.y).equals(furnitureBefore)) {
+			renderer.redraw(location.x, location.y);
+		}
+
+	}
+
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(index, zone);
-		//eventBus.post(new PlaceGroupRedrawRequestEvent());
+		renderer.redrawPlaceGroups();
 	}
 
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.add(zone);
-		//eventBus.post(new PlaceGroupRedrawRequestEvent());
+		renderer.redrawPlaceGroups();
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
 		currentState.placeGroupZones.remove(zone);
-		//eventBus.post(new PlaceGroupRedrawRequestEvent());
+		renderer.redrawPlaceGroups();
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
@@ -280,8 +263,9 @@ public class CataclysmMap {
 		return lastSavedState == null || currentState.equals(lastSavedState);
 	}
 
-	protected void saveUndoState() {
-		System.err.println("IMPLEMENT UNDO STATES");
+	@Override
+	public String toString() {
+		return "Map"; //TODO Use map name
 	}
 
 }

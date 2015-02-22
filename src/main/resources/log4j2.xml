@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration status="DEBUG">
 
-	<Properties>
-		<Property name="conlevel">$${sys:consolelevel}</Property>
-		<Property name="fillevel">$${sys:filelevel}</Property>
-	</Properties>
-
 	<appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout
@@ -20,8 +15,8 @@
 
 	<loggers>
 		<root level="TRACE">
-			<appender-ref ref="Console" level="${conlevel}" />
-			<appender-ref ref="File" level="${fillevel}" />
+			<appender-ref ref="Console" level="TRACE" />
+			<appender-ref ref="File" level="TRACE" />
 		</root>
 	</loggers>
 </configuration>

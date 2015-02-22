@@ -6,6 +6,8 @@ import com.google.common.eventbus.EventBus;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,6 +20,8 @@ import java.util.TreeMap;
 
 //TODO Make this a service
 public class TileSet {
+
+	private static Logger log = LogManager.getLogger(TileSet.class);
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -33,12 +37,12 @@ public class TileSet {
 		try {
 			texture = ImageIO.read(new File("Sample Data/tileset/tiles.png"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to read tileset image 'Sample Data/tileset/tiles.png':", e); //TODO Use Cataclysm distribution's tiles
 		}
 		try {
 			load(path);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to read tileset definitions:", e);
 		}
 	}
 

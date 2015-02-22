@@ -14,7 +14,7 @@ public class MapState {
 
 	}
 
-	protected MapState(final MapState mapState) {
+	public MapState(final MapState mapState) {
 		for (int x = 0; x < CataclysmMap.SIZE; x++) {
 			for (int y = 0; y < CataclysmMap.SIZE; y++) {
 				terrain[x][y] = mapState.terrain[x][y];

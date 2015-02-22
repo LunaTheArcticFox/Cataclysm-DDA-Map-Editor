@@ -12,12 +12,16 @@ import javafx.scene.layout.TilePane;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class TilePicker {
+
+	private static Logger log = LogManager.getLogger(TilePicker.class);
 
 	@FXML
 	private TilePane tileContainer;
@@ -51,7 +55,7 @@ public class TilePicker {
 			loadTiles(Paths.get("Sample Data").resolve("ags_terrain.json"));
 			loadTiles(Paths.get("Sample Data").resolve("furniture.json"));
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while loading terrain and furniture definitions:", e);
 		}
 
 	}
@@ -63,27 +67,23 @@ public class TilePicker {
 		JsonNode root = mapper.readTree(path.toFile());
 
 		root.forEach(node -> {
-			try {
 
-				Tile tile = Tile.tiles.get(node.get("id").asText());
+			Tile tile = Tile.tiles.get(node.get("id").asText());
 
-				if (tile == null) {
-					return;
-				}
-
-				ImageView view = new ImageView(TileSet.textures.get(tile.getTile().getID()));
-				view.setPickOnBounds(true);
-				view.setOnMousePressed(mouseEvent -> {
-					eventBus.post(new TilePickedEvent(tile));
-				});
-				view.setOnMouseMoved(mouseEvent -> {
-					eventBus.post(new TileHoverEvent(node.get("id").asText() + " (" + node.get("name").asText() + ")", 0, 0));
-				});
-				tileContainer.getChildren().add(view);
-
-			} catch (Exception e) {
-				e.printStackTrace();
+			if (tile == null) {
+				return;
 			}
+
+			ImageView view = new ImageView(TileSet.textures.get(tile.getTile().getID()));
+			view.setPickOnBounds(true);
+			view.setOnMousePressed(mouseEvent -> {
+				eventBus.post(new TilePickedEvent(tile));
+			});
+			view.setOnMouseMoved(mouseEvent -> {
+				eventBus.post(new TileHoverEvent(node.get("id").asText() + " (" + node.get("name").asText() + ")", 0, 0));
+			});
+			tileContainer.getChildren().add(view);
+
 		});
 
 	}

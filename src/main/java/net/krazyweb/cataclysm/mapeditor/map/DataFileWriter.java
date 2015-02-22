@@ -9,6 +9,8 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.io.Resources;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DataFileWriter extends Service<Boolean> {
+
+	private static Logger log = LogManager.getLogger(DataFileWriter.class);
 
 	private static final char[] SYMBOLS = new char[] {
 			'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u',
@@ -96,7 +100,10 @@ public class DataFileWriter extends Service<Boolean> {
 					try {
 						generator.writeStringField(entry.getValue() + "", entry.getKey().terrain);
 					} catch (IOException e) {
-						e.printStackTrace();
+						log.error("Error while writing symbol (terrain) '"+ entry.getValue() + "'" +
+								"'"+ entry.getKey().terrain + "', " +
+								"'"+ entry.getKey().furniture + "'" +
+								" to map file '" + path.toAbsolutePath() + "':", e);
 					}
 				}
 			});
@@ -108,7 +115,10 @@ public class DataFileWriter extends Service<Boolean> {
 					try {
 						generator.writeStringField(entry.getValue() + "", entry.getKey().furniture);
 					} catch (IOException e) {
-						e.printStackTrace();
+						log.error("Error while writing symbol (furniture) '"+ entry.getValue() + "'" +
+								"'"+ entry.getKey().terrain + "', " +
+								"'"+ entry.getKey().furniture + "'" +
+								" to map file '" + path.toAbsolutePath() + "':", e);
 					}
 				}
 			});
@@ -169,7 +179,7 @@ public class DataFileWriter extends Service<Boolean> {
 			map.lastSavedState = new MapState(map.currentState);
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error while writing to map file '" + path.toAbsolutePath() + "':", e);
 		}
 
 	}
@@ -321,7 +331,7 @@ public class DataFileWriter extends Service<Boolean> {
 			reader.close();
 
 		} catch (IOException | URISyntaxException e) {
-			e.printStackTrace();
+			log.error("Error while reading tileSymbolMap.txt:", e);
 		}
 
 		List<Character> usedSymbols = new ArrayList<>();

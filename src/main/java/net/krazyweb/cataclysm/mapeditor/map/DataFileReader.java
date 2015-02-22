@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Map;
 
 public class DataFileReader extends Service<Boolean> {
+
+	private Logger log = LogManager.getLogger(DataFileReader.class);
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -63,13 +67,9 @@ public class DataFileReader extends Service<Boolean> {
 				Map<Character, String> terrainMap = new HashMap<>();
 				Map<Character, String> furnitureMap = new HashMap<>();
 
-				object.get("terrain").fields().forEachRemaining(tile -> {
-					terrainMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-				});
+				object.get("terrain").fields().forEachRemaining(tile -> terrainMap.put(tile.getKey().charAt(0), tile.getValue().asText()));
 
-				object.get("furniture").fields().forEachRemaining(tile -> {
-					furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText());
-				});
+				object.get("furniture").fields().forEachRemaining(tile -> furnitureMap.put(tile.getKey().charAt(0), tile.getValue().asText()));
 
 				Value<String> fillTer = new Value<>();
 
@@ -144,12 +144,11 @@ public class DataFileReader extends Service<Boolean> {
 				}
 
 				map.lastSavedState = new MapState(map.currentState);
-				//TODO REMOVE map.saveUndoState();
 
 				maps.add(map);
 
 			} catch (Exception e) {
-				e.printStackTrace();
+				log.error("Error while reading map file '" + path.toAbsolutePath() + "':", e);
 			}
 
 		});

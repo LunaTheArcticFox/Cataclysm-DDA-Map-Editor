@@ -120,6 +120,7 @@ public class MapRenderer {
 
 	public void redraw() {
 		drawMap();
+		drawPlaceGroups();
 	}
 
 	public void redraw(final int x, final int y) {
@@ -130,10 +131,9 @@ public class MapRenderer {
 		drawTile(x,     y - 1);
 	}
 
-	/*@Subscribe
-	public void placeGroupRedrawRequestEventListener(final PlaceGroupRedrawRequestEvent event) {
+	public void redrawPlaceGroups() {
 		drawPlaceGroups();
-	}*/
+	}
 
 	@Subscribe
 	public void toolSelectedEventListener(final ToolSelectedEvent event) {
