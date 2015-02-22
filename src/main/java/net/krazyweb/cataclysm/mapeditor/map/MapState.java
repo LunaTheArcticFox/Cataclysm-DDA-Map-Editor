@@ -9,6 +9,7 @@ public class MapState {
 	protected String[][] terrain = new String[CataclysmMap.SIZE][CataclysmMap.SIZE];
 	protected String[][] furniture = new String[CataclysmMap.SIZE][CataclysmMap.SIZE];
 	protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
+	protected MapSettings settings = new MapSettings();
 
 	protected MapState() {
 
@@ -22,6 +23,7 @@ public class MapState {
 			}
 		}
 		mapState.placeGroupZones.forEach(zone -> placeGroupZones.add(new PlaceGroupZone(zone)));
+		settings = new MapSettings(mapState.settings);
 	}
 
 	@Override
@@ -33,6 +35,10 @@ public class MapState {
 		MapState mapState = (MapState) o;
 
 		if (placeGroupZones != null ? !placeGroupZones.equals(mapState.placeGroupZones) : mapState.placeGroupZones != null) {
+			return false;
+		}
+
+		if (settings != null ? !settings.equals(mapState.settings) : mapState.settings != null) {
 			return false;
 		}
 

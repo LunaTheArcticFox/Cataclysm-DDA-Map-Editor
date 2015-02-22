@@ -46,13 +46,12 @@ public class CataclysmMap {
 	protected MapState lastSavedState = null;
 	protected MapState currentState = new MapState();
 
-	private Set<Point> changedTiles = new HashSet<>();
-
 	private EventBus eventBus;
 	private MapManager manager;
 	private MapRenderer renderer;
 
 	private UndoEvent undoEvent = new UndoEvent();
+	private Set<Point> changedTiles = new HashSet<>();
 	private boolean editing = false;
 
 	protected CataclysmMap(final EventBus eventBus) {
@@ -292,13 +291,17 @@ public class CataclysmMap {
 		return getTileAt(x, y, Layer.FURNITURE);
 	}
 
+	protected void markSavePoint() {
+		lastSavedState = new MapState(currentState);
+	}
+
 	protected boolean isSaved() {
 		return lastSavedState == null || currentState.equals(lastSavedState);
 	}
 
 	@Override
 	public String toString() {
-		return "Map"; //TODO Use map name
+		return currentState.settings.overMapTerrain;
 	}
 
 }

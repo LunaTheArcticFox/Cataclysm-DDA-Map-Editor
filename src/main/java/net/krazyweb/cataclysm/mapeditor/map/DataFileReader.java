@@ -64,6 +64,12 @@ public class DataFileReader extends Service<Boolean> {
 
 				CataclysmMap map = new CataclysmMap(eventBus);
 
+				if (root.has("om_terrain")) {
+					map.currentState.settings.overMapTerrain = root.get("om_terrain").get(0).asText();
+				} else {
+					map.currentState.settings.overMapTerrain = "No OM Terrain"; //TODO Use nested OM terrain type and pick better default
+				}
+
 				Map<Character, String> terrainMap = new HashMap<>();
 				Map<Character, String> furnitureMap = new HashMap<>();
 

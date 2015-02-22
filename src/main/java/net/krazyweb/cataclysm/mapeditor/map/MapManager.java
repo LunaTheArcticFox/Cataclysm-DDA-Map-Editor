@@ -101,7 +101,7 @@ public class MapManager {
 		mapContainer.setFitToWidth(true);
 		mapContainer.setFitToHeight(true);
 
-		Tab tab = new Tab("map");
+		Tab tab = new Tab(map.currentState.settings.overMapTerrain); //TODO Rename tab when changed
 		tab.setContent(mapContainer);
 
 		root.getTabs().add(tab);
