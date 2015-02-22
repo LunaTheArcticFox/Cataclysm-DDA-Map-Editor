@@ -53,8 +53,8 @@ public class UndoBuffer {
 	}
 
 	private void removeEnd() {
-		log.info("Removing end of undo buffer.");
 		if (hasNextEvent()) {
+			log.info("Removing end of undo buffer.");
 			while (eventLinkedList.size() > currentIndex + 1) {
 				log.trace("Removing last event from undo buffer: " + peekAtNextEvent());
 				eventLinkedList.removeLast();
