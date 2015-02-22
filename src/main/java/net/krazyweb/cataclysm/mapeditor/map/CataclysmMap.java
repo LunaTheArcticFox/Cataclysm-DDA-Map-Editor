@@ -66,7 +66,10 @@ public class CataclysmMap {
 		this.renderer = renderer;
 	}
 
-	private void rotateMapClockwise() {
+	public void rotateMapClockwise() {
+		if (editing) {
+			undoEvent.addAction(new RotateMapAction(this));
+		}
 		transposeArray(currentState.terrain);
 		reverseColumns(currentState.terrain);
 		transposeArray(currentState.furniture);

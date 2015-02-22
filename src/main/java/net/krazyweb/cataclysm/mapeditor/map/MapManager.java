@@ -32,6 +32,8 @@ public class MapManager {
 	private EventBus eventBus;
 	private UndoBuffer undoBuffer;
 
+	private CataclysmMap selectedMap;
+
 	@FXML
 	public void initialize() {
 		VBox.setVgrow(root, Priority.ALWAYS);
@@ -43,6 +45,8 @@ public class MapManager {
 
 	public void load(final Path path) {
 		//Load: Spawn file read service to get map sections and load each one
+
+		selectedMap = null;
 
 		try {
 			if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
@@ -65,6 +69,10 @@ public class MapManager {
 	}
 
 	private void loadMap(final CataclysmMap map) {
+
+		if (selectedMap == null) {
+			selectedMap = map;
+		}
 
 		map.setManager(this);
 
@@ -103,6 +111,11 @@ public class MapManager {
 
 		Tab tab = new Tab(map.currentState.settings.overMapTerrain); //TODO Rename tab when changed
 		tab.setContent(mapContainer);
+		tab.setOnSelectionChanged(event -> {
+			if (root.getSelectionModel().getSelectedItem() == tab) {
+				selectedMap = map;
+			}
+		});
 
 		root.getTabs().add(tab);
 
@@ -148,7 +161,9 @@ public class MapManager {
 	}
 
 	public void rotateMap() {
-
+		selectedMap.startEdit();
+		selectedMap.rotateMapClockwise();
+		selectedMap.finishEdit("Rotate Map");
 	}
 
 	protected void addUndoEvent(final UndoEvent event) {
