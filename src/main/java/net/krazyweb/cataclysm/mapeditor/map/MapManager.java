@@ -118,7 +118,11 @@ public class MapManager {
 	}
 
 	public void revert() {
-		load(path);
+		if (path == null) {
+			load(Paths.get("templates").resolve("default.json"));
+		} else {
+			load(path);
+		}
 	}
 
 	public void undo() {
