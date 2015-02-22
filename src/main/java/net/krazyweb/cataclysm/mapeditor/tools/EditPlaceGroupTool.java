@@ -72,7 +72,9 @@ public class EditPlaceGroupTool extends Tool {
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
 		placeGroupZone = map.getPlaceGroupZoneAt(lastX, lastY);
-		map.startEdit();
+		if (placeGroupZone != null) {
+			map.startEdit();
+		}
 
 	}
 
@@ -104,7 +106,7 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 
-		if (event.getButton() != MouseButton.PRIMARY) {
+		if (event.getButton() != MouseButton.PRIMARY || placeGroupZone == null) {
 			return;
 		}
 
