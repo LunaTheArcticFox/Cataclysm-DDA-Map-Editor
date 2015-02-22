@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import javafx.scene.paint.Color;
+import net.krazyweb.cataclysm.mapeditor.tools.Point;
 
 public class PlaceGroupZone {
 
@@ -16,14 +17,6 @@ public class PlaceGroupZone {
 	};
 
 	private static int currentZoneColor = 0;
-
-	private class Point2D {
-		private int x, y;
-		public Point2D(final int x, final int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
 
 	public int x, y, w, h;
 	public Color fillColor;
@@ -59,14 +52,14 @@ public class PlaceGroupZone {
 
 	public void rotate() {
 
-		Point2D[] points = new Point2D[] {
-				new Point2D(x, y),
-				new Point2D(x + w, y),
-				new Point2D(x, y + h),
-				new Point2D(x + w, y + h)
+		Point[] points = new Point[] {
+				new Point(x, y),
+				new Point(x + w, y),
+				new Point(x, y + h),
+				new Point(x + w, y + h)
 		};
 
-		for (Point2D point : points) {
+		for (Point point : points) {
 
 			point.x -= 12;
 			point.y -= 12;
@@ -80,10 +73,10 @@ public class PlaceGroupZone {
 
 		}
 
-		Point2D leastXY = null;
-		Point2D greatestXY = null;
+		Point leastXY = null;
+		Point greatestXY = null;
 
-		for (Point2D point : points) {
+		for (Point point : points) {
 			if (leastXY == null || (point.x <= leastXY.x && point.y <= leastXY.y)) {
 				leastXY = point;
 			}
@@ -132,6 +125,11 @@ public class PlaceGroupZone {
 		result = 31 * result + h;
 		result = 31 * result + (group != null ? group.hashCode() : 0);
 		return result;
+	}
+
+	@Override
+	public String toString() {
+		return "[Group: " + group + ", Area: [" + x + ", " + y + ", " + w + ", " + h + "], Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
 	}
 
 }
