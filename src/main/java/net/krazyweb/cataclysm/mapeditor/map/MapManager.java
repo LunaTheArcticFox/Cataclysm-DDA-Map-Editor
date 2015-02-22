@@ -30,7 +30,7 @@ public class MapManager {
 
 	private Path path;
 	private EventBus eventBus;
-	private UndoBuffer undoBuffer = new UndoBuffer();
+	private UndoBuffer undoBuffer;
 
 	@FXML
 	public void initialize() {
@@ -54,6 +54,8 @@ public class MapManager {
 
 		//TODO Unregister old maps
 		root.getTabs().clear();
+		undoBuffer = new UndoBuffer();
+		updateUndoRedoText();
 
 		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
 		dataFileReader.setOnSucceeded(event -> dataFileReader.getMaps().forEach(this::loadMap));
