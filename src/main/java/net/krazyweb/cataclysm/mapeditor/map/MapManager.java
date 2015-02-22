@@ -53,7 +53,7 @@ public class MapManager {
 				this.path = path;
 			}
 		} catch (IOException e) {
-			log.error("An error occurred while attempting to determine if '" + path.toAbsolutePath() + "' is the same file as the default template.", e);
+			log.error("Error while determining if '" + path.toAbsolutePath() + "' is the same file as the default template:", e);
 		}
 
 		//TODO Unregister old maps
@@ -80,7 +80,7 @@ public class MapManager {
 		try {
 			loader.load();
 		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/mapCanvas.fxml':", e);
+			log.error("Error while loading '/fxml/mapCanvas.fxml':", e);
 		}
 		eventBus.register(loader.<MapRenderer>getController());
 		loader.<MapRenderer>getController().setEventBus(eventBus);
