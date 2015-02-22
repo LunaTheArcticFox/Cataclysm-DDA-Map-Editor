@@ -72,6 +72,7 @@ public class EditPlaceGroupTool extends Tool {
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
 		placeGroupZone = map.getPlaceGroupZoneAt(lastX, lastY);
+		map.startEdit();
 
 	}
 
@@ -88,8 +89,7 @@ public class EditPlaceGroupTool extends Tool {
 			int deltaY = convertCoord(event.getY()) - lastY;
 
 			if (deltaX != 0 || deltaY != 0) {
-				placeGroupZone.x += deltaX;
-				placeGroupZone.y += deltaY;
+				map.movePlaceGroupZone(placeGroupZone, deltaX, deltaY);
 				//Bring the zone to the front
 				map.removePlaceGroupZone(placeGroupZone);
 				map.addPlaceGroupZone(0, placeGroupZone);
@@ -142,9 +142,8 @@ public class EditPlaceGroupTool extends Tool {
 		PlaceGroupInfoPanel infoPanel = new PlaceGroupInfoPanel("Edit PlaceGroup", zone.group);
 		infoPanel.showAndWait().ifPresent(result -> {
 			if (result == ButtonType.FINISH) {
-				zone.group.type = infoPanel.getType();
-				zone.group.group = infoPanel.getGroup();
-				zone.group.chance = infoPanel.getChance();
+				map.startEdit();
+				map.modifyPlaceGroup(zone.group, infoPanel.getType(), infoPanel.getGroup(), infoPanel.getChance());
 				map.finishEdit("Edit PlaceGroup");
 			}
 		});

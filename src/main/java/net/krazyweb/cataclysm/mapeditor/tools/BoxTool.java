@@ -16,6 +16,11 @@ public class BoxTool extends Tool {
 	private boolean dragging = false;
 
 	@Override
+	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		map.startEdit();
+	}
+
+	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		dragging = false;
 		startX = convertCoord(event.getX());

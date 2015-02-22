@@ -23,12 +23,12 @@ public class TileChangeAction implements Action {
 	}
 
 	public void execute() {
-		log.trace("Redoing on map '" + map + "' - " + layer.name() + ", " + location + ", " + before + " -> " + after);
+		log.debug("Redoing tile change on map '" + map + "' - " + layer.name() + ", " + location + ", " + before + " -> " + after);
 		map.setTile(location, layer, after);
 	}
 
 	public void undo() {
-		log.trace("Undoing on map '" + map + "' - " + layer.name() + ", " + location + ", " + after + " -> " + before);
+		log.debug("Undoing tile change on map '" + map + "' - " + layer.name() + ", " + location + ", " + after + " -> " + before);
 		map.setTile(location, layer, before);
 	}
 

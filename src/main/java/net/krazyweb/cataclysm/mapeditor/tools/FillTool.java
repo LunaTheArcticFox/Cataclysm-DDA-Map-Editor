@@ -12,6 +12,8 @@ public class FillTool extends Tool {
 	@Override
 	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 
+		map.startEdit();
+
 		for (Point point : getFill(convertCoord(event.getX()), convertCoord(event.getY()), tile, map)) {
 			map.setTile(point.x, point.y, tile);
 		}

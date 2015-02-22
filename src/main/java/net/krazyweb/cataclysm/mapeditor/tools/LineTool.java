@@ -25,6 +25,7 @@ public class LineTool extends Tool {
 
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+		map.startEdit();
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
 		dragging = true;

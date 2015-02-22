@@ -14,6 +14,7 @@ public class EraserTool extends Tool {
 	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
 		//TODO Pick tiles better
 		if (event.getButton() == MouseButton.PRIMARY) {
+			map.startEdit();
 			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), Tile.tiles.get("t_grass"));
 			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), Tile.tiles.get("f_null"));
 		}

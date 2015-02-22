@@ -3,8 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.google.common.eventbus.EventBus;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.map.undo.TileChangeAction;
-import net.krazyweb.cataclysm.mapeditor.map.undo.UndoEvent;
+import net.krazyweb.cataclysm.mapeditor.map.undo.*;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 
 import java.util.ArrayList;
@@ -53,6 +52,9 @@ public class CataclysmMap {
 	private MapManager manager;
 	private MapRenderer renderer;
 
+	private UndoEvent undoEvent = new UndoEvent();
+	private boolean editing = false;
+
 	protected CataclysmMap(final EventBus eventBus) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
@@ -94,13 +96,18 @@ public class CataclysmMap {
 		}
 	}
 
-	private UndoEvent undoEvent = new UndoEvent();
+	public void startEdit() {
+		if (!editing) {
+			undoEvent = new UndoEvent();
+			editing = true;
+		}
+	}
 
 	public void finishEdit(final String operationName) {
 		undoEvent.setName(operationName);
 		manager.addUndoEvent(undoEvent);
-		undoEvent = new UndoEvent();
 		changedTiles.clear();
+		editing = false;
 	}
 
 	public void setTile(final int x, final int y, final Tile tile) {
@@ -114,13 +121,13 @@ public class CataclysmMap {
 
 		//TODO get terrain type instead of just checking if furniture for things like items (?)
 		if (tile.isFurniture()) {
-			if (!changedTiles.contains(new Point(x, y))) {
+			if (editing && !changedTiles.contains(new Point(x, y))) {
 				undoEvent.addAction(new TileChangeAction(this, Layer.FURNITURE, new Point(x, y), furnitureBefore, tile.getID()));
 				changedTiles.add(new Point(x, y));
 			}
 			currentState.furniture[x][y] = tile.getID();
 		} else {
-			if (!changedTiles.contains(new Point(x, y))) {
+			if (editing && !changedTiles.contains(new Point(x, y))) {
 				undoEvent.addAction(new TileChangeAction(this, Layer.TERRAIN, new Point(x, y), terrainBefore, tile.getID()));
 				changedTiles.add(new Point(x, y));
 			}
@@ -154,18 +161,44 @@ public class CataclysmMap {
 	}
 
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
+		if (editing) {
+			undoEvent.addAction(new PlaceGroupZoneAddedAction(this, index, zone));
+		}
 		currentState.placeGroupZones.add(index, zone);
 		renderer.redrawPlaceGroups();
 	}
 
 	public void addPlaceGroupZone(final PlaceGroupZone zone) {
+		if (editing) {
+			undoEvent.addAction(new PlaceGroupZoneAddedAction(this, zone));
+		}
 		currentState.placeGroupZones.add(zone);
 		renderer.redrawPlaceGroups();
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
+		if (editing) {
+			undoEvent.addAction(new PlaceGroupZoneRemovedAction(this, currentState.placeGroupZones.indexOf(zone), zone));
+		}
 		currentState.placeGroupZones.remove(zone);
 		renderer.redrawPlaceGroups();
+	}
+
+	public void movePlaceGroupZone(final PlaceGroupZone zone, final int deltaX, final int deltaY) {
+		if (editing) {
+			undoEvent.addAction(new PlaceGroupZoneMovedAction(this, zone, deltaX, deltaY));
+		}
+		zone.x += deltaX;
+		zone.y += deltaY;
+	}
+
+	public void modifyPlaceGroup(final PlaceGroup placeGroup, final String type, final String group, final int chance) {
+		if (editing) {
+			undoEvent.addAction(new PlaceGroupModifiedAction(this, placeGroup, type, group, chance));
+		}
+		placeGroup.type = type;
+		placeGroup.group = group;
+		placeGroup.chance = chance;
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
