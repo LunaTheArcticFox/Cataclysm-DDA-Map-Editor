@@ -9,12 +9,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
-import javafx.scene.text.Text;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
-import net.krazyweb.cataclysm.mapeditor.map.undo.TabChangedAction;
-import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBuffer;
-import net.krazyweb.cataclysm.mapeditor.map.undo.UndoEvent;
+import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -25,23 +22,20 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MapManager {
+public class MapManager implements UndoBufferListener {
 
 	private static Logger log = LogManager.getLogger(MapManager.class);
 
 	@FXML
 	private TabPane root;
 
-	private Tab lastTab;
-
 	private Path path;
 	private EventBus eventBus;
-	private UndoBuffer undoBuffer;
-
-	private boolean manualTabSet = false;
 
 	private MapEditor mapEditor;
 	private ScrollPane mapContainer;
+
+	private boolean listenerRegistered = false;
 
 	private Map<Tab, MapgenEntry> maps = new HashMap<>();
 
@@ -55,7 +49,6 @@ public class MapManager {
 		this.eventBus = eventBus;
 
 		mapEditor = new MapEditor(eventBus);
-		mapEditor.setManager(this);
 
 		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mapCanvas.fxml"));
 		try {
@@ -91,12 +84,6 @@ public class MapManager {
 		mapContainer.setFitToWidth(true);
 		mapContainer.setFitToHeight(true);
 
-		root.getSelectionModel().selectedItemProperty().addListener((observable, previousTab, tab) -> {
-			if (!manualTabSet && undoBuffer.hasPreviousEvent()) {
-				undoBuffer.getCurrentEvent().addAction(new TabChangedAction(this, lastTab, tab));
-			}
-		});
-
 	}
 
 	public void load(final Path path) {
@@ -112,14 +99,47 @@ public class MapManager {
 
 		//TODO Unregister old maps
 		root.getTabs().clear();
-		undoBuffer = new UndoBuffer();
-		updateUndoRedoText();
+		if (mapEditor.getUndoBuffer() != null) {
+			updateUndoRedoText();
+		}
+
+		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
+		dataFileReader.setOnSucceeded(event -> {
+
+			dataFileReader.getMaps().forEach(this::loadMap);
+
+			if (!listenerRegistered) {
+				root.getSelectionModel().selectedItemProperty().addListener((observable, oldTab, newTab) -> {
+					if (oldTab != null) {
+						oldTab.setContent(null);
+						mapEditor.getUndoBuffer().unregister(this);
+					}
+					newTab.setContent(mapContainer);
+					mapEditor.setMapgenEntry(maps.get(newTab));
+					mapEditor.getUndoBuffer().register(this);
+					updateUndoRedoText();
+				});
+				listenerRegistered = true;
+			}
+
+			mapEditor.setMapgenEntry(maps.get(root.getTabs().get(0)));
+			mapEditor.getUndoBuffer().register(this);
+			root.getTabs().get(0).setContent(mapContainer);
+
+		});
+
+		dataFileReader.start();
+
+	}
+
+	public void addMap(final Path path) {
 
 		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
 		dataFileReader.setOnSucceeded(event -> {
 			dataFileReader.getMaps().forEach(this::loadMap);
-			mapEditor.setMapgenEntry(maps.get(root.getTabs().get(0)));
-			root.getTabs().get(0).setContent(mapContainer);
+			mapEditor.setMapgenEntry(maps.get(root.getTabs().get(root.getTabs().size() - 1)));
+			root.getSelectionModel().select(root.getTabs().get(root.getTabs().size() - 1));
+			root.getTabs().get(root.getTabs().size() - 1).setContent(mapContainer);
 		});
 
 		dataFileReader.start();
@@ -135,25 +155,6 @@ public class MapManager {
 		root.getTabs().add(tab);
 		maps.put(tab, map);
 
-		tab.setOnSelectionChanged(event -> {
-
-			for (Tab t : root.getTabs()) {
-				t.setContent(new Text());
-			}
-
-			tab.setContent(mapContainer);
-			mapEditor.setMapgenEntry(maps.get(tab));
-
-			lastTab = tab;
-
-		});
-
-	}
-
-	public void setTab(final Tab tab) {
-		manualTabSet = true;
-		root.getSelectionModel().select(tab);
-		manualTabSet = false;
 	}
 
 	public void save() {
@@ -175,23 +176,21 @@ public class MapManager {
 
 	public void undo() {
 
-		if (!undoBuffer.hasPreviousEvent()) {
+		if (!mapEditor.getUndoBuffer().hasPreviousEvent()) {
 			return;
 		}
 
-		undoBuffer.undoLastEvent();
-		updateUndoRedoText();
+		mapEditor.getUndoBuffer().undoLastEvent();
 
 	}
 
 	public void redo() {
 
-		if (!undoBuffer.hasNextEvent()) {
+		if (!mapEditor.getUndoBuffer().hasNextEvent()) {
 			return;
 		}
 
-		undoBuffer.redoNextEvent();
-		updateUndoRedoText();
+		mapEditor.getUndoBuffer().redoNextEvent();
 
 	}
 
@@ -201,22 +200,17 @@ public class MapManager {
 		mapEditor.finishEdit("Rotate Map");
 	}
 
-	protected void addUndoEvent(final UndoEvent event) {
-		undoBuffer.addEvent(event);
-		updateUndoRedoText();
-	}
-
 	private void updateUndoRedoText() {
 
 		String undoText = "";
 		String redoText = "";
 
-		if (undoBuffer.hasPreviousEvent()) {
-			undoText = undoBuffer.getCurrentEvent().getName();
+		if (mapEditor.getUndoBuffer().hasPreviousEvent()) {
+			undoText = mapEditor.getUndoBuffer().getCurrentEvent().getName();
 		}
 
-		if (undoBuffer.hasNextEvent()) {
-			redoText = undoBuffer.peekAtNextEvent().getName();
+		if (mapEditor.getUndoBuffer().hasNextEvent()) {
+			redoText = mapEditor.getUndoBuffer().peekAtNextEvent().getName();
 		}
 
 		eventBus.post(new UndoBufferChangedEvent(undoText, redoText));
@@ -229,6 +223,11 @@ public class MapManager {
 
 	public Path getPath() {
 		return path;
+	}
+
+	@Override
+	public void undoBufferChanged() {
+		updateUndoRedoText();
 	}
 
 }

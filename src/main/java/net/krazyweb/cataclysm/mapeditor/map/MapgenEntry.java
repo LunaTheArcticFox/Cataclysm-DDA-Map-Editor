@@ -56,10 +56,10 @@ public class MapgenEntry {
 
 	@Override
 	public int hashCode() {
-		int result = (placeGroupZones != null ? placeGroupZones.hashCode() : 0);
-		result = 31 * result + Arrays.deepHashCode(terrain);
-		result = 31 * result + Arrays.deepHashCode(furniture);
+		int result = Arrays.hashCode(terrain);
+		result = 31 * result + Arrays.hashCode(furniture);
+		result = 31 * result + placeGroupZones.hashCode();
+		result = 31 * result + settings.hashCode();
 		return result;
 	}
-
 }

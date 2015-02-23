@@ -8,8 +8,11 @@
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
 			<Menu text="_File">
-				<MenuItem text="_New" onAction="#newFile">
+				<MenuItem text="New _Project" onAction="#newFile">
 					<accelerator><KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/></accelerator>
+				</MenuItem>
+				<MenuItem text="_New Map" onAction="#newMap">
+					<accelerator><KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
 				<MenuItem text="_Open" onAction="#openFile">
 					<accelerator><KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
@@ -30,13 +33,13 @@
 				<MenuItem text="_Redo" fx:id="redoButton" onAction="#redo" disable="true">
 					<accelerator><KeyCodeCombination alt="UP" code="Y" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
-				<MenuItem text="_Cut">
+				<MenuItem text="Cut">
 					<accelerator><KeyCodeCombination alt="UP" code="X" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
-				<MenuItem text="_Copy">
+				<MenuItem text="Copy">
 					<accelerator><KeyCodeCombination alt="UP" code="C" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
-				<MenuItem text="_Paste">
+				<MenuItem text="Paste">
 					<accelerator><KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
 			</Menu>

@@ -3,7 +3,9 @@ package net.krazyweb.cataclysm.mapeditor.map.undo;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Set;
 
 public class UndoBuffer {
 
@@ -11,6 +13,7 @@ public class UndoBuffer {
 
 	private LinkedList<UndoEvent> eventLinkedList = new LinkedList<>();
 	private int currentIndex = -1; //Since the first event added will increment this to the index 0, it needs to be -1.
+	private Set<UndoBufferListener> listeners = new HashSet<>();
 
 	/**
 	 * WARNING: Removes the end of the queue -- the current index is the new last index
@@ -21,6 +24,7 @@ public class UndoBuffer {
 		currentIndex++;
 		log.trace("Added event to undo buffer: " + undoEvent.getName());
 		eventLinkedList.add(undoEvent);
+		notifyListeners();
 	}
 
 	public boolean hasNextEvent() {
@@ -41,10 +45,12 @@ public class UndoBuffer {
 
 	public void undoLastEvent() {
 		eventLinkedList.get(currentIndex--).undo();
+		notifyListeners();
 	}
 
 	public void redoNextEvent() {
 		eventLinkedList.get(++currentIndex).redo();
+		notifyListeners();
 	}
 
 	public UndoEvent removeLastEvent() {
@@ -60,6 +66,18 @@ public class UndoBuffer {
 				eventLinkedList.removeLast();
 			}
 		}
+	}
+
+	private void notifyListeners() {
+		listeners.forEach(UndoBufferListener::undoBufferChanged);
+	}
+
+	public void register(final UndoBufferListener listener) {
+		listeners.add(listener);
+	}
+
+	public void unregister(final UndoBufferListener listener) {
+		listeners.remove(listener);
 	}
 
 }

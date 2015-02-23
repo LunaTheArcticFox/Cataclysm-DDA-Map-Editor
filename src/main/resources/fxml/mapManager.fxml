@@ -3,5 +3,5 @@
 
 <?import javafx.scene.control.TabPane?>
 
-<TabPane prefHeight="100.0" prefWidth="100.0" fx:id="root" tabClosingPolicy="UNAVAILABLE" focusTraversable="false" fx:controller="net.krazyweb.cataclysm.mapeditor.map.MapManager" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<TabPane prefHeight="100.0" prefWidth="100.0" fx:id="root" tabClosingPolicy="ALL_TABS" focusTraversable="false" fx:controller="net.krazyweb.cataclysm.mapeditor.map.MapManager" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 </TabPane>

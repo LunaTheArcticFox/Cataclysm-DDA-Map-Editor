@@ -151,6 +151,11 @@ public class EditorMain {
 	}
 
 	@FXML
+	private void newMap() {
+		mapManager.addMap(Paths.get("templates").resolve("default.json"));
+	}
+
+	@FXML
 	private void openFile() {
 
 		FileChooser fileChooser = new FileChooser();

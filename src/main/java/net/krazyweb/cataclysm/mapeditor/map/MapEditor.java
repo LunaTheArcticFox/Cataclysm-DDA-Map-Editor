@@ -5,16 +5,17 @@ import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.undo.*;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MapEditor {
 
 	public static final int SIZE = 24;
+
+	private static Logger log = LogManager.getLogger(MapEditor.class);
 
 	private static enum Orientation {
 		EITHER, VERTICAL, HORIZONTAL
@@ -46,10 +47,10 @@ public class MapEditor {
 	protected MapgenEntry lastSavedState = null;
 	protected MapgenEntry currentMap;
 
-	private MapManager manager;
 	private MapRenderer renderer;
 
 	private UndoEvent undoEvent = new UndoEvent();
+	private Map<MapgenEntry, UndoBuffer> undoBuffers = new HashMap<>();
 	private Set<Point> changedTiles = new HashSet<>();
 	private boolean editing = false;
 
@@ -57,9 +58,6 @@ public class MapEditor {
 		eventBus.register(this);
 	}
 
-	protected void setManager(final MapManager manager) {
-		this.manager = manager;
-	}
 	protected void setRenderer(final MapRenderer renderer) {
 		this.renderer = renderer;
 	}
@@ -105,7 +103,7 @@ public class MapEditor {
 
 	public void finishEdit(final String operationName) {
 		undoEvent.setName(operationName);
-		manager.addUndoEvent(undoEvent);
+		undoBuffers.get(currentMap).addEvent(undoEvent);
 		changedTiles.clear();
 		editing = false;
 	}
@@ -301,8 +299,15 @@ public class MapEditor {
 	}
 
 	protected void setMapgenEntry(final MapgenEntry mapgenEntry) {
+		if (!undoBuffers.containsKey(mapgenEntry)) {
+			undoBuffers.put(mapgenEntry, new UndoBuffer());
+		}
 		currentMap = mapgenEntry;
 		renderer.redraw();
+	}
+
+	public UndoBuffer getUndoBuffer() {
+		return undoBuffers.get(currentMap);
 	}
 
 	@Override
