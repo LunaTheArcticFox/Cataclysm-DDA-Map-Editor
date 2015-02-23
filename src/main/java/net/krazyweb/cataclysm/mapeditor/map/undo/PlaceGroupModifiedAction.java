@@ -1,6 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor.map.undo;
 
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,12 +9,12 @@ public class PlaceGroupModifiedAction implements Action {
 
 	private static Logger log = LogManager.getLogger(PlaceGroupModifiedAction.class);
 
-	private CataclysmMap map;
+	private MapEditor map;
 	private PlaceGroup placeGroup;
 	private String beforeType, afterType, beforeGroup, afterGroup;
 	private int beforeChance, afterChance;
 
-	public PlaceGroupModifiedAction(final CataclysmMap map, final PlaceGroup placeGroup, final String type, final String group, final int chance) {
+	public PlaceGroupModifiedAction(final MapEditor map, final PlaceGroup placeGroup, final String type, final String group, final int chance) {
 		this.map = map;
 		this.placeGroup = placeGroup;
 		this.beforeType = placeGroup.type;

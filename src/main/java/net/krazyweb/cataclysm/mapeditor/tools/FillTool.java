@@ -3,14 +3,14 @@ package net.krazyweb.cataclysm.mapeditor.tools;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
 import java.util.*;
 
 public class FillTool extends Tool {
 
 	@Override
-	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
 		map.startEdit();
 
@@ -23,13 +23,13 @@ public class FillTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
 		return getFill(x, y, tile, map);
 	}
 
-	private Set<Point> getFill(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	private Set<Point> getFill(final int x, final int y, final Tile tile, final MapEditor map) {
 
-		CataclysmMap.Layer layer = tile.isFurniture() ? CataclysmMap.Layer.FURNITURE : CataclysmMap.Layer.TERRAIN;
+		MapEditor.Layer layer = tile.isFurniture() ? MapEditor.Layer.FURNITURE : MapEditor.Layer.TERRAIN;
 
 		String targetTile = map.getTileAt(x, y, layer);
 
@@ -59,11 +59,11 @@ public class FillTool extends Tool {
 
 	}
 
-	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final CataclysmMap map, final Set<Point> toFill) {
-		if (x < 0 || y < 0 || x >= CataclysmMap.SIZE || y >= CataclysmMap.SIZE) {
+	private boolean shouldFill(final int x, final int y, final Tile replacementTile, final String targetTile, final MapEditor map, final Set<Point> toFill) {
+		if (x < 0 || y < 0 || x >= MapEditor.SIZE || y >= MapEditor.SIZE) {
 			return false;
 		}
-		CataclysmMap.Layer layer = replacementTile.isFurniture() ? CataclysmMap.Layer.FURNITURE : CataclysmMap.Layer.TERRAIN;
+		MapEditor.Layer layer = replacementTile.isFurniture() ? MapEditor.Layer.FURNITURE : MapEditor.Layer.TERRAIN;
 		return !toFill.contains(new Point(x, y)) && !isSameTile(map.getTileAt(x, y, layer), replacementTile.getID()) && map.getTileAt(x, y, layer) != null && isSameTile(map.getTileAt(x, y, layer), targetTile);
 	}
 

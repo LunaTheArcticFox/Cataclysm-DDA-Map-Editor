@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class CataclysmMap {
+public class MapEditor {
 
 	public static final int SIZE = 24;
 
@@ -43,10 +43,9 @@ public class CataclysmMap {
 		TERRAIN, FURNITURE
 	}
 
-	protected MapState lastSavedState = null;
-	protected MapState currentState = new MapState();
+	protected MapgenEntry lastSavedState = null;
+	protected MapgenEntry currentMap;
 
-	private EventBus eventBus;
 	private MapManager manager;
 	private MapRenderer renderer;
 
@@ -54,8 +53,7 @@ public class CataclysmMap {
 	private Set<Point> changedTiles = new HashSet<>();
 	private boolean editing = false;
 
-	protected CataclysmMap(final EventBus eventBus) {
-		this.eventBus = eventBus;
+	protected MapEditor(final EventBus eventBus) {
 		eventBus.register(this);
 	}
 
@@ -70,17 +68,17 @@ public class CataclysmMap {
 		if (editing) {
 			undoEvent.addAction(new RotateMapAction(this));
 		}
-		transposeArray(currentState.terrain);
-		reverseColumns(currentState.terrain);
-		transposeArray(currentState.furniture);
-		reverseColumns(currentState.furniture);
-		currentState.placeGroupZones.forEach(PlaceGroupZone::rotate);
+		transposeArray(currentMap.terrain);
+		reverseColumns(currentMap.terrain);
+		transposeArray(currentMap.furniture);
+		reverseColumns(currentMap.furniture);
+		currentMap.placeGroupZones.forEach(PlaceGroupZone::rotate);
 		renderer.redraw();
 	}
 
 	private void transposeArray(final String[][] array) {
-		for(int i = 0; i < 24; i++) {
-			for(int j = i + 1; j < 24; j++) {
+		for(int i = 0; i < SIZE; i++) {
+			for(int j = i + 1; j < SIZE; j++) {
 				String temp = array[i][j];
 				array[i][j] = array[j][i];
 				array[j][i] = temp;
@@ -127,13 +125,13 @@ public class CataclysmMap {
 				undoEvent.addAction(new TileChangeAction(this, Layer.FURNITURE, new Point(x, y), furnitureBefore, tile.getID()));
 				changedTiles.add(new Point(x, y));
 			}
-			currentState.furniture[x][y] = tile.getID();
+			currentMap.furniture[x][y] = tile.getID();
 		} else {
 			if (editing && !changedTiles.contains(new Point(x, y))) {
 				undoEvent.addAction(new TileChangeAction(this, Layer.TERRAIN, new Point(x, y), terrainBefore, tile.getID()));
 				changedTiles.add(new Point(x, y));
 			}
-			currentState.terrain[x][y] = tile.getID();
+			currentMap.terrain[x][y] = tile.getID();
 		}
 
 		updateTile(x, y);
@@ -151,9 +149,9 @@ public class CataclysmMap {
 		String furnitureBefore = getFurnitureAt(location.x, location.y);
 
 		if (layer == Layer.TERRAIN) {
-			currentState.terrain[location.x][location.y] = tile;
+			currentMap.terrain[location.x][location.y] = tile;
 		} else {
-			currentState.furniture[location.x][location.y] = tile;
+			currentMap.furniture[location.x][location.y] = tile;
 		}
 
 		if (!getTerrainAt(location.x, location.y).equals(terrainBefore) || !getFurnitureAt(location.x, location.y).equals(furnitureBefore)) {
@@ -166,7 +164,7 @@ public class CataclysmMap {
 		if (editing) {
 			undoEvent.addAction(new PlaceGroupZoneAddedAction(this, index, zone));
 		}
-		currentState.placeGroupZones.add(index, zone);
+		currentMap.placeGroupZones.add(index, zone);
 		renderer.redrawPlaceGroups();
 	}
 
@@ -174,15 +172,15 @@ public class CataclysmMap {
 		if (editing) {
 			undoEvent.addAction(new PlaceGroupZoneAddedAction(this, zone));
 		}
-		currentState.placeGroupZones.add(zone);
+		currentMap.placeGroupZones.add(zone);
 		renderer.redrawPlaceGroups();
 	}
 
 	public void removePlaceGroupZone(final PlaceGroupZone zone) {
 		if (editing) {
-			undoEvent.addAction(new PlaceGroupZoneRemovedAction(this, currentState.placeGroupZones.indexOf(zone), zone));
+			undoEvent.addAction(new PlaceGroupZoneRemovedAction(this, currentMap.placeGroupZones.indexOf(zone), zone));
 		}
-		currentState.placeGroupZones.remove(zone);
+		currentMap.placeGroupZones.remove(zone);
 		renderer.redrawPlaceGroups();
 	}
 
@@ -204,7 +202,7 @@ public class CataclysmMap {
 	}
 
 	public PlaceGroupZone getPlaceGroupZoneAt(final int x, final int y) {
-		for (PlaceGroupZone zone : currentState.placeGroupZones) {
+		for (PlaceGroupZone zone : currentMap.placeGroupZones) {
 			if (zone.contains(x, y)) {
 				return zone;
 			}
@@ -213,11 +211,11 @@ public class CataclysmMap {
 	}
 
 	public List<PlaceGroupZone> getPlaceGroupZonesAt(final int x, final int y) {
-		return currentState.placeGroupZones.stream().filter(zone -> zone.contains(x, y)).collect(Collectors.toList());
+		return currentMap.placeGroupZones.stream().filter(zone -> zone.contains(x, y)).collect(Collectors.toList());
 	}
 
 	public List<PlaceGroupZone> getPlaceGroupZones() {
-		return new ArrayList<>(currentState.placeGroupZones);
+		return new ArrayList<>(currentMap.placeGroupZones);
 	}
 
 	private void updateTilesSurrounding(final int x, final int y) {
@@ -233,8 +231,8 @@ public class CataclysmMap {
 
 		if (tile.endsWith("_v") || tile.endsWith("_h")) {
 			int bitwiseMapping = getBitwiseMapping(x, y, Layer.TERRAIN);
-			currentState.terrain[x][y] = tile.substring(0, tile.lastIndexOf("_"));
-			currentState.terrain[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
+			currentMap.terrain[x][y] = tile.substring(0, tile.lastIndexOf("_"));
+			currentMap.terrain[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
 		}
 
 	}
@@ -274,15 +272,15 @@ public class CataclysmMap {
 			return "";
 		}
 		if (layer == Layer.TERRAIN) {
-			if (currentState.terrain[x][y] == null) {
+			if (currentMap.terrain[x][y] == null) {
 				return "";
 			}
-			return currentState.terrain[x][y];
+			return currentMap.terrain[x][y];
 		} else {
-			if (currentState.furniture[x][y] == null) {
+			if (currentMap.furniture[x][y] == null) {
 				return "";
 			}
-			return currentState.furniture[x][y];
+			return currentMap.furniture[x][y];
 		}
 	}
 
@@ -295,16 +293,21 @@ public class CataclysmMap {
 	}
 
 	protected void markSavePoint() {
-		lastSavedState = new MapState(currentState);
+		lastSavedState = new MapgenEntry(currentMap);
 	}
 
 	protected boolean isSaved() {
-		return lastSavedState == null || currentState.equals(lastSavedState);
+		return lastSavedState == null || currentMap.equals(lastSavedState);
+	}
+
+	protected void setMapgenEntry(final MapgenEntry mapgenEntry) {
+		currentMap = mapgenEntry;
+		renderer.redraw();
 	}
 
 	@Override
 	public String toString() {
-		return currentState.settings.overMapTerrain;
+		return currentMap.settings.overMapTerrain;
 	}
 
 }

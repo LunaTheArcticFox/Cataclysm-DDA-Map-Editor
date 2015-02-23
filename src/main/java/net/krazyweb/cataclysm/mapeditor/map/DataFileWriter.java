@@ -37,10 +37,10 @@ public class DataFileWriter extends Service<Boolean> {
 
 	private Path path;
 
-	private CataclysmMap map;
+	private MapEditor map;
 	private EventBus eventBus;
 
-	public DataFileWriter(final Path path, final CataclysmMap map, final EventBus eventBus) {
+	public DataFileWriter(final Path path, final MapEditor map, final EventBus eventBus) {
 		this.path = path;
 		this.map = map;
 		this.eventBus = eventBus;
@@ -57,7 +57,7 @@ public class DataFileWriter extends Service<Boolean> {
 		};
 	}
 
-	public CataclysmMap getMap() {
+	public MapEditor getMap() {
 		return map;
 	}
 
@@ -85,10 +85,10 @@ public class DataFileWriter extends Service<Boolean> {
 
 			generator.writeArrayFieldStart("rows");
 			Map<MapTile, Character> mappings = mapSymbols();
-			for (int y = 0; y < CataclysmMap.SIZE; y++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
 				String row = "";
-				for (int x = 0; x < CataclysmMap.SIZE; x++) {
-					row += mappings.get(new MapTile(map.currentState.terrain[x][y], map.currentState.furniture[x][y]));
+				for (int x = 0; x < MapEditor.SIZE; x++) {
+					row += mappings.get(new MapTile(map.currentMap.terrain[x][y], map.currentMap.furniture[x][y]));
 				}
 				generator.writeString(row);
 			}
@@ -125,9 +125,9 @@ public class DataFileWriter extends Service<Boolean> {
 			generator.writeEndObject();
 
 			generator.writeArrayFieldStart("place_specials");
-			for (int x = 0; x < CataclysmMap.SIZE; x++) {
-				for (int y = 0; y < CataclysmMap.SIZE; y++) {
-					if (map.currentState.furniture[x][y].equals("f_toilet")) {
+			for (int x = 0; x < MapEditor.SIZE; x++) {
+				for (int y = 0; y < MapEditor.SIZE; y++) {
+					if (map.currentMap.furniture[x][y].equals("f_toilet")) {
 						generator.writeStartObject();
 						generator.writeStringField("type", "toilet");
 						generator.writeNumberField("x", x);
@@ -142,9 +142,9 @@ public class DataFileWriter extends Service<Boolean> {
 			createRandomGrass(generator);
 			generator.writeEndArray();
 
-			if (!map.currentState.placeGroupZones.isEmpty()) {
+			if (!map.currentMap.placeGroupZones.isEmpty()) {
 				generator.writeArrayFieldStart("place_groups");
-				for (PlaceGroupZone placeGroupZone : map.currentState.placeGroupZones) {
+				for (PlaceGroupZone placeGroupZone : map.currentMap.placeGroupZones) {
 					generator.writeStartObject();
 					generator.writeStringField(placeGroupZone.group.type, placeGroupZone.group.group);
 					generator.writeNumberField("chance", placeGroupZone.group.chance);
@@ -176,7 +176,7 @@ public class DataFileWriter extends Service<Boolean> {
 
 			generator.close();
 
-			map.lastSavedState = new MapState(map.currentState);
+			map.lastSavedState = new MapgenEntry(map.currentMap);
 
 		} catch (Exception e) {
 			log.error("Error while writing to map file '" + path.toAbsolutePath() + "':", e);
@@ -186,18 +186,18 @@ public class DataFileWriter extends Service<Boolean> {
 
 	private void createRandomGrass(final JsonGenerator generator) throws IOException {
 
-		boolean[][] grassArray = new boolean[CataclysmMap.SIZE][CataclysmMap.SIZE];
+		boolean[][] grassArray = new boolean[MapEditor.SIZE][MapEditor.SIZE];
 
-		for (int x = 0; x < CataclysmMap.SIZE; x++) {
-			for (int y = 0; y < CataclysmMap.SIZE; y++) {
+		for (int x = 0; x < MapEditor.SIZE; x++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
 				grassArray[x][y] = map.getTerrainAt(x, y).equals("t_grass");
 			}
 		}
 
 		List<Rectangle> grassRectangles = new ArrayList<>();
 
-		for (int x = 0; x < CataclysmMap.SIZE; x++) {
-			for (int y = 0; y < CataclysmMap.SIZE; y++) {
+		for (int x = 0; x < MapEditor.SIZE; x++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
 
 				if (!grassArray[x][y]) {
 					continue;
@@ -263,7 +263,7 @@ public class DataFileWriter extends Service<Boolean> {
 
 	private int getGrassY2(final int x, final int y, final boolean[][] grassArray) {
 		int y2 = y;
-		for (int iy = y; iy < CataclysmMap.SIZE; iy++) {
+		for (int iy = y; iy < MapEditor.SIZE; iy++) {
 			if (grassArray[x][iy]) {
 				y2 = iy;
 			} else {
@@ -275,7 +275,7 @@ public class DataFileWriter extends Service<Boolean> {
 
 	private int getGrassX2(final int x, final int y, final int y2, final boolean[][] grassArray) {
 		int x2 = x;
-		for (int ix = x; ix < CataclysmMap.SIZE; ix++) {
+		for (int ix = x; ix < MapEditor.SIZE; ix++) {
 			boolean nonGrassFound = false;
 			for (int iy = y; iy <= y2; iy++) {
 				if (!grassArray[ix][iy]) {
@@ -338,9 +338,9 @@ public class DataFileWriter extends Service<Boolean> {
 		List<MapTile> resolveLater = new ArrayList<>();
 		Map<MapTile, Character> mappings = new HashMap<>();
 
-		for (int x = 0; x < CataclysmMap.SIZE; x++) {
-			for (int y = 0; y < CataclysmMap.SIZE; y++) {
-				MapTile tile = new MapTile(map.currentState.terrain[x][y], map.currentState.furniture[x][y]);
+		for (int x = 0; x < MapEditor.SIZE; x++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
+				MapTile tile = new MapTile(map.currentMap.terrain[x][y], map.currentMap.furniture[x][y]);
 				if (!mappings.containsKey(tile)) {
 					if (commonMappings.containsKey(tile)) {
 						boolean found = false;

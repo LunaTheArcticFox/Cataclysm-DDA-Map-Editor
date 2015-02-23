@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 
@@ -24,7 +24,7 @@ public class EditPlaceGroupTool extends Tool {
 	private PlaceGroupZone placeGroupZone;
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
 		int x = convertCoord(event.getX());
 		int y = convertCoord(event.getY());
@@ -63,7 +63,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
 		if (event.getButton() != MouseButton.PRIMARY) {
 			return;
@@ -79,7 +79,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
 		if (event.getButton() != MouseButton.PRIMARY) {
 			return;
@@ -104,7 +104,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
 		if (event.getButton() != MouseButton.PRIMARY || placeGroupZone == null) {
 			return;
@@ -116,7 +116,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
 
 		Set<Point> area = new HashSet<>();
 
@@ -140,7 +140,7 @@ public class EditPlaceGroupTool extends Tool {
 		return null;
 	}
 
-	private void editPlaceGroupZone(final PlaceGroupZone zone, final CataclysmMap map) {
+	private void editPlaceGroupZone(final PlaceGroupZone zone, final MapEditor map) {
 		PlaceGroupInfoPanel infoPanel = new PlaceGroupInfoPanel("Edit PlaceGroup", zone.group);
 		infoPanel.showAndWait().ifPresent(result -> {
 			if (result == ButtonType.FINISH) {

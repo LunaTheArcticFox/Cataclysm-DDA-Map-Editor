@@ -23,7 +23,7 @@ import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
@@ -65,7 +65,7 @@ public class MapRenderer {
 
 	private Bounds bounds;
 	private boolean dragging = false;
-	private CataclysmMap map;
+	private MapEditor map;
 	private EventBus eventBus;
 	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
 	private Tile currentTile = Tile.tiles.get("t_grass"); //TODO Set to last tile used on startup
@@ -189,7 +189,7 @@ public class MapRenderer {
 
 	private void updateStatus(final int x, final int y) {
 		//TODO Delegate String responsibility to StatusBarController
-		if (x >= 0 && y >= 0 && x < CataclysmMap.SIZE && y < CataclysmMap.SIZE) {
+		if (x >= 0 && y >= 0 && x < MapEditor.SIZE && y < MapEditor.SIZE) {
 			eventBus.post(new TileHoverEvent(map.getTerrainAt(x, y) + " | " + map.getFurnitureAt(x, y), x, y));
 		}
 	}
@@ -233,7 +233,7 @@ public class MapRenderer {
 		context.setStroke(new Color(1, 1, 1, 0.8));
 		context.setLineWidth(0.5);
 
-		for (int i = 0; i < CataclysmMap.SIZE; i++) {
+		for (int i = 0; i < MapEditor.SIZE; i++) {
 			context.strokeLine(i * 32, 0, i * 32, 768);
 			context.strokeLine(0, i * 32, 768, i * 32);
 		}
@@ -252,11 +252,11 @@ public class MapRenderer {
 		groups.setVisible(event.showGroups());
 	}
 
-	public void setMap(final CataclysmMap map) {
+	public void setMapEditor(final MapEditor map) {
 
 		this.map = map;
 
-		drawMap();
+//		drawMap();
 
 		overlays.setOnMouseMoved(mouseEvent -> {
 			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
@@ -285,16 +285,9 @@ public class MapRenderer {
 
 	}
 
-	/*@Subscribe
-	public void mapLoadedEventListener(final MapLoadedEvent event) {
-
-		//TODO Move this?
-
-	}*/
-
 	private void drawMap() {
-		for (int x = 0; x < CataclysmMap.SIZE; x++) {
-			for (int y = 0; y < CataclysmMap.SIZE; y++) {
+		for (int x = 0; x < MapEditor.SIZE; x++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
 				drawTile(x, y);
 			}
 		}
@@ -325,7 +318,7 @@ public class MapRenderer {
 
 	private void drawTile(final int x, final int y, final GraphicsContext graphicsContext) {
 
-		if (x < 0 || y < 0 || x >= CataclysmMap.SIZE || y >= CataclysmMap.SIZE) {
+		if (x < 0 || y < 0 || x >= MapEditor.SIZE || y >= MapEditor.SIZE) {
 			return;
 		}
 
@@ -346,7 +339,7 @@ public class MapRenderer {
 
 		//TODO Don't duplicate these sections
 		if (Tile.tiles.get(map.getTerrainAt(x, y)).isMultiTile()) {
-			int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.TERRAIN);
+			int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.TERRAIN);
 			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
 			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size
@@ -358,7 +351,7 @@ public class MapRenderer {
 		//TODO Don't duplicate these sections
 		if (map.getFurnitureAt(x, y) != null) {
 			if (Tile.tiles.get(map.getFurnitureAt(x, y)).isMultiTile()) {
-				int bitwiseMapping = map.getBitwiseMapping(x, y, CataclysmMap.Layer.FURNITURE);
+				int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.FURNITURE);
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 				int rotation = BITWISE_ROTATIONS[bitwiseMapping];
 				drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size

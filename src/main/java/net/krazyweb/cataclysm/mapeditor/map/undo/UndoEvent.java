@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map.undo;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class UndoEvent {
@@ -22,7 +23,9 @@ public class UndoEvent {
 	}
 
 	public void undo() {
-		actions.forEach(Action::undo);
+		List<Action> reversedActions = new ArrayList<>(actions);
+		Collections.reverse(reversedActions);
+		reversedActions.forEach(Action::undo);
 	}
 
 	public void redo() {

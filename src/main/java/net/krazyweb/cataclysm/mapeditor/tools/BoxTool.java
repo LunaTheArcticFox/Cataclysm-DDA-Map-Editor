@@ -3,7 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.tools;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,12 +16,12 @@ public class BoxTool extends Tool {
 	private boolean dragging = false;
 
 	@Override
-	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		map.startEdit();
 	}
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
@@ -29,14 +29,14 @@ public class BoxTool extends Tool {
 	}
 
 	@Override
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = true;
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		for (Point point : getBox(convertCoord(event.getX()), convertCoord(event.getY()))) {
 			map.setTile(point.x, point.y, tile);
@@ -45,7 +45,7 @@ public class BoxTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
 		return dragging ? getBox(x, y) : super.getHighlight(x, y, tile, map);
 	}
 

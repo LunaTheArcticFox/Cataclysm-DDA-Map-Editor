@@ -14,7 +14,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +43,7 @@ public class EditorMain {
 	private EventBus eventBus = new EventBus();
 	private MapManager mapManager;
 	private Stage primaryStage;
-	private CataclysmMap map;
+	private MapEditor map;
 
 	@FXML
 	private void initialize() {
