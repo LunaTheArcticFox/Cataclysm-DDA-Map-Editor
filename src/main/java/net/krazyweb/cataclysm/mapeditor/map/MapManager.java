@@ -15,12 +15,14 @@ import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.IdentityHashMap;
-import java.util.Map;
+import java.nio.file.StandardOpenOption;
+import java.util.*;
 
 public class MapManager implements UndoBufferListener {
 
@@ -38,6 +40,8 @@ public class MapManager implements UndoBufferListener {
 	private boolean listenerRegistered = false;
 
 	private Map<Tab, MapgenEntry> maps = new IdentityHashMap<>();
+	private List<MapgenEntry> mapInsertionOrder = new ArrayList<>();
+	private List<OverMapEntry> overMapEntries = new ArrayList<>();
 
 	@FXML
 	public void initialize() {
@@ -97,7 +101,8 @@ public class MapManager implements UndoBufferListener {
 			log.error("Error while determining if '" + path.toAbsolutePath() + "' is the same file as the default template:", e);
 		}
 
-		//TODO Unregister old maps
+		maps.values().forEach(eventBus::unregister);
+		maps.clear();
 		root.getTabs().clear();
 		if (mapEditor.getUndoBuffer() != null) {
 			updateUndoRedoText();
@@ -105,6 +110,8 @@ public class MapManager implements UndoBufferListener {
 
 		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
 		dataFileReader.setOnSucceeded(event -> {
+
+			overMapEntries.addAll(dataFileReader.getOverMapEntries());
 
 			dataFileReader.getMaps().forEach(this::loadMap);
 
@@ -152,6 +159,8 @@ public class MapManager implements UndoBufferListener {
 
 		log.info("Adding map '" + map + "' to MapManager.");
 
+		mapInsertionOrder.add(map);
+
 		Tab tab = new Tab(map.settings.overMapTerrain); //TODO Rename tab when changed
 
 		maps.put(tab, map);
@@ -164,8 +173,75 @@ public class MapManager implements UndoBufferListener {
 	}
 
 	public void save(final Path path) {
-		//Save: For each map, get mapgen section, write extra sections
+
+		//TODO Service-ify and run on separate thread
+
+		List<MapgenEntry> mapgenEntries = new ArrayList<>(maps.values());
+		Collections.sort(mapgenEntries, (map1, map2) -> {
+
+			if (mapInsertionOrder.indexOf(map1) > mapInsertionOrder.indexOf(map2)) {
+				return 1;
+			} else if (mapInsertionOrder.indexOf(map2) >  mapInsertionOrder.indexOf(map1)) {
+				return -1;
+			}
+
+			return 0;
+
+		});
+
+		List<String> lines = new ArrayList<>();
+
+		lines.add("[");
+
+		overMapEntries.forEach(overMapEntry -> {
+
+			overMapEntry.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
+
+			if (overMapEntries.indexOf(overMapEntry) != overMapEntries.size() - 1) {
+				String line = lines.remove(lines.size() - 1);
+				lines.add(line + ",");
+			} else if (overMapEntries.indexOf(overMapEntry) == overMapEntries.size() - 1) {
+				if (mapgenEntries.size() > 0) {
+					String line = lines.remove(lines.size() - 1);
+					lines.add(line + ",");
+				}
+			}
+
+		});
+
+
+
+		Collections.reverse(mapgenEntries);
+
+		mapgenEntries.forEach(map -> {
+
+			map.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
+
+			if (mapgenEntries.indexOf(map) != mapgenEntries.size() - 1) {
+				String line = lines.remove(lines.size() - 1);
+				lines.add(line + ",");
+			}
+
+		});
+
+		Collections.reverse(mapgenEntries);
+
+		lines.add("]");
+
+		try (BufferedWriter writer = Files.newBufferedWriter(path, Charset.forName("UTF-8"), StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.CREATE)){
+			lines.forEach(line -> {
+				try {
+					writer.append(line).append(System.lineSeparator());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			});
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		this.path = path;
+
 	}
 
 	public void revert() {

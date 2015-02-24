@@ -3,7 +3,10 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import javafx.scene.paint.Color;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 
-public class PlaceGroupZone {
+import java.util.ArrayList;
+import java.util.List;
+
+public class PlaceGroupZone implements Jsonable {
 
 	//TODO More colors
 	private static final Color[][] ZONE_COLORS = new Color[][] {
@@ -130,6 +133,35 @@ public class PlaceGroupZone {
 	@Override
 	public String toString() {
 		return "[Group: " + group + ", Area: [" + x + ", " + y + ", " + w + ", " + h + "], Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
+	}
+
+	@Override
+	public List<String> getJsonLines() {
+
+		List<String> lines = new ArrayList<>();
+
+		String line = "{ \"group\": \"" + group.group + "\", \"chance\": " + group.chance + ", \"x\": ";
+
+		if (w != 1) {
+			line += "[ " + x + ", " + (x - 1 + w) + " ], ";
+		} else {
+			line += x + ", ";
+		}
+
+		line += " \"y\": ";
+
+		if (h != 1) {
+			line += "[ " + y + ", " + (y - 1 + h) + " ]";
+		} else {
+			line += y + "";
+		}
+
+		line += " }";
+
+		lines.add(line);
+
+		return lines;
+
 	}
 
 }

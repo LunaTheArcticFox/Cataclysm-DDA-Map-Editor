@@ -1,6 +1,9 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
-public class MapSettings {
+import java.util.ArrayList;
+import java.util.List;
+
+public class MapSettings implements Jsonable {
 
 	protected String overMapTerrain;
 	protected int weight = 200;
@@ -38,6 +41,18 @@ public class MapSettings {
 		return result;
 	}
 
+	@Override
+	public List<String> getJsonLines() {
 
+		List<String> lines = new ArrayList<>();
+
+		lines.add("\"type\": \"mapgen\"");
+		lines.add("\"om_terrain\": [ \"" + overMapTerrain + "\" ]");
+		lines.add("\"method\": \"json\"");
+		lines.add("\"weight\": " + weight);
+
+		return lines;
+
+	}
 
 }
