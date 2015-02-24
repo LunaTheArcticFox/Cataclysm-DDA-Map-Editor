@@ -50,7 +50,7 @@ public class MapEditor {
 	private MapRenderer renderer;
 
 	private UndoEvent undoEvent = new UndoEvent();
-	private Map<MapgenEntry, UndoBuffer> undoBuffers = new HashMap<>();
+	private Map<MapgenEntry, UndoBuffer> undoBuffers = new IdentityHashMap<>();
 	private Set<Point> changedTiles = new HashSet<>();
 	private boolean editing = false;
 

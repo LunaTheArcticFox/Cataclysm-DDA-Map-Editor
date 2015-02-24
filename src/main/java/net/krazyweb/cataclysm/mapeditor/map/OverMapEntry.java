@@ -24,13 +24,13 @@ public class OverMapEntry implements Jsonable {
 		lines.add(INDENT + "\"type\": \"overmap_terrain\",");
 		lines.add(INDENT + "\"id\": \"" + id + "\",");
 		lines.add(INDENT + "\"name\": \"" + name + "\",");
-		lines.add(INDENT + "\"rotate\": \"" + rotate + "\",");
-		lines.add(INDENT + "\"sym\": \"" + symbol + "\",");
+		lines.add(INDENT + "\"rotate\": " + rotate + ",");
+		lines.add(INDENT + "\"sym\": " + symbol + ",");
 		lines.add(INDENT + "\"color\": \"" + symbolColor + "\",");
-		lines.add(INDENT + "\"see_cost\": \"" + seeCost + "\",");
+		lines.add(INDENT + "\"see_cost\": " + seeCost + ",");
 		lines.add(INDENT + "\"extras\": \"" + extras + "\",");
-		lines.add(INDENT + "\"mondensity\": \"" + monsterDensity + "\",");
-		lines.add(INDENT + "\"sidewalk\": \"" + sidewalk + "\"");
+		lines.add(INDENT + "\"mondensity\": " + monsterDensity + ",");
+		lines.add(INDENT + "\"sidewalk\": " + sidewalk);
 		lines.add("}");
 
 		return lines;
