@@ -27,6 +27,7 @@ public class Tile {
 		tileGroups.put("t_window_boarded", "wallGroup");
 		tileGroups.put("t_window_empty", "wallGroup");
 		tileGroups.put("t_window_domestic", "wallGroup");
+		tileGroups.put("t_curtains", "wallGroup");
 		tileGroups.put("t_door_c", "wallGroup");
 		tileGroups.put("t_door_glass_c", "wallGroup");
 		tileGroups.put("t_door_locked", "wallGroup");

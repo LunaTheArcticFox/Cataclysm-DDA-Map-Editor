@@ -88,7 +88,7 @@ public class MapgenEntry implements Jsonable {
 
 		for (int x = 0; x < MapEditor.SIZE; x++) {
 			for (int y = 0; y < MapEditor.SIZE; y++) {
-				grassArray[x][y] = terrain[x][y].equals("t_grass");
+				grassArray[x][y] = terrain[x][y].equals("t_grass") && furniture[x][y].equals("f_null");
 			}
 		}
 

@@ -123,7 +123,6 @@ F t_floor f_arcade_machine
 # t_linoleum_gray f_counter
 O t_linoleum_white f_oven
 = t_rock_floor f_woodstove
-  t_concrete
 1 t_floor f_toilet
 ^ f_indoor_plant
 F t_linoleum_gray f_fridge
@@ -455,6 +454,7 @@ C t_concrete
 c t_concrete
 # t_floor f_tatami
 ] t_dirt f_ash
+  t_concrete
 4 t_concrete f_bench
 q t_shrub_strawberry
 d f_dumpster

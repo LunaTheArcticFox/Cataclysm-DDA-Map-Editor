@@ -140,7 +140,7 @@ public class PlaceGroupZone implements Jsonable {
 
 		List<String> lines = new ArrayList<>();
 
-		String line = "{ \"group\": \"" + group.group + "\", \"chance\": " + group.chance + ", \"x\": ";
+		String line = "{ \"" + group.type + "\": \"" + group.group + "\", \"chance\": " + group.chance + ", \"x\": ";
 
 		if (w != 1) {
 			line += "[ " + x + ", " + (x - 1 + w) + " ], ";
