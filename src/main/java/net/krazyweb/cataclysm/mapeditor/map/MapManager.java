@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.Map;
 
 public class MapManager implements UndoBufferListener {
@@ -37,7 +37,7 @@ public class MapManager implements UndoBufferListener {
 
 	private boolean listenerRegistered = false;
 
-	private Map<Tab, MapgenEntry> maps = new HashMap<>();
+	private Map<Tab, MapgenEntry> maps = new IdentityHashMap<>();
 
 	@FXML
 	public void initialize() {
@@ -114,10 +114,12 @@ public class MapManager implements UndoBufferListener {
 						oldTab.setContent(null);
 						mapEditor.getUndoBuffer().unregister(this);
 					}
-					newTab.setContent(mapContainer);
-					mapEditor.setMapgenEntry(maps.get(newTab));
-					mapEditor.getUndoBuffer().register(this);
-					updateUndoRedoText();
+					if (newTab != null) {
+						newTab.setContent(mapContainer);
+						mapEditor.setMapgenEntry(maps.get(newTab));
+						mapEditor.getUndoBuffer().register(this);
+						updateUndoRedoText();
+					}
 				});
 				listenerRegistered = true;
 			}
@@ -152,8 +154,8 @@ public class MapManager implements UndoBufferListener {
 
 		Tab tab = new Tab(map.settings.overMapTerrain); //TODO Rename tab when changed
 
-		root.getTabs().add(tab);
 		maps.put(tab, map);
+		root.getTabs().add(tab);
 
 	}
 
