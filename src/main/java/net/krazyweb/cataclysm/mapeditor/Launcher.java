@@ -5,11 +5,16 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Launcher extends Application {
 
+	private static Logger log = LogManager.getLogger(Launcher.class);
+
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
+		log.info("Starting Application");
 		try {
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/editorMain.fxml"));
 			loader.load();
@@ -22,7 +27,7 @@ public class Launcher extends Application {
 			primaryStage.setOnCloseRequest(event -> loader.<EditorMain>getController().requestClose()); //TODO Save on exit prompts
 			primaryStage.show();
 		} catch (Exception e) {
-			e.printStackTrace();
+			log.error("Error while starting or running application:", e);
 		}
 	}
 

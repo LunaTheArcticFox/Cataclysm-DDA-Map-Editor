@@ -3,7 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.tools;
 import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -16,7 +16,7 @@ public class LineTool extends Tool {
 	private boolean dragging = false;
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
@@ -24,14 +24,15 @@ public class LineTool extends Tool {
 	}
 
 	@Override
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+		map.startEdit();
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
 		dragging = true;
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		for (Point point : getLine(convertCoord(event.getX()), convertCoord(event.getY()))) {
 			map.setTile(point.x, point.y, tile);
@@ -40,7 +41,7 @@ public class LineTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
 		return dragging ? getLine(x, y) : super.getHighlight(x, y, tile, map);
 	}
 

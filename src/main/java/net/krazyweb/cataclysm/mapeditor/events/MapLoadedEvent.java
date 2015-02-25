@@ -1,16 +1,16 @@
 package net.krazyweb.cataclysm.mapeditor.events;
 
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
 public class MapLoadedEvent {
 
-	private final CataclysmMap map;
+	private final MapEditor map;
 
-	public MapLoadedEvent(final CataclysmMap map) {
+	public MapLoadedEvent(final MapEditor map) {
 		this.map = map;
 	}
 
-	public CataclysmMap getMap() {
+	public MapEditor getMap() {
 		return map;
 	}
 

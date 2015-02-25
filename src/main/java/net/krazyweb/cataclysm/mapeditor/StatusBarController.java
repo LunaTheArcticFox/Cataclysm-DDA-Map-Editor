@@ -30,7 +30,7 @@ public class StatusBarController {
 
 	@Subscribe
 	public void mapSavedEventListener(final MapSavedEvent event) {
-		statusBar.setText("Saved map to '" + event.getMap().getPath() + "'");
+		//TODO statusBar.setText("Saved map to '" + event.getMap().getPath() + "'");
 	}
 
 	@FXML

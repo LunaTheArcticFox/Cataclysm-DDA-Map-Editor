@@ -6,7 +6,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.TileSet;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -19,13 +19,13 @@ public abstract class Tool {
 		Tool.eventBus = eventBus;
 	}
 
-	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {}
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {}
-	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {}
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {}
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final CataclysmMap map) {}
+	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {}
+	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {}
+	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {}
+	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {}
+	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {}
 
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final CataclysmMap map) {
+	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
 		Set<Point> highlight = new HashSet<>();
 		highlight.add(new Point(x, y));
 		return highlight;

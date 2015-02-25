@@ -38,4 +38,9 @@ public class PlaceGroup {
 		return result;
 	}
 
+	@Override
+	public String toString() {
+		return "[Type: " + type + ", Group: " + group + ", Chance: " + chance + "]";
+	}
+
 }

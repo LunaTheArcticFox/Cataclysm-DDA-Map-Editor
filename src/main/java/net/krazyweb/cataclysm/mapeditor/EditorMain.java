@@ -5,17 +5,20 @@ import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.VPos;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
-import net.krazyweb.cataclysm.mapeditor.map.CataclysmMap;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,14 +26,13 @@ import java.nio.file.Paths;
 
 public class EditorMain {
 
+	private static Logger log = LogManager.getLogger(EditorMain.class);
+
 	@FXML
 	private BorderPane root;
 
 	@FXML
-	private ScrollPane mapPanel;
-
-	@FXML
-	private VBox tilePickerPanel, toolbarPanel;
+	private VBox tilePickerPanel, mapContainer;
 
 	@FXML
 	private MenuItem undoButton, redoButton;
@@ -39,8 +41,9 @@ public class EditorMain {
 	private CheckMenuItem showGridButton, showGroupsButton;
 
 	private EventBus eventBus = new EventBus();
+	private MapManager mapManager;
 	private Stage primaryStage;
-	private CataclysmMap map;
+	private MapEditor map;
 
 	@FXML
 	private void initialize() {
@@ -52,7 +55,7 @@ public class EditorMain {
 		try {
 			tilePickerLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
 		}
 		eventBus.register(tilePickerLoader.getController());
 		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
@@ -61,17 +64,28 @@ public class EditorMain {
 		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
 
 		eventBus.register(this);
-		eventBus.register(new MapLoader(eventBus));
+
+		FXMLLoader mapManagerLoader = new FXMLLoader(getClass().getResource("/fxml/mapManager.fxml"));
+		try {
+			mapManagerLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
+		}
+		eventBus.register(mapManagerLoader.<MapManager>getController());
+		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
+		mapManager = mapManagerLoader.<MapManager>getController();
+		mapContainer.getChildren().add(mapManagerLoader.<ScrollPane>getRoot());
 
 		//-> Toolbars
 		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
 		try {
 			mapToolbarLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
 		}
 		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
-		toolbarPanel.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
+		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
+		mapContainer.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
 
 		//Load each component in the main view and pass the model to them
 		//-> Status bar
@@ -79,38 +93,11 @@ public class EditorMain {
 		try {
 			statusBarLoader.load();
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
 		}
-		eventBus.register(statusBarLoader.<MapDisplay>getController());
+		eventBus.register(statusBarLoader.<MapRenderer>getController());
 		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
 		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
-
-		//-> Canvasses
-		FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/mapCanvasses.fxml"));
-		try {
-			loader.load();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		eventBus.register(loader.<MapDisplay>getController());
-		loader.<MapDisplay>getController().setEventBus(eventBus);
-
-		GridPane centeredContentPane = new GridPane();
-		centeredContentPane.add(loader.<ScrollPane>getRoot(), 0, 0);
-
-		RowConstraints row = new RowConstraints();
-		row.setPercentHeight(100);
-		row.setFillHeight(false);
-		row.setValignment(VPos.CENTER);
-		centeredContentPane.getRowConstraints().add(row);
-
-		ColumnConstraints column = new ColumnConstraints();
-		column.setPercentWidth(100);
-		column.setFillWidth(false);
-		column.setHalignment(HPos.CENTER);
-		centeredContentPane.getColumnConstraints().add(column);
-
-		mapPanel.setContent(centeredContentPane);
 
 		newFile();
 
@@ -135,28 +122,24 @@ public class EditorMain {
 	}
 
 	@Subscribe
-	public void updateUndoTextEventListener(final UpdateUndoTextEvent event) {
-		undoButton.setText("_Undo " + event.getText());
-		undoButton.setDisable(event.getText().isEmpty());
-	}
-
-	@Subscribe
-	public void updateRedoTextEventListener(final UpdateRedoTextEvent event) {
-		redoButton.setText("_Redo " + event.getText());
-		redoButton.setDisable(event.getText().isEmpty());
+	public void undoRedoPerformedEventListener(final UndoBufferChangedEvent event) {
+		undoButton.setText("_Undo " + event.getUndoText());
+		undoButton.setDisable(event.getUndoText().isEmpty());
+		redoButton.setText("_Redo " + event.getRedoText());
+		redoButton.setDisable(event.getRedoText().isEmpty());
 	}
 
 	private void refreshTitle() {
 
 		String title = "Cataclysm Map Editor - ";
 
-		if (map.getPath() != null) {
-			title += map.getPath().getFileName();
+		if (mapManager.getPath() != null) {
+			title += mapManager.getPath().getFileName();
 		} else {
 			title += "Untitled";
 		}
 
-		title += map.isSaved() ? "" : "*";
+		title += mapManager.isSaved() ? "" : "*";
 
 		primaryStage.setTitle(title);
 
@@ -164,7 +147,12 @@ public class EditorMain {
 
 	@FXML
 	private void newFile() {
-		eventBus.post(new RequestLoadMapEvent(Paths.get("templates").resolve("default.json")));
+		mapManager.load(Paths.get("templates").resolve("default.json"));
+	}
+
+	@FXML
+	private void newMap() {
+		mapManager.addMap(Paths.get("templates").resolve("default.json"));
 	}
 
 	@FXML
@@ -180,7 +168,7 @@ public class EditorMain {
 
 		File selectedFile = fileChooser.showOpenDialog(null);
 		if (selectedFile != null) {
-			eventBus.post(new RequestLoadMapEvent(selectedFile.toPath()));
+			mapManager.load(selectedFile.toPath());
 		}
 
 	}
@@ -188,10 +176,10 @@ public class EditorMain {
 	@FXML
 	private void saveFile() {
 
-		if (map.getPath() == null) {
+		if (mapManager.getPath() == null) {
 			saveFileAs();
 		} else {
-			eventBus.post(new RequestSaveMapEvent(map.getPath()));
+			mapManager.save();
 		}
 
 	}
@@ -209,14 +197,14 @@ public class EditorMain {
 
 		File selectedFile = fileChooser.showSaveDialog(null);
 		if (selectedFile != null) {
-			eventBus.post(new RequestSaveMapEvent(selectedFile.toPath()));
+			mapManager.save(selectedFile.toPath());
 		}
 
 	}
 
 	@FXML
 	private void revertFile() {
-		eventBus.post(new RequestRevertMapEvent());
+		mapManager.revert();
 	}
 
 	@FXML
@@ -226,12 +214,12 @@ public class EditorMain {
 
 	@FXML
 	private void undo() {
-		eventBus.post(new RequestUndoEvent());
+		mapManager.undo();
 	}
 
 	@FXML
 	private void redo() {
-		eventBus.post(new RequestRedoEvent());
+		mapManager.redo();
 	}
 
 	@FXML
