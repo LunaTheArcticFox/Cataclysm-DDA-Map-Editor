@@ -44,7 +44,6 @@ public class MapEditor {
 		TERRAIN, FURNITURE
 	}
 
-	protected MapgenEntry lastSavedState = null;
 	protected MapgenEntry currentMap;
 
 	private MapRenderer renderer;
@@ -114,6 +113,8 @@ public class MapEditor {
 			return;
 		}
 
+
+
 		String terrainBefore = getTerrainAt(x, y);
 		String furnitureBefore = getFurnitureAt(x, y);
 
@@ -142,6 +143,10 @@ public class MapEditor {
 	}
 
 	public void setTile(final Point location, final Layer layer, final String tile) {
+
+		if (location.x < 0 || location.y < 0 || location.x >= SIZE || location.y >= SIZE) {
+			return;
+		}
 
 		String terrainBefore = getTerrainAt(location.x, location.y);
 		String furnitureBefore = getFurnitureAt(location.x, location.y);
@@ -288,14 +293,6 @@ public class MapEditor {
 
 	public String getFurnitureAt(final int x, final int y) {
 		return getTileAt(x, y, Layer.FURNITURE);
-	}
-
-	protected void markSavePoint() {
-		lastSavedState = new MapgenEntry(currentMap);
-	}
-
-	protected boolean isSaved() {
-		return lastSavedState == null || currentMap.equals(lastSavedState);
 	}
 
 	protected void setMapgenEntry(final MapgenEntry mapgenEntry) {

@@ -14,7 +14,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
-import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 import org.apache.logging.log4j.LogManager;
@@ -43,7 +42,6 @@ public class EditorMain {
 	private EventBus eventBus = new EventBus();
 	private MapManager mapManager;
 	private Stage primaryStage;
-	private MapEditor map;
 
 	@FXML
 	private void initialize() {
@@ -109,8 +107,7 @@ public class EditorMain {
 	}
 
 	@Subscribe
-	public void mapLoadedEventListener(final MapLoadedEvent event) {
-		map = event.getMap();
+	public void mapLoadedEventListener(final FileLoadedEvent event) {
 		refreshTitle();
 		undoButton.setText("_Undo");
 		redoButton.setText("_Redo");
@@ -220,6 +217,11 @@ public class EditorMain {
 	@FXML
 	private void redo() {
 		mapManager.redo();
+	}
+
+	@FXML
+	private void mapProperties() {
+		mapManager.editMapProperties();
 	}
 
 	@FXML

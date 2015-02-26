@@ -10,6 +10,8 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
+import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
@@ -135,6 +137,8 @@ public class MapManager implements UndoBufferListener {
 			mapEditor.getUndoBuffer().register(this);
 			root.getTabs().get(0).setContent(mapContainer);
 
+			eventBus.post(new FileLoadedEvent());
+
 		});
 
 		dataFileReader.start();
@@ -207,9 +211,9 @@ public class MapManager implements UndoBufferListener {
 				}
 			}
 
+			overMapEntry.markSaved();
+
 		});
-
-
 
 		Collections.reverse(mapgenEntries);
 
@@ -221,6 +225,8 @@ public class MapManager implements UndoBufferListener {
 				String line = lines.remove(lines.size() - 1);
 				lines.add(line + ",");
 			}
+
+			map.markSaved();
 
 		});
 
@@ -295,8 +301,22 @@ public class MapManager implements UndoBufferListener {
 
 	}
 
+	public void editMapProperties() {
+
+	}
+
 	public boolean isSaved() {
-		return false; //TODO
+		for (MapgenEntry map : maps.values()) {
+			if (!map.isSaved()) {
+				return false;
+			}
+		}
+		for (OverMapEntry overMapEntry : overMapEntries) {
+			if (!overMapEntry.isSaved()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	public Path getPath() {
@@ -306,6 +326,7 @@ public class MapManager implements UndoBufferListener {
 	@Override
 	public void undoBufferChanged() {
 		updateUndoRedoText();
+		eventBus.post(new MapChangedEvent());
 	}
 
 }

@@ -30,6 +30,8 @@ public class MapgenEntry implements Jsonable {
 	protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 	protected MapSettings settings = new MapSettings();
 
+	private MapgenEntry lastSavedState;
+
 	protected MapgenEntry() {
 
 	}
@@ -43,6 +45,14 @@ public class MapgenEntry implements Jsonable {
 		}
 		mapgenEntry.placeGroupZones.forEach(zone -> placeGroupZones.add(new PlaceGroupZone(zone)));
 		settings = new MapSettings(mapgenEntry.settings);
+	}
+
+	public boolean isSaved() {
+		return this.equals(lastSavedState);
+	}
+
+	public void markSaved() {
+		lastSavedState = new MapgenEntry(this);
 	}
 
 	@Override

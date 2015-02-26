@@ -43,7 +43,8 @@
 					<accelerator><KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
 			</Menu>
-			<Menu text="_Tools">
+			<Menu text="_Map">
+				<MenuItem text="Properties" onAction="#mapProperties"/>
 			</Menu>
 			<Menu text="_View">
 				<CheckMenuItem mnemonicParsing="false" text="Grid" fx:id="showGridButton" onAction="#toggleGrid"/>

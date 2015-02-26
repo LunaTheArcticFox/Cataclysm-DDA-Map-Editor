@@ -145,6 +145,7 @@ public class DataFileReader extends Service<Boolean> {
 			map.placeGroupZones.addAll(loadPlaceGroupZones(object.get("place_groups")));
 		}
 
+		map.markSaved();
 		maps.add(map);
 
 		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
@@ -167,6 +168,7 @@ public class DataFileReader extends Service<Boolean> {
 		entry.extras = root.get("extras").asText();
 		entry.monsterDensity = root.get("mondensity").asInt();
 		entry.sidewalk = root.get("sidewalk").asBoolean();
+		entry.markSaved();
 
 		overMapEntries.add(entry);
 
