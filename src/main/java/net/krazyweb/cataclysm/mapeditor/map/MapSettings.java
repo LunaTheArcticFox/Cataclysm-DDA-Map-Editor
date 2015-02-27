@@ -56,4 +56,9 @@ public class MapSettings implements Jsonable {
 
 	}
 
+	@Override
+	public String toString() {
+		return "MapSettings[Overmap Terrain: " + overMapTerrain + ", Weight: " + weight + "]";
+	}
+
 }
