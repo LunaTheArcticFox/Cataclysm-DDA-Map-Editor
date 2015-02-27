@@ -1,6 +1,12 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
+import javafx.geometry.Insets;
+import javafx.scene.control.ButtonBar;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.undo.*;
@@ -112,8 +118,6 @@ public class MapEditor {
 		if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
 			return;
 		}
-
-
 
 		String terrainBefore = getTerrainAt(x, y);
 		String furnitureBefore = getFurnitureAt(x, y);
@@ -305,6 +309,55 @@ public class MapEditor {
 
 	public UndoBuffer getUndoBuffer() {
 		return undoBuffers.get(currentMap);
+	}
+
+	public void editMapProperties(){
+
+		Dialog<MapSettings> settingsDialog = new Dialog<>();
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(10);
+		grid.setPadding(new Insets(20, 150, 10, 10));
+
+		TextField overMapTerrain = new TextField(currentMap.settings.overMapTerrain);
+		grid.add(overMapTerrain, 1, 1);
+
+		TextField weight = new TextField(currentMap.settings.weight + "");
+		grid.add(weight, 1, 2);
+
+		settingsDialog.getDialogPane().setContent(grid);
+
+		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		settingsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+		settingsDialog.setResultConverter(dialogButton -> {
+			if (dialogButton == saveButtonType) {
+				return new MapSettings(overMapTerrain.getText(), Integer.parseInt(weight.getText()));
+			}
+			return null;
+		});
+
+		Optional<MapSettings> result = settingsDialog.showAndWait();
+
+		result.ifPresent(mapSettings -> {
+			startEdit();
+			setMapSettings(mapSettings);
+			finishEdit("Edit Map Settings");
+		});
+
+	}
+
+	public void setMapSettings(final MapSettings mapSettings) {
+
+		MapSettings old = currentMap.settings;
+
+		currentMap.settings = mapSettings;
+
+		if (editing) {
+			undoEvent.addAction(new MapSettingsChangeAction(this, old, mapSettings));
+		}
+
 	}
 
 	@Override

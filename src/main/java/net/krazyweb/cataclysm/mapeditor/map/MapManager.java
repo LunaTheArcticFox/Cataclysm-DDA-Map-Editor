@@ -301,8 +301,12 @@ public class MapManager implements UndoBufferListener {
 
 	}
 
-	public void editMapProperties() {
+	private void refreshTabName() {
+		root.getSelectionModel().getSelectedItem().setText(mapEditor.currentMap.settings.overMapTerrain);
+	}
 
+	public void editMapProperties() {
+		mapEditor.editMapProperties();
 	}
 
 	public boolean isSaved() {
@@ -326,6 +330,7 @@ public class MapManager implements UndoBufferListener {
 	@Override
 	public void undoBufferChanged() {
 		updateUndoRedoText();
+		refreshTabName();
 		eventBus.post(new MapChangedEvent());
 	}
 

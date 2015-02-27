@@ -17,21 +17,22 @@ public class MapSettings implements Jsonable {
 		weight = mapSettings.weight;
 	}
 
+	public MapSettings(final String overMapTerrain, final int weight) {
+		this.overMapTerrain = overMapTerrain;
+		this.weight = weight;
+	}
+
 	@Override
 	public boolean equals(Object o) {
-
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		MapSettings mapSettings = (MapSettings) o;
+		MapSettings that = (MapSettings) o;
 
-		if (weight != mapSettings.weight) return false;
-		if (overMapTerrain != null ? !overMapTerrain.equals(mapSettings.overMapTerrain) : mapSettings.overMapTerrain != null) {
-			return false;
-		}
+		if (weight != that.weight) return false;
+		if (!overMapTerrain.equals(that.overMapTerrain)) return false;
 
 		return true;
-
 	}
 
 	@Override
