@@ -75,26 +75,55 @@ public class DataFileReader extends Service<Boolean> {
 			placeGroupDef.fields().forEachRemaining(field -> {
 				switch (field.getKey()) {
 					case "x":
+
 						if (field.getValue().isArray()) {
-							zone.x = field.getValue().get(0).asInt();
-							zone.w = field.getValue().get(1).asInt() - field.getValue().get(0).asInt() + 1;
+
+							int x1 = field.getValue().get(0).asInt();
+							int x2 = field.getValue().get(1).asInt();
+
+							if (x1 > x2) {
+								int temp = x1;
+								x1 = x2;
+								x2 = temp;
+							}
+
+							zone.x = x1;
+							zone.w = x2 - x1 + 1;
+
 						} else {
+
 							zone.x = field.getValue().asInt();
 							zone.w = 1;
+
 						}
+
 						break;
+
 					case "y":
 						if (field.getValue().isArray()) {
-							zone.y = field.getValue().get(0).asInt();
-							zone.h = field.getValue().get(1).asInt() - field.getValue().get(0).asInt() + 1;
+
+							int y1 = field.getValue().get(0).asInt();
+							int y2 = field.getValue().get(1).asInt();
+
+							if (y1 > y2) {
+								int temp = y1;
+								y1 = y2;
+								y2 = temp;
+							}
+
+							zone.y = y1;
+							zone.h = y2 - y1 + 1;
+
 						} else {
 							zone.y = field.getValue().asInt();
 							zone.h = 1;
 						}
 						break;
+
 					case "chance":
 						zone.group.chance = field.getValue().asInt();
 						break;
+
 				}
 			});
 			zones.add(zone);
