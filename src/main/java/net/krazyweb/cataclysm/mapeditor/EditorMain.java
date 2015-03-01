@@ -48,6 +48,9 @@ public class EditorMain {
 
 		eventBus.register(ApplicationSettings.getInstance());
 
+		showGridButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
+		showGroupsButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
+
 		Tool.setEventBus(eventBus);
 
 		//-> Tile picker
@@ -255,6 +258,7 @@ public class EditorMain {
 	}
 
 	public void requestClose() {
+		ApplicationSettings.getInstance().save();
 		//TODO Create modal dialogue class to ask for save on exit
 		Platform.exit();
 	}

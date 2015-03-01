@@ -108,6 +108,8 @@ public class MapRenderer {
 		grid.setManaged(false); //TODO Use setting as of last run, default to hidden
 		grid.setVisible(false); //TODO Use setting as of last run, default to hidden
 		drawGrid();
+		grid.setManaged(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
+		grid.setVisible(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
 	}
 
 	public void setEventBus(final EventBus eventBus) {
