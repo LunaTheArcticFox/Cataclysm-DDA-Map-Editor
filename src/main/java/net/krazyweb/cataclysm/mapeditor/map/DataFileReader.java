@@ -134,8 +134,12 @@ public class DataFileReader extends Service<Boolean> {
 						break;
 
 					case "repeat":
-						zone.repeatMin = field.getValue().get(0).asInt();
-						zone.repeatMax = field.getValue().get(1).asInt();
+						if (field.getValue().isArray()) {
+							zone.repeatMin = field.getValue().get(0).asInt();
+							zone.repeatMax = field.getValue().get(1).asInt();
+						} else {
+							zone.repeatMin = field.getValue().asInt();
+						}
 						break;
 
 				}

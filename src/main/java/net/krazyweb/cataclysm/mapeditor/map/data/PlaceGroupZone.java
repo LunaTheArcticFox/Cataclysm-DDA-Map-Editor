@@ -162,6 +162,8 @@ public class PlaceGroupZone implements Jsonable {
 
 		if (repeatMin != -1 && repeatMax != -1) {
 			line += ", \"repeat\": [ " + repeatMin + ", " + repeatMax + " ]";
+		} else if (repeatMin != -1) {
+			line += ", \"repeat\": " + repeatMin;
 		}
 
 		line += " }";
