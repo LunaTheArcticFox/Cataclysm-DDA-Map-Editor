@@ -49,16 +49,24 @@ public class EditPlaceGroupTool extends Tool {
 			}
 		} else {
 
-			if (map.getPlaceGroupZoneAt(x, y) != null) {
+			if ((placeGroupZone = map.getPlaceGroupZoneAt(x, y)) != null) {
 
 				MenuItem edit = new MenuItem("Edit");
+				MenuItem duplicate = new MenuItem("Duplicate");
 				MenuItem delete = new MenuItem("Delete");
 				MenuItem cancel = new MenuItem("Cancel");
 
-				ContextMenu menu = new ContextMenu(edit, delete, new SeparatorMenuItem(), cancel);
+				ContextMenu menu = new ContextMenu(edit, duplicate, delete, new SeparatorMenuItem(), cancel);
 				menu.setAutoHide(true);
 
 				edit.setOnAction(action -> editPlaceGroupZone(map.getPlaceGroupZoneAt(x, y), map));
+				duplicate.setOnAction(action -> {
+					map.startEdit();
+					PlaceGroupZone newZone = new PlaceGroupZone(placeGroupZone);
+					newZone.refreshColors();
+					map.addPlaceGroupZone(0, newZone);
+					map.finishEdit("Duplicate PlaceGroup");
+				});
 				delete.setOnAction(action -> {
 					map.startEdit();
 					map.removePlaceGroupZone(placeGroupZone);

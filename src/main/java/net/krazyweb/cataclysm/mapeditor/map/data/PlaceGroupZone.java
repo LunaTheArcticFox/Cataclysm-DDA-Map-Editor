@@ -110,6 +110,14 @@ public class PlaceGroupZone implements Jsonable {
 		return bounds.contains(x, y);
 	}
 
+	public void refreshColors() {
+		fillColor = ZONE_COLORS[currentZoneColor][0];
+		strokeColor = ZONE_COLORS[currentZoneColor][1];
+		if (++currentZoneColor >= ZONE_COLORS.length) {
+			currentZoneColor = 0;
+		}
+	}
+
 	@Override
 	public boolean equals(Object o) {
 
