@@ -111,6 +111,8 @@ public class MapManager implements UndoBufferListener {
 			log.error("Error while determining if '" + path.toAbsolutePath() + "' is the same file as the default template:", e);
 		}
 
+		overMapEntries.clear();
+		itemGroupEntries.clear();
 		maps.values().forEach(eventBus::unregister);
 		maps.clear();
 		root.getTabs().clear();
