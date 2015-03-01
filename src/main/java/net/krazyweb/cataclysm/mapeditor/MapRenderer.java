@@ -29,6 +29,7 @@ import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -194,7 +195,7 @@ public class MapRenderer {
 		}
 	}
 
-	//TODO Attempt optimization
+	//TODO Attempt optimization!
 	private void updateOverlays(final Set<Point> highlight) {
 
 		clearOverlay();
@@ -203,31 +204,43 @@ public class MapRenderer {
 
 		GraphicsContext context = overlays.getGraphicsContext2D();
 
+		Set<Rectangle> patches = new HashSet<>();
+
 		context.setGlobalAlpha(0.75);
 		for (Point point : highlight) {
 
-			double xMod = 0;
-			double yMod = 0;
+			boolean adjBelow = false;
+			boolean adjRight = false;
+			boolean adjDiag = false;
 
 			for (Point point1 : highlight) {
 				if (point1 != point) {
-					if (point.x == point1.x - 1 && point.y == point.y - 1) {
-						xMod = xMod + 1.0;
-						yMod = yMod + 1.0;
+					if (point.x == point1.x - 1 && point.y == point1.y - 1) {
+						adjDiag = true;
 					} else if (point.x == point1.x - 1 && point.y == point1.y) {
-						xMod = xMod + 1.0;
+						patches.add(new Rectangle(point.x * 32 + 31.5, point.y * 32 + 0.5, 2, 31)); //TODO Use tileset size
+						adjRight = true;
 					} else if (point.x == point1.x && point.y == point1.y - 1) {
-						yMod = yMod + 1.0;
+						patches.add(new Rectangle(point.x * 32 + 0.5, point.y * 32 + 31.5, 31, 2)); //TODO Use tileset size
+						adjBelow = true;
 					}
 				}
 			}
 
-			Rectangle r = new Rectangle(point.x * 32 + 0.5, point.y * 32 + 0.5, 32 + xMod, 32 + yMod); //TODO Use tileset size
+			Rectangle r = new Rectangle(
+					point.x * 32 + 0.5,
+					point.y * 32 + 0.5,
+					32 + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
+					32 + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0)); //TODO Use tileset size
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
 
 			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32); //TODO Bitwise map tile previews
 
+		}
+		for (Rectangle r : patches) {
+			r.setFill(Color.WHITE);
+			path = Shape.union(path, r);
 		}
 		context.setGlobalAlpha(1.0);
 
