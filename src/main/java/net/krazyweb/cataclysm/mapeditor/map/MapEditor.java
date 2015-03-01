@@ -1,12 +1,11 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.google.common.eventbus.EventBus;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
-import javafx.scene.control.ButtonBar;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.undo.*;
@@ -314,17 +313,29 @@ public class MapEditor {
 	public void editMapProperties(){
 
 		Dialog<MapSettings> settingsDialog = new Dialog<>();
+		settingsDialog.setTitle("Edit Map Properties");
 
 		GridPane grid = new GridPane();
 		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(20, 150, 10, 10));
+		grid.setVgap(15);
+		grid.setPadding(new Insets(0, 10, 10, 10));
 
 		TextField overMapTerrain = new TextField(currentMap.settings.overMapTerrain);
-		grid.add(overMapTerrain, 1, 1);
+
+		VBox terrainBox = new VBox();
+		terrainBox.setSpacing(5);
+		terrainBox.getChildren().add(new Label("Terrain:"));
+		terrainBox.getChildren().add(overMapTerrain);
+
+		grid.add(terrainBox, 1, 1);
 
 		TextField weight = new TextField(currentMap.settings.weight + "");
-		grid.add(weight, 1, 2);
+
+		VBox weightBox = new VBox();
+		weightBox.setSpacing(5);
+		weightBox.getChildren().add(new Label("Weight:"));
+		weightBox.getChildren().add(weight);
+		grid.add(weightBox, 1, 2);
 
 		settingsDialog.getDialogPane().setContent(grid);
 
@@ -338,12 +349,16 @@ public class MapEditor {
 			return null;
 		});
 
+		Platform.runLater(overMapTerrain::requestFocus);
+
 		Optional<MapSettings> result = settingsDialog.showAndWait();
 
 		result.ifPresent(mapSettings -> {
-			startEdit();
-			setMapSettings(mapSettings);
-			finishEdit("Edit Map Settings");
+			if (!mapSettings.equals(currentMap.settings)) {
+				startEdit();
+				setMapSettings(mapSettings);
+				finishEdit("Edit Map Settings");
+			}
 		});
 
 	}
