@@ -24,12 +24,16 @@ public class PlaceGroupZone implements Jsonable {
 	private static int currentZoneColor = 0;
 
 	public Rectangle bounds = new Rectangle();
+	public int repeatMin = -1;
+	public int repeatMax = -1;
 	public Color fillColor;
 	public Color strokeColor;
 	public PlaceGroup group;
 
 	public PlaceGroupZone(final PlaceGroupZone zone) {
 		this.bounds = new Rectangle(zone.bounds);
+		this.repeatMin = zone.repeatMin;
+		this.repeatMax = zone.repeatMax;
 		this.fillColor = zone.fillColor;
 		this.strokeColor = zone.strokeColor;
 		this.group = new PlaceGroup(zone.group);
@@ -47,6 +51,12 @@ public class PlaceGroupZone implements Jsonable {
 	public PlaceGroupZone(final int x1, final int x2, final int y1, final int y2, final PlaceGroup group) {
 		this(group);
 		bounds = new Rectangle(x1, x2, y1, y2);
+	}
+
+	public PlaceGroupZone(final int x1, final int x2, final int y1, final int y2, final int repeatMin, final int repeatMax, final PlaceGroup group) {
+		this(x1, x2, y1, y2, group);
+		this.repeatMin = repeatMin;
+		this.repeatMax = repeatMax;
 	}
 
 	public void rotate() {
@@ -106,22 +116,25 @@ public class PlaceGroupZone implements Jsonable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		PlaceGroupZone zone = (PlaceGroupZone) o;
+		PlaceGroupZone that = (PlaceGroupZone) o;
 
-		return bounds.equals(zone.bounds) && group.equals(zone.group);
+		return repeatMax == that.repeatMax && repeatMin == that.repeatMin && bounds.equals(that.bounds) && group.equals(that.group);
 
 	}
 
 	@Override
 	public int hashCode() {
 		int result = bounds.hashCode();
+		result = 31 * result + repeatMin;
+		result = 31 * result + repeatMax;
 		result = 31 * result + group.hashCode();
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "[Group: " + group + ", Bounds: " + bounds + ", Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
+		return "[Group: " + group + ", Bounds: " + bounds + ", Repeat: [" + repeatMin + ", " + repeatMax + "], " +
+				"Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
 	}
 
 	@Override
@@ -145,6 +158,10 @@ public class PlaceGroupZone implements Jsonable {
 			line += "[ " + croppedBounds.y1 + ", " + croppedBounds.y2 + " ]";
 		} else {
 			line += croppedBounds.y1 + "";
+		}
+
+		if (repeatMin != -1 && repeatMax != -1) {
+			line += ", \"repeat\": [ " + repeatMin + ", " + repeatMax + " ]";
 		}
 
 		line += " }";

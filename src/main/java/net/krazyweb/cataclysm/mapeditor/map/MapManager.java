@@ -14,10 +14,7 @@ import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
-import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
-import net.krazyweb.cataclysm.mapeditor.map.data.Jsonable;
-import net.krazyweb.cataclysm.mapeditor.map.data.MapgenEntry;
-import net.krazyweb.cataclysm.mapeditor.map.data.OverMapEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.*;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -49,6 +46,7 @@ public class MapManager implements UndoBufferListener {
 	private Map<Tab, MapgenEntry> maps = new IdentityHashMap<>();
 	private List<MapgenEntry> mapInsertionOrder = new ArrayList<>();
 	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
+	private List<MonsterGroupEntry> monsterGroupEntries = new ArrayList<>();
 	private List<OverMapEntry> overMapEntries = new ArrayList<>();
 
 	@FXML
@@ -111,8 +109,9 @@ public class MapManager implements UndoBufferListener {
 			log.error("Error while determining if '" + path.toAbsolutePath() + "' is the same file as the default template:", e);
 		}
 
-		overMapEntries.clear();
 		itemGroupEntries.clear();
+		monsterGroupEntries.clear();
+		overMapEntries.clear();
 		maps.values().forEach(eventBus::unregister);
 		maps.clear();
 		root.getTabs().clear();
@@ -124,6 +123,7 @@ public class MapManager implements UndoBufferListener {
 		dataFileReader.setOnSucceeded(event -> {
 
 			itemGroupEntries.addAll(dataFileReader.getItemGroupEntries());
+			monsterGroupEntries.addAll(dataFileReader.getMonsterGroupEntries());
 			overMapEntries.addAll(dataFileReader.getOverMapEntries());
 
 			dataFileReader.getMaps().forEach(this::loadMap);
@@ -216,13 +216,31 @@ public class MapManager implements UndoBufferListener {
 				String line = lines.remove(lines.size() - 1);
 				lines.add(line + ",");
 			} else if (itemGroupEntries.indexOf(itemGroupEntry) == itemGroupEntries.size() - 1) {
-				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0) {
+				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0 || monsterGroupEntries.size() > 0) {
 					String line = lines.remove(lines.size() - 1);
 					lines.add(line + ",");
 				}
 			}
 
 			itemGroupEntry.markSaved();
+
+		});
+
+		monsterGroupEntries.forEach(monsterGroupEntry -> {
+
+			monsterGroupEntry.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
+
+			if (monsterGroupEntries.indexOf(monsterGroupEntry) != monsterGroupEntries.size() - 1) {
+				String line = lines.remove(lines.size() - 1);
+				lines.add(line + ",");
+			} else if (monsterGroupEntries.indexOf(monsterGroupEntry) == monsterGroupEntries.size() - 1) {
+				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0) {
+					String line = lines.remove(lines.size() - 1);
+					lines.add(line + ",");
+				}
+			}
+
+			monsterGroupEntry.markSaved();
 
 		});
 

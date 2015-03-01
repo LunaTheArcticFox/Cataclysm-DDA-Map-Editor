@@ -25,6 +25,7 @@ public class DataFileReader extends Service<Boolean> {
 
 	private List<MapgenEntry> maps = new ArrayList<>();
 	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
+	private List<MonsterGroupEntry> monsterGroupEntries = new ArrayList<>();
 	private List<OverMapEntry> overMapEntries = new ArrayList<>();
 	private EventBus eventBus;
 
@@ -50,6 +51,10 @@ public class DataFileReader extends Service<Boolean> {
 
 	public List<ItemGroupEntry> getItemGroupEntries() {
 		return itemGroupEntries;
+	}
+
+	public List<MonsterGroupEntry> getMonsterGroupEntries() {
+		return monsterGroupEntries;
 	}
 
 	public List<OverMapEntry> getOverMapEntries() {
@@ -128,6 +133,11 @@ public class DataFileReader extends Service<Boolean> {
 						zone.group.chance = field.getValue().asInt();
 						break;
 
+					case "repeat":
+						zone.repeatMin = field.getValue().get(0).asInt();
+						zone.repeatMax = field.getValue().get(1).asInt();
+						break;
+
 				}
 			});
 			zones.add(zone);
@@ -204,6 +214,32 @@ public class DataFileReader extends Service<Boolean> {
 
 	}
 
+	private void loadMonsterGroupSection(final JsonNode root) {
+
+		log.info("Loading Monster Group section.");
+		long startTime = System.nanoTime();
+
+		MonsterGroupEntry entry = new MonsterGroupEntry();
+
+		entry.name = root.get("name").asText();
+		entry.defaultGroup = root.get("default").asText();
+
+		root.get("monsters").forEach(monsterGroupMonster -> {
+			MonsterGroupMonster monster = new MonsterGroupMonster();
+			monster.monster = monsterGroupMonster.get("monster").asText();
+			monster.frequency = monsterGroupMonster.get("freq").asInt();
+			monster.multiplier = monsterGroupMonster.get("cost_multiplier").asInt();
+			entry.monsters.add(monster);
+		});
+
+		entry.markSaved();
+
+		monsterGroupEntries.add(entry);
+
+		log.info("Loaded Monster Group section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
+
+	}
+
 	private void loadOverMapSection(final JsonNode root) {
 
 		log.info("Loading OverMap section.");
@@ -249,6 +285,10 @@ public class DataFileReader extends Service<Boolean> {
 
 					case "item_group":
 						loadItemGroupSection(root);
+						break;
+
+					case "monstergroup":
+						loadMonsterGroupSection(root);
 						break;
 
 					case "overmap_terrain":
