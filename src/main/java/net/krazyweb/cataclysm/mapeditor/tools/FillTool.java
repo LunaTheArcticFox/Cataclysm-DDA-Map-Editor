@@ -5,26 +5,30 @@ import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.Stack;
 
 public class FillTool extends Tool {
 
 	@Override
 	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
-		map.startEdit();
+		Set<Point> toFill = getFill(convertCoord(event.getX()), convertCoord(event.getY()), tile, map);
 
-		for (Point point : getFill(convertCoord(event.getX()), convertCoord(event.getY()), tile, map)) {
-			map.setTile(point.x, point.y, tile);
+		if (!toFill.isEmpty()) {
+			map.startEdit();
+			toFill.forEach(point -> map.setTile(point.x, point.y, tile));
+			map.finishEdit("Fill");
 		}
-
-		map.finishEdit("Fill");
 
 	}
 
 	@Override
 	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
-		return getFill(x, y, tile, map);
+		Set<Point> toFill = getFill(x, y, tile, map);
+		toFill.add(new Point(x, y));
+		return toFill;
 	}
 
 	private Set<Point> getFill(final int x, final int y, final Tile tile, final MapEditor map) {
@@ -34,7 +38,9 @@ public class FillTool extends Tool {
 		String targetTile = map.getTileAt(x, y, layer);
 
 		Stack<Point> fillQueue = new Stack<>();
-		fillQueue.push(new Point(x, y));
+		if (!isSameTile(map.getTileAt(x, y, layer), tile.getID())) {
+			fillQueue.push(new Point(x, y));
+		}
 
 		Set<Point> toFill = new HashSet<>();
 
