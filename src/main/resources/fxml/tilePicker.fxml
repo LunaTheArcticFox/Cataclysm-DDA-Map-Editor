@@ -3,9 +3,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <VBox fx:controller="net.krazyweb.cataclysm.mapeditor.TilePicker" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-	<ToolBar prefHeight="30.0" prefWidth="200.0">
-		<Button mnemonicParsing="false" text="Button"/>
-	</ToolBar>
 	<ScrollPane focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS" fx:id="tilePaneContainer">
 		<TilePane prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer">
 			<ToolBar/>
