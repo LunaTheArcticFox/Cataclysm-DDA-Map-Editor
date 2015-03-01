@@ -205,10 +205,29 @@ public class MapRenderer {
 
 		context.setGlobalAlpha(0.75);
 		for (Point point : highlight) {
-			Rectangle r = new Rectangle(point.x * 32, point.y * 32, 32, 32); //TODO Use tileset size
+
+			double xMod = 0;
+			double yMod = 0;
+
+			for (Point point1 : highlight) {
+				if (point1 != point) {
+					if (point.x == point1.x - 1 && point.y == point.y - 1) {
+						xMod = xMod + 1.0;
+						yMod = yMod + 1.0;
+					} else if (point.x == point1.x - 1 && point.y == point1.y) {
+						xMod = xMod + 1.0;
+					} else if (point.x == point1.x && point.y == point1.y - 1) {
+						yMod = yMod + 1.0;
+					}
+				}
+			}
+
+			Rectangle r = new Rectangle(point.x * 32 + 0.5, point.y * 32 + 0.5, 32 + xMod, 32 + yMod); //TODO Use tileset size
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
+
 			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32); //TODO Bitwise map tile previews
+
 		}
 		context.setGlobalAlpha(1.0);
 
@@ -216,7 +235,7 @@ public class MapRenderer {
 
 		context.setFill(new Color(1, 1, 1, 0.2));
 		context.setStroke(new Color(1, 1, 1, 0.75));
-		context.setLineWidth(2);
+		context.setLineWidth(1);
 
 		context.beginPath();
 		context.appendSVGPath(ShapeConverter.shapeToSvgString(path));
@@ -229,14 +248,27 @@ public class MapRenderer {
 	private void drawGrid() {
 
 		GraphicsContext context = grid.getGraphicsContext2D();
+		grid.setOpacity(0.25);
 
-		context.setStroke(new Color(1, 1, 1, 0.8));
-		context.setLineWidth(0.5);
+		context.setStroke(Color.WHITE);
+		context.setLineWidth(1);
 
 		for (int i = 0; i < MapEditor.SIZE; i++) {
-			context.strokeLine(i * 32, 0, i * 32, 768);
-			context.strokeLine(0, i * 32, 768, i * 32);
+			double loc = i * 32 + 0.5;
+			context.moveTo(loc, 0);
+			context.lineTo(loc, 768);
+			context.moveTo(0, loc);
+			context.lineTo(768, loc);
+			context.stroke();
 		}
+
+		double loc = MapEditor.SIZE * 32 - 0.5;
+
+		context.moveTo(loc, 0);
+		context.lineTo(loc, 768);
+		context.moveTo(0, loc);
+		context.lineTo(768, loc);
+		context.stroke();
 
 	}
 
@@ -300,8 +332,8 @@ public class MapRenderer {
 			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
 			graphicsContext.setFill(placeGroupZone.fillColor);
 			graphicsContext.setStroke(placeGroupZone.strokeColor);
-			graphicsContext.fillRect(placeGroupZone.bounds.x1 * 32, placeGroupZone.bounds.y1 * 32, placeGroupZone.bounds.getWidth() * 32, placeGroupZone.bounds.getHeight() * 32); //TODO Use tileset size
-			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * 32, placeGroupZone.bounds.y1 * 32, placeGroupZone.bounds.getWidth() * 32, placeGroupZone.bounds.getHeight() * 32); //TODO Use tileset size
+			graphicsContext.fillRect(placeGroupZone.bounds.x1 * 32 + 0.5, placeGroupZone.bounds.y1 * 32 + 0.5, placeGroupZone.bounds.getWidth() * 32 - 1, placeGroupZone.bounds.getHeight() * 32 - 1); //TODO Use tileset size
+			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * 32 + 0.5, placeGroupZone.bounds.y1 * 32 + 0.5, placeGroupZone.bounds.getWidth() * 32 - 1, placeGroupZone.bounds.getHeight() * 32 - 1); //TODO Use tileset size
 		}
 	}
 
