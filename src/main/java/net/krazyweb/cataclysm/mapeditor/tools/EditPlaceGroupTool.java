@@ -48,12 +48,18 @@ public class EditPlaceGroupTool extends Tool {
 			if (map.getPlaceGroupZoneAt(x, y) != null) {
 
 				MenuItem edit = new MenuItem("Edit");
+				MenuItem delete = new MenuItem("Delete");
 				MenuItem cancel = new MenuItem("Cancel");
 
-				ContextMenu menu = new ContextMenu(edit, new SeparatorMenuItem(), cancel);
+				ContextMenu menu = new ContextMenu(edit, delete, new SeparatorMenuItem(), cancel);
 				menu.setAutoHide(true);
 
 				edit.setOnAction(action -> editPlaceGroupZone(map.getPlaceGroupZoneAt(x, y), map));
+				delete.setOnAction(action -> {
+					map.startEdit();
+					map.removePlaceGroupZone(placeGroupZone);
+					map.finishEdit("Delete PlaceGroup");
+				});
 				cancel.setOnAction(action -> menu.hide());
 
 				menu.show(rootNode, event.getScreenX(), event.getScreenY());
@@ -67,12 +73,13 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
-		if (event.getButton() != MouseButton.PRIMARY) {
+		lastX = convertCoord(event.getX());
+		lastY = convertCoord(event.getY());
+
+		if (event.getButton() != MouseButton.PRIMARY || map.getPlaceGroupZonesAt(lastX, lastY).isEmpty()) {
 			return;
 		}
 
-		lastX = convertCoord(event.getX());
-		lastY = convertCoord(event.getY());
 		placeGroupZone = map.getPlaceGroupZoneAt(lastX, lastY);
 		originalBounds = new Rectangle(placeGroupZone.bounds);
 		if (placeGroupZone != null) {
