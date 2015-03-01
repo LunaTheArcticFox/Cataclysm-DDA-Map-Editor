@@ -1,17 +1,17 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
+import net.krazyweb.util.Rectangle;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,6 +20,8 @@ public class EditPlaceGroupTool extends Tool {
 
 	private int lastX;
 	private int lastY;
+
+	private Rectangle originalBounds;
 
 	private PlaceGroupZone placeGroupZone;
 
@@ -72,6 +74,7 @@ public class EditPlaceGroupTool extends Tool {
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
 		placeGroupZone = map.getPlaceGroupZoneAt(lastX, lastY);
+		originalBounds = new Rectangle(placeGroupZone.bounds);
 		if (placeGroupZone != null) {
 			map.startEdit();
 		}
@@ -111,8 +114,10 @@ public class EditPlaceGroupTool extends Tool {
 		}
 
 		drag(event, tile, rootNode, map);
+		removeOutOfBounds(placeGroupZone, map);
+
 		map.finishEdit("Move PlaceGroup");
-		//TODO Crop zone to map boundaries (only on drag end)
+
 	}
 
 	@Override
@@ -120,10 +125,15 @@ public class EditPlaceGroupTool extends Tool {
 
 		Set<Point> area = new HashSet<>();
 
+		if (!ApplicationSettings.getInstance().showGroups()) {
+			area.add(new Point(x, y));
+			return area;
+		}
+
 		PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
 		if (zone != null) {
-			for (int ix = zone.x; ix < zone.x + zone.w; ix++) {
-				for (int iy = zone.y; iy < zone.y + zone.h; iy++) {
+			for (int ix = zone.bounds.x1; ix < zone.bounds.x2 + 1; ix++) {
+				for (int iy = zone.bounds.y1; iy < zone.bounds.y2 + 1; iy++) {
 					area.add(new Point(ix, iy));
 				}
 			}
@@ -138,6 +148,33 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public Image getHighlightTile(final Tile tile) {
 		return null;
+	}
+
+	private void removeOutOfBounds(final PlaceGroupZone zone, final MapEditor map) {
+
+		Rectangle cropped = Rectangle.intersectionOf(new Rectangle(0, MapEditor.SIZE, 0, MapEditor.SIZE), zone.bounds);
+
+		if (cropped.getArea() <= 0) {
+
+			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.setTitle("Remove PlaceGroup?");
+			alert.setContentText("Are you sure you want to delete this PlaceGroup?");
+
+			ButtonType yes = new ButtonType("Yes");
+			ButtonType no = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+			alert.getButtonTypes().setAll(yes, no);
+
+			alert.showAndWait().ifPresent(result -> {
+				if (result == yes) {
+					map.removePlaceGroupZone(zone);
+				} else {
+					map.movePlaceGroupZone(zone, originalBounds.x1 - placeGroupZone.bounds.x1, originalBounds.y1 - placeGroupZone.bounds.y1);
+				}
+			});
+
+		}
+
 	}
 
 	private void editPlaceGroupZone(final PlaceGroupZone zone, final MapEditor map) {

@@ -90,19 +90,13 @@ public class CreatePlaceGroupTool extends Tool {
 				placeGroup.group = placeGroupInfoPanel.getGroup();
 				placeGroup.chance = placeGroupInfoPanel.getChance();
 
-				int width = Math.abs(x - startX) + 1;
-				int height = Math.abs(y - startY) + 1;
-
-				if (x < startX) {
-					startX = x;
-				}
-
-				if (y < startY) {
-					startY = y;
-				}
+				int x1 = (x < startX) ? x : startX;
+				int x2 = (x < startX) ? startX : x;
+				int y1 = (y < startY) ? y : startY;
+				int y2 = (y < startY) ? startY : y;
 
 				map.startEdit();
-				map.addPlaceGroupZone(new PlaceGroupZone(startX, startY, width, height, placeGroup));
+				map.addPlaceGroupZone(new PlaceGroupZone(x1, x2, y1, y2, placeGroup));
 				map.finishEdit("Create PlaceGroup");
 
 			}

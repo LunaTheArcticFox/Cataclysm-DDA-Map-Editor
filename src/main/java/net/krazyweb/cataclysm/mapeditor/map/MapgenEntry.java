@@ -3,6 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Resources;
+import net.krazyweb.util.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -149,9 +150,9 @@ public class MapgenEntry implements Jsonable {
 				grassEntry += "\"y\": [ " + r.y1 + ", " + r.y2 + " ], ";
 			}
 
-			int area = (r.x2 - r.x1 + 1) * (r.y2 - r.y1 + 1);
-			int repeatMin = Math.max(Math.min((int) (area / 3.5) - 1, 8), 0); //TODO Remove the off-by-one error
-			int repeatMax = Math.min(Math.max((int) (area / 2.5) - 1, 1), 14);
+			int area = r.getArea();
+			int repeatMin = Math.max(Math.min((int) (area / 3.5), 8), 0);
+			int repeatMax = Math.min(Math.max((int) (area / 2.5), 1), 14);
 
 			grassEntry += "\"repeat\": [ " + repeatMin + ", " + repeatMax + " ] },";
 			grassEntries.add(grassEntry);
@@ -190,14 +191,6 @@ public class MapgenEntry implements Jsonable {
 			}
 		}
 		return x2;
-	}
-
-	private static class Rectangle {
-		private int x1, y1, x2, y2;
-		@Override
-		public String toString() {
-			return "[" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + "]";
-		}
 	}
 
 	@Override

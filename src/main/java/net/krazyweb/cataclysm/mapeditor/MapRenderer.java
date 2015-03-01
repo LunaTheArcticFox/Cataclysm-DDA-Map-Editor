@@ -256,8 +256,6 @@ public class MapRenderer {
 
 		this.map = map;
 
-//		drawMap();
-
 		overlays.setOnMouseMoved(mouseEvent -> {
 			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
 			updateStatus((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32);
@@ -302,8 +300,8 @@ public class MapRenderer {
 			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
 			graphicsContext.setFill(placeGroupZone.fillColor);
 			graphicsContext.setStroke(placeGroupZone.strokeColor);
-			graphicsContext.fillRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
-			graphicsContext.strokeRect(placeGroupZone.x * 32, placeGroupZone.y * 32, placeGroupZone.w * 32, placeGroupZone.h * 32); //TODO Use tileset size
+			graphicsContext.fillRect(placeGroupZone.bounds.x1 * 32, placeGroupZone.bounds.y1 * 32, placeGroupZone.bounds.getWidth() * 32, placeGroupZone.bounds.getHeight() * 32); //TODO Use tileset size
+			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * 32, placeGroupZone.bounds.y1 * 32, placeGroupZone.bounds.getWidth() * 32, placeGroupZone.bounds.getHeight() * 32); //TODO Use tileset size
 		}
 	}
 

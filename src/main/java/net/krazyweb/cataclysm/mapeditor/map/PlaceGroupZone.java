@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor.map;
 
 import javafx.scene.paint.Color;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
+import net.krazyweb.util.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +22,13 @@ public class PlaceGroupZone implements Jsonable {
 
 	private static int currentZoneColor = 0;
 
-	public int x, y, w, h;
+	public Rectangle bounds = new Rectangle();
 	public Color fillColor;
 	public Color strokeColor;
 	public PlaceGroup group;
 
 	public PlaceGroupZone(final PlaceGroupZone zone) {
-		this.x = zone.x;
-		this.y = zone.y;
-		this.w = zone.w;
-		this.h = zone.h;
+		this.bounds = new Rectangle(zone.bounds);
 		this.fillColor = zone.fillColor;
 		this.strokeColor = zone.strokeColor;
 		this.group = new PlaceGroup(zone.group);
@@ -45,21 +43,18 @@ public class PlaceGroupZone implements Jsonable {
 		}
 	}
 
-	public PlaceGroupZone(final int x, final int y, final int w, final int h, final PlaceGroup group) {
+	public PlaceGroupZone(final int x1, final int x2, final int y1, final int y2, final PlaceGroup group) {
 		this(group);
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
+		bounds = new Rectangle(x1, x2, y1, y2);
 	}
 
 	public void rotate() {
 
 		Point[] points = new Point[] {
-				new Point(x, y),
-				new Point(x + w, y),
-				new Point(x, y + h),
-				new Point(x + w, y + h)
+				new Point(bounds.x1, bounds.y1),
+				new Point(bounds.x2 + 1, bounds.y1),
+				new Point(bounds.x1, bounds.y2 + 1),
+				new Point(bounds.x2 + 1, bounds.y2 + 1)
 		};
 
 		for (Point point : points) {
@@ -89,50 +84,43 @@ public class PlaceGroupZone implements Jsonable {
 		}
 
 		if (leastXY != null) {
-			x = leastXY.x;
-			y = leastXY.y;
-			w = Math.abs(greatestXY.x - leastXY.x);
-			h = Math.abs(greatestXY.y - leastXY.y);
+			bounds.x1 = leastXY.x;
+			bounds.x2 = greatestXY.x - 1;
+			bounds.y1 = leastXY.y;
+			bounds.y2 = greatestXY.y - 1;
 		} else {
 			throw new IllegalStateException("Could not rotate a PlaceGroupZone; somehow leastXY ended up null." +
-					" Coordinates pre-rotation: [" + x + ", " + y + ", " + w + ", " + h + "]");
+					" Coordinates pre-rotation: [" + bounds.x1 + ", " + bounds.x2 + ", " + bounds.y1 + ", " + bounds.y2 + "]");
 		}
 
 	}
 
 	public boolean contains(final int x, final int y) {
-		return x >= this.x && x < this.x + this.w && y >= this.y && y < this.y + this.h;
+		return bounds.contains(x, y);
 	}
 
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		PlaceGroupZone that = (PlaceGroupZone) o;
+		PlaceGroupZone zone = (PlaceGroupZone) o;
 
-		if (h != that.h) return false;
-		if (w != that.w) return false;
-		if (x != that.x) return false;
-		if (y != that.y) return false;
-		if (group != null ? !group.equals(that.group) : that.group != null) return false;
+		return bounds.equals(zone.bounds) && group.equals(zone.group);
 
-		return true;
 	}
 
 	@Override
 	public int hashCode() {
-		int result = x;
-		result = 31 * result + y;
-		result = 31 * result + w;
-		result = 31 * result + h;
-		result = 31 * result + (group != null ? group.hashCode() : 0);
+		int result = bounds.hashCode();
+		result = 31 * result + group.hashCode();
 		return result;
 	}
 
 	@Override
 	public String toString() {
-		return "[Group: " + group + ", Area: [" + x + ", " + y + ", " + w + ", " + h + "], Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
+		return "[Group: " + group + ", Bounds: " + bounds + ", Fill Color: " + fillColor.toString() + ", Stroke Color: " + strokeColor + "]";
 	}
 
 	@Override
@@ -142,18 +130,20 @@ public class PlaceGroupZone implements Jsonable {
 
 		String line = "{ \"" + group.type + "\": \"" + group.group + "\", \"chance\": " + group.chance + ", \"x\": ";
 
-		if (w != 1) {
-			line += "[ " + x + ", " + (x - 1 + w) + " ], ";
+		Rectangle croppedBounds = Rectangle.intersectionOf(new Rectangle(0, MapEditor.SIZE, 0, MapEditor.SIZE), bounds);
+
+		if (croppedBounds.x1 != croppedBounds.x2) {
+			line += "[ " + croppedBounds.x1 + ", " + croppedBounds.x2 + " ], ";
 		} else {
-			line += x + ", ";
+			line += croppedBounds.x1 + ", ";
 		}
 
 		line += " \"y\": ";
 
-		if (h != 1) {
-			line += "[ " + y + ", " + (y - 1 + h) + " ]";
+		if (croppedBounds.y1 != croppedBounds.y2) {
+			line += "[ " + croppedBounds.y1 + ", " + croppedBounds.y2 + " ]";
 		} else {
-			line += y + "";
+			line += croppedBounds.y1 + "";
 		}
 
 		line += " }";

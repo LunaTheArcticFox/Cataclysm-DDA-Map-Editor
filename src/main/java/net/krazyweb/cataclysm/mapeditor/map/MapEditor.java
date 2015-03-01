@@ -194,8 +194,8 @@ public class MapEditor {
 		if (editing) {
 			undoEvent.addAction(new PlaceGroupZoneMovedAction(this, zone, deltaX, deltaY));
 		}
-		zone.x += deltaX;
-		zone.y += deltaY;
+		zone.bounds.shift(deltaX, deltaY);
+		renderer.redrawPlaceGroups();
 	}
 
 	public void modifyPlaceGroup(final PlaceGroup placeGroup, final String type, final String group, final int chance) {

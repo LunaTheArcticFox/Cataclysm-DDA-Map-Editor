@@ -87,14 +87,12 @@ public class DataFileReader extends Service<Boolean> {
 								x2 = temp;
 							}
 
-							zone.x = x1;
-							zone.w = x2 - x1 + 1;
+							zone.bounds.x1 = x1;
+							zone.bounds.x2 = x2;
 
 						} else {
-
-							zone.x = field.getValue().asInt();
-							zone.w = 1;
-
+							zone.bounds.x1 = field.getValue().asInt();
+							zone.bounds.x2 = field.getValue().asInt();
 						}
 
 						break;
@@ -111,12 +109,12 @@ public class DataFileReader extends Service<Boolean> {
 								y2 = temp;
 							}
 
-							zone.y = y1;
-							zone.h = y2 - y1 + 1;
+							zone.bounds.y1 = y1;
+							zone.bounds.y2 = y2;
 
 						} else {
-							zone.y = field.getValue().asInt();
-							zone.h = 1;
+							zone.bounds.y1 = field.getValue().asInt();
+							zone.bounds.y2 = field.getValue().asInt();
 						}
 						break;
 
