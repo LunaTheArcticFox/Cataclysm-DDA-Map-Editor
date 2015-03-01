@@ -28,7 +28,7 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
-		if (!ApplicationSettings.getInstance().showGroups()) {
+		if (!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS).get()) {
 			return;
 		}
 
@@ -80,7 +80,8 @@ public class EditPlaceGroupTool extends Tool {
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
 
-		if (event.getButton() != MouseButton.PRIMARY || map.getPlaceGroupZonesAt(lastX, lastY).isEmpty() || !ApplicationSettings.getInstance().showGroups()) {
+		if (event.getButton() != MouseButton.PRIMARY || map.getPlaceGroupZonesAt(lastX, lastY).isEmpty() ||
+				!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS).get()) {
 			return;
 		}
 
@@ -95,7 +96,8 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
-		if (event.getButton() != MouseButton.PRIMARY || !ApplicationSettings.getInstance().showGroups()) {
+		if (event.getButton() != MouseButton.PRIMARY ||
+				!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS).get()) {
 			return;
 		}
 
@@ -137,7 +139,7 @@ public class EditPlaceGroupTool extends Tool {
 
 		Set<Point> area = new HashSet<>();
 
-		if (!ApplicationSettings.getInstance().showGroups()) {
+		if (!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS).get()) {
 			area.add(new Point(x, y));
 			return area;
 		}
