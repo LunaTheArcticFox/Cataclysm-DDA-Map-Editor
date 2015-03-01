@@ -24,7 +24,7 @@ import javafx.util.Duration;
 import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;

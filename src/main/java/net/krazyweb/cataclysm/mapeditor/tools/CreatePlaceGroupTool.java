@@ -7,9 +7,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.PlaceGroup;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroup;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
-import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 
 import java.util.HashSet;
 import java.util.Set;

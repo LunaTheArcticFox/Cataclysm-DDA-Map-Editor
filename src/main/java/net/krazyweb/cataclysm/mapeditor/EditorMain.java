@@ -225,8 +225,13 @@ public class EditorMain {
 	}
 
 	@FXML
-	private void mapProperties() {
+	private void editMapProperties() {
 		mapManager.editMapProperties();
+	}
+
+	@FXML
+	private void editDefinitions() {
+		mapManager.editDefinitions();
 	}
 
 	@FXML

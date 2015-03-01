@@ -1,8 +1,10 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.io.Resources;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.util.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,14 +28,14 @@ public class MapgenEntry implements Jsonable {
 
 	private static Logger log = LogManager.getLogger(MapgenEntry.class);
 
-	protected String[][] terrain = new String[MapEditor.SIZE][MapEditor.SIZE];
-	protected String[][] furniture = new String[MapEditor.SIZE][MapEditor.SIZE];
-	protected List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
-	protected MapSettings settings = new MapSettings();
+	public String[][] terrain = new String[MapEditor.SIZE][MapEditor.SIZE];
+	public String[][] furniture = new String[MapEditor.SIZE][MapEditor.SIZE];
+	public List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
+	public MapSettings settings = new MapSettings();
 
 	private MapgenEntry lastSavedState;
 
-	protected MapgenEntry() {
+	public MapgenEntry() {
 
 	}
 

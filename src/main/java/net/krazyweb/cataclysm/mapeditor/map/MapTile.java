@@ -2,8 +2,8 @@ package net.krazyweb.cataclysm.mapeditor.map;
 
 public class MapTile {
 
-	protected String terrain;
-	protected String furniture;
+	public String terrain;
+	public String furniture;
 
 	public MapTile() {
 

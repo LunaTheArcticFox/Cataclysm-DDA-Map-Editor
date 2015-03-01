@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +37,7 @@ public class OverMapEntry implements Jsonable {
 		return this.equals(lastSavedState);
 	}
 
-	protected void markSaved() {
+	public void markSaved() {
 		lastSavedState = new OverMapEntry(this);
 	}
 

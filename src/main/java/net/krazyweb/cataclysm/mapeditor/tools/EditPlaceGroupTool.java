@@ -10,7 +10,7 @@ import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
-import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.util.Rectangle;
 
 import java.util.HashSet;

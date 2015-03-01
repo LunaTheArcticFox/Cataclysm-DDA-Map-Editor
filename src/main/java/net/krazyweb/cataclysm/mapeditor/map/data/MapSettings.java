@@ -1,12 +1,12 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MapSettings implements Jsonable {
 
-	protected String overMapTerrain;
-	protected int weight = 200;
+	public String overMapTerrain;
+	public int weight = 200;
 
 	public MapSettings() {
 
@@ -24,15 +24,14 @@ public class MapSettings implements Jsonable {
 
 	@Override
 	public boolean equals(Object o) {
+
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		MapSettings that = (MapSettings) o;
 
-		if (weight != that.weight) return false;
-		if (!overMapTerrain.equals(that.overMapTerrain)) return false;
+		return weight == that.weight && overMapTerrain.equals(that.overMapTerrain);
 
-		return true;
 	}
 
 	@Override

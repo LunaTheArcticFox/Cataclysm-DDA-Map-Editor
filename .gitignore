@@ -2,6 +2,7 @@
 
 Sample Data/*
 *.log
+preferences.json
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm

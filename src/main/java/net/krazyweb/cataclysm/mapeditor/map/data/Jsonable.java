@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import java.util.List;
 

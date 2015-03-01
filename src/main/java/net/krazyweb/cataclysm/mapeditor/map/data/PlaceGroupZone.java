@@ -1,6 +1,7 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import javafx.scene.paint.Color;
+import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.util.Rectangle;
 

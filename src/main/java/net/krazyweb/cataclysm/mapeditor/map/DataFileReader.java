@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
+import net.krazyweb.cataclysm.mapeditor.map.data.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -23,6 +24,7 @@ public class DataFileReader extends Service<Boolean> {
 	private Path path;
 
 	private List<MapgenEntry> maps = new ArrayList<>();
+	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
 	private List<OverMapEntry> overMapEntries = new ArrayList<>();
 	private EventBus eventBus;
 
@@ -44,6 +46,10 @@ public class DataFileReader extends Service<Boolean> {
 
 	public List<MapgenEntry> getMaps() {
 		return maps;
+	}
+
+	public List<ItemGroupEntry> getItemGroupEntries() {
+		return itemGroupEntries;
 	}
 
 	public List<OverMapEntry> getOverMapEntries() {
@@ -179,6 +185,25 @@ public class DataFileReader extends Service<Boolean> {
 
 	}
 
+	private void loadItemGroupSection(final JsonNode root) {
+
+		log.info("Loading Item Group section.");
+		long startTime = System.nanoTime();
+
+		ItemGroupEntry entry = new ItemGroupEntry();
+
+		entry.id = root.get("id").asText();
+
+		root.get("items").forEach(item -> entry.items.put(item.get(0).asText(), item.get(1).asInt()));
+
+		entry.markSaved();
+
+		itemGroupEntries.add(entry);
+
+		log.info("Loaded Item Group section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
+
+	}
+
 	private void loadOverMapSection(final JsonNode root) {
 
 		log.info("Loading OverMap section.");
@@ -220,6 +245,10 @@ public class DataFileReader extends Service<Boolean> {
 
 					case "mapgen":
 						loadMapgenSection(root);
+						break;
+
+					case "item_group":
+						loadItemGroupSection(root);
 						break;
 
 					case "overmap_terrain":

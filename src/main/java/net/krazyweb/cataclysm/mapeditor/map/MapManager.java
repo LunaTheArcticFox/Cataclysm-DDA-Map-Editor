@@ -14,6 +14,10 @@ import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.Jsonable;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapgenEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.OverMapEntry;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,6 +48,7 @@ public class MapManager implements UndoBufferListener {
 
 	private Map<Tab, MapgenEntry> maps = new IdentityHashMap<>();
 	private List<MapgenEntry> mapInsertionOrder = new ArrayList<>();
+	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
 	private List<OverMapEntry> overMapEntries = new ArrayList<>();
 
 	@FXML
@@ -116,6 +121,7 @@ public class MapManager implements UndoBufferListener {
 		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
 		dataFileReader.setOnSucceeded(event -> {
 
+			itemGroupEntries.addAll(dataFileReader.getItemGroupEntries());
 			overMapEntries.addAll(dataFileReader.getOverMapEntries());
 
 			dataFileReader.getMaps().forEach(this::loadMap);
@@ -199,6 +205,24 @@ public class MapManager implements UndoBufferListener {
 		List<String> lines = new ArrayList<>();
 
 		lines.add("[");
+
+		itemGroupEntries.forEach(itemGroupEntry -> {
+
+			itemGroupEntry.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
+
+			if (itemGroupEntries.indexOf(itemGroupEntry) != itemGroupEntries.size() - 1) {
+				String line = lines.remove(lines.size() - 1);
+				lines.add(line + ",");
+			} else if (itemGroupEntries.indexOf(itemGroupEntry) == itemGroupEntries.size() - 1) {
+				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0) {
+					String line = lines.remove(lines.size() - 1);
+					lines.add(line + ",");
+				}
+			}
+
+			itemGroupEntry.markSaved();
+
+		});
 
 		overMapEntries.forEach(overMapEntry -> {
 
@@ -312,6 +336,12 @@ public class MapManager implements UndoBufferListener {
 
 	public void editMapProperties() {
 		mapEditor.editMapProperties();
+	}
+
+	public void editDefinitions() {
+
+
+
 	}
 
 	public boolean isSaved() {

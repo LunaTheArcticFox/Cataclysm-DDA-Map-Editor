@@ -45,7 +45,10 @@
 				</MenuItem>
 			</Menu>
 			<Menu text="_Map">
-				<MenuItem text="Properties" onAction="#mapProperties"/>
+				<MenuItem text="Properties" onAction="#editMapProperties"/>
+			</Menu>
+			<Menu text="_Project">
+				<MenuItem text="Definitions" onAction="#editDefinitions"/>
 			</Menu>
 			<Menu text="_View">
 				<CheckMenuItem mnemonicParsing="false" text="Grid" fx:id="showGridButton" onAction="#toggleGrid"/>

@@ -1,7 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map.undo;
 
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupZone;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
