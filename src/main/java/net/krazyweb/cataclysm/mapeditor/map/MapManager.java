@@ -370,6 +370,16 @@ public class MapManager implements UndoBufferListener {
 				return false;
 			}
 		}
+		for (ItemGroupEntry itemGroupEntry : itemGroupEntries) {
+			if (!itemGroupEntry.isSaved()) {
+				return false;
+			}
+		}
+		for (MonsterGroupEntry monsterGroupEntry : monsterGroupEntries) {
+			if (!monsterGroupEntry.isSaved()) {
+				return false;
+			}
+		}
 		for (OverMapEntry overMapEntry : overMapEntries) {
 			if (!overMapEntry.isSaved()) {
 				return false;
