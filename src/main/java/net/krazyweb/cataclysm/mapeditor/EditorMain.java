@@ -102,7 +102,7 @@ public class EditorMain {
 	}
 
 	@Subscribe
-	public void mapSavedEventListener(final MapSavedEvent event) {
+	public void mapSavedEventListener(final FileSavedEvent event) {
 		refreshTitle();
 	}
 

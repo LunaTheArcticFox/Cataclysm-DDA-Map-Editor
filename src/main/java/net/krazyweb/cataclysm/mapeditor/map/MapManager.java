@@ -11,6 +11,7 @@ import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
@@ -98,6 +99,8 @@ public class MapManager implements UndoBufferListener {
 		try {
 			if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
 				this.path = path;
+			} else {
+				this.path = null;
 			}
 		} catch (IOException e) {
 			log.error("Error while determining if '" + path.toAbsolutePath() + "' is the same file as the default template:", e);
@@ -247,6 +250,8 @@ public class MapManager implements UndoBufferListener {
 		}
 
 		this.path = path;
+
+		eventBus.post(new FileSavedEvent());
 
 	}
 

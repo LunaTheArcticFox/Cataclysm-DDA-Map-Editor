@@ -4,7 +4,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
 import javafx.scene.control.Slider;
-import net.krazyweb.cataclysm.mapeditor.events.MapSavedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.ZoomChangeEvent;
 import org.controlsfx.control.StatusBar;
@@ -29,7 +29,7 @@ public class StatusBarController {
 	}
 
 	@Subscribe
-	public void mapSavedEventListener(final MapSavedEvent event) {
+	public void mapSavedEventListener(final FileSavedEvent event) {
 		//TODO statusBar.setText("Saved map to '" + event.getMap().getPath() + "'");
 	}
 

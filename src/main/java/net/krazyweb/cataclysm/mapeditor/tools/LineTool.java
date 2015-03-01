@@ -16,6 +16,11 @@ public class LineTool extends Tool {
 	private boolean dragging = false;
 
 	@Override
+	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+		map.startEdit();
+	}
+
+	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		startX = convertCoord(event.getX());
@@ -25,7 +30,6 @@ public class LineTool extends Tool {
 
 	@Override
 	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
-		map.startEdit();
 		startX = convertCoord(event.getX());
 		startY = convertCoord(event.getY());
 		dragging = true;
