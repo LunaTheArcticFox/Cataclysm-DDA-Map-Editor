@@ -180,6 +180,7 @@ public class EditPlaceGroupTool extends Tool {
 
 			Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
 			alert.initModality(Modality.APPLICATION_MODAL);
+			alert.setHeaderText("");
 			alert.setTitle("Remove PlaceGroup?");
 			alert.setContentText("Are you sure you want to delete this PlaceGroup?");
 
