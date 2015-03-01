@@ -28,6 +28,10 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
+		if (!ApplicationSettings.getInstance().showGroups()) {
+			return;
+		}
+
 		int x = convertCoord(event.getX());
 		int y = convertCoord(event.getY());
 
@@ -76,7 +80,7 @@ public class EditPlaceGroupTool extends Tool {
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
 
-		if (event.getButton() != MouseButton.PRIMARY || map.getPlaceGroupZonesAt(lastX, lastY).isEmpty()) {
+		if (event.getButton() != MouseButton.PRIMARY || map.getPlaceGroupZonesAt(lastX, lastY).isEmpty() || !ApplicationSettings.getInstance().showGroups()) {
 			return;
 		}
 
@@ -91,7 +95,7 @@ public class EditPlaceGroupTool extends Tool {
 	@Override
 	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
 
-		if (event.getButton() != MouseButton.PRIMARY) {
+		if (event.getButton() != MouseButton.PRIMARY || !ApplicationSettings.getInstance().showGroups()) {
 			return;
 		}
 
@@ -122,6 +126,7 @@ public class EditPlaceGroupTool extends Tool {
 
 		drag(event, tile, rootNode, map);
 		removeOutOfBounds(placeGroupZone, map);
+		placeGroupZone = null;
 
 		map.finishEdit("Move PlaceGroup");
 

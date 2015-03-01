@@ -24,6 +24,7 @@
 					<accelerator><KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/></accelerator>
 				</MenuItem>
 				<MenuItem text="_Revert" onAction="#revertFile"/>
+				<SeparatorMenuItem/>
 				<MenuItem text="E_xit" onAction="#exit"/>
 			</Menu>
 			<Menu text="_Edit">
@@ -51,6 +52,8 @@
 				<CheckMenuItem mnemonicParsing="false" text="Groups" fx:id="showGroupsButton" onAction="#toggleGroups" selected="true"/>
 			</Menu>
 			<Menu text="_Help">
+				<MenuItem mnemonicParsing="false" text="PlaceGroups" onAction="#showPlaceGroupHelp"/>
+				<SeparatorMenuItem/>
 				<MenuItem mnemonicParsing="false" text="About"/>
 			</Menu>
 		</MenuBar>

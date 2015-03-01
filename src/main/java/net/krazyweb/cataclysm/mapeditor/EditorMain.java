@@ -46,6 +46,8 @@ public class EditorMain {
 	@FXML
 	private void initialize() {
 
+		eventBus.register(ApplicationSettings.getInstance());
+
 		Tool.setEventBus(eventBus);
 
 		//-> Tile picker
@@ -232,6 +234,20 @@ public class EditorMain {
 	@FXML
 	private void toggleGroups() {
 		eventBus.post(new ShowGroupsEvent(showGroupsButton.isSelected()));
+	}
+
+	@FXML
+	private void showPlaceGroupHelp() {
+		//TODO
+		/*
+		* Place items from item group in the rectangle (x1,y1) - (x2,y2). Several items may be spawned
+		* on different places. Several items may spawn at once (at one place) when the item group says
+		* so (uses @ref item_group::items_from which may return several items at once).
+		* @param chance Chance for more items. A chance of 100 creates 1 item all the time, otherwise
+		* it's the chance that more items will be created (place items until the random roll with that
+		* chance fails). The chance is used for the first item as well, so it may not spawn an item at
+		* all. Values <= 0 or > 100 are invalid.
+		 */
 	}
 
 	public void setPrimaryStage(final Stage primaryStage) {
