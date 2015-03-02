@@ -149,12 +149,12 @@ public class EditorMain {
 
 	@FXML
 	private void newFile() {
-		mapManager.load(Paths.get("templates").resolve("default.json"));
+		mapManager.load(ApplicationSettings.DEFAULT_NEW_FILE);
 	}
 
 	@FXML
 	private void newMap() {
-		mapManager.addMap(Paths.get("templates").resolve("default.json"));
+		mapManager.addMap(ApplicationSettings.DEFAULT_NEW_FILE);
 	}
 
 	@FXML
@@ -162,7 +162,7 @@ public class EditorMain {
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Pick Json File");
-		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+		fileChooser.setInitialDirectory(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.LAST_FOLDER).toAbsolutePath().toFile());
 
 		FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Cataclysm JSON File", "*.json");
 		fileChooser.getExtensionFilters().add(filter);
@@ -191,7 +191,7 @@ public class EditorMain {
 
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Save As");
-		fileChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+		fileChooser.setInitialDirectory(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.LAST_FOLDER).toAbsolutePath().toFile());
 
 		FileChooser.ExtensionFilter filter = new FileChooser.ExtensionFilter("Cataclysm JSON File", "*.json");
 		fileChooser.getExtensionFilters().add(filter);

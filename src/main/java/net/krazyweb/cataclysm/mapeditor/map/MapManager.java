@@ -4,27 +4,30 @@ import com.google.common.eventbus.EventBus;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.data.*;
+import net.krazyweb.cataclysm.mapeditor.map.data.utils.PropertySheetItemCreator;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.control.PropertySheet;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.*;
 
@@ -100,7 +103,7 @@ public class MapManager implements UndoBufferListener {
 		//Load: Spawn file read service to get map sections and load each one
 
 		try {
-			if (!Files.isSameFile(path, Paths.get("templates").resolve("default.json"))) {
+			if (!Files.isSameFile(path, ApplicationSettings.DEFAULT_NEW_FILE)) {
 				this.path = path;
 			} else {
 				this.path = null;
@@ -148,7 +151,7 @@ public class MapManager implements UndoBufferListener {
 			mapEditor.getUndoBuffer().register(this);
 			root.getTabs().get(0).setContent(mapContainer);
 
-			eventBus.post(new FileLoadedEvent());
+			eventBus.post(new FileLoadedEvent(path));
 
 		});
 
@@ -295,13 +298,13 @@ public class MapManager implements UndoBufferListener {
 
 		this.path = path;
 
-		eventBus.post(new FileSavedEvent());
+		eventBus.post(new FileSavedEvent(path));
 
 	}
 
 	public void revert() {
 		if (path == null) {
-			load(Paths.get("templates").resolve("default.json"));
+			load(ApplicationSettings.DEFAULT_NEW_FILE);
 		} else {
 			load(path);
 		}
@@ -360,7 +363,94 @@ public class MapManager implements UndoBufferListener {
 
 	public void editDefinitions() {
 
+		Dialog<Boolean> definitionsDialog = new Dialog<>();
+		definitionsDialog.setTitle("Edit Definitions");
+		definitionsDialog.initModality(Modality.APPLICATION_MODAL);
+		definitionsDialog.setResizable(true);
 
+		SplitPane parent = new SplitPane();
+		parent.setPadding(new Insets(0));
+
+		TreeItem<String> treeRoot = new TreeItem<>("");
+
+		TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
+		itemGroups.setExpanded(true);
+		treeRoot.getChildren().add(itemGroups);
+
+		TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
+		monsterGroups.setExpanded(true);
+		treeRoot.getChildren().add(monsterGroups);
+
+		TreeItem<String> overMaps = new TreeItem<>("Overmaps");
+		overMaps.setExpanded(true);
+		treeRoot.getChildren().add(overMaps);
+
+		overMapEntries.forEach(overMapEntry -> {
+			TreeItem<String> overMap = new TreeItem<>(overMapEntry.name);
+			overMaps.getChildren().add(overMap);
+		});
+
+		TreeView<String> treeView = new TreeView<>(treeRoot);
+		treeView.setShowRoot(false);
+		treeView.setEditable(true);
+		treeView.setCellFactory(factory -> new TreeCell());
+		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			if (newValue.getParent() == overMaps) {
+				parent.getItems().remove(1);
+				parent.getItems().add(new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overMapEntries.get(newValue.getParent().getChildren().indexOf(newValue)))));
+			}
+		});
+
+		parent.getItems().add(treeView);
+		parent.getItems().add(new PropertySheet());
+
+		ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.OK_DONE);
+		definitionsDialog.getDialogPane().getButtonTypes().setAll(closeButton);
+
+		definitionsDialog.setOnCloseRequest(event -> definitionsDialog.close());
+
+		definitionsDialog.getDialogPane().setContent(parent);
+		definitionsDialog.showAndWait();
+
+		updateUndoRedoText();
+
+		/*Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+		alert.initModality(Modality.APPLICATION_MODAL);
+		alert.setHeaderText("");
+		alert.setTitle("Remove PlaceGroup?");
+		alert.setContentText("Are you sure you want to delete this PlaceGroup?");
+
+		ButtonType yes = new ButtonType("Yes");
+		ButtonType no = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
+		alert.getButtonTypes().setAll(yes, no);
+
+		alert.showAndWait().ifPresent(result -> {
+			if (result == yes) {
+				map.removePlaceGroupZone(zone);
+			} else {
+				map.movePlaceGroupZone(zone, originalBounds.x1 - placeGroupZone.bounds.x1, originalBounds.y1 - placeGroupZone.bounds.y1);
+			}
+		});*/
+
+	}
+
+	private class TreeCell extends TextFieldTreeCell {
+
+		private ContextMenu contextMenu;
+
+		public TreeCell() {
+			super();
+			contextMenu = new ContextMenu();
+			MenuItem testItem = new MenuItem("TEST");
+			contextMenu.getItems().add(testItem);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public void updateItem(Object item, boolean empty) {
+			super.updateItem(item, empty);
+			setContextMenu(contextMenu);
+		}
 
 	}
 
