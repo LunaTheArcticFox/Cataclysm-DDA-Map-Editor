@@ -363,12 +363,14 @@ public class MapManager implements UndoBufferListener {
 
 	public void editDefinitions() {
 
+		//TODO Extract to own class
 		Dialog<Boolean> definitionsDialog = new Dialog<>();
 		definitionsDialog.setTitle("Edit Definitions");
 		definitionsDialog.initModality(Modality.APPLICATION_MODAL);
 		definitionsDialog.setResizable(true);
 
 		SplitPane parent = new SplitPane();
+		parent.setDividerPosition(0, 0.3);
 		parent.setPadding(new Insets(0));
 
 		TreeItem<String> treeRoot = new TreeItem<>("");
@@ -414,24 +416,6 @@ public class MapManager implements UndoBufferListener {
 
 		updateUndoRedoText();
 
-		/*Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-		alert.initModality(Modality.APPLICATION_MODAL);
-		alert.setHeaderText("");
-		alert.setTitle("Remove PlaceGroup?");
-		alert.setContentText("Are you sure you want to delete this PlaceGroup?");
-
-		ButtonType yes = new ButtonType("Yes");
-		ButtonType no = new ButtonType("No", ButtonBar.ButtonData.CANCEL_CLOSE);
-		alert.getButtonTypes().setAll(yes, no);
-
-		alert.showAndWait().ifPresent(result -> {
-			if (result == yes) {
-				map.removePlaceGroupZone(zone);
-			} else {
-				map.movePlaceGroupZone(zone, originalBounds.x1 - placeGroupZone.bounds.x1, originalBounds.y1 - placeGroupZone.bounds.y1);
-			}
-		});*/
-
 	}
 
 	private class TreeCell extends TextFieldTreeCell {
@@ -440,6 +424,7 @@ public class MapManager implements UndoBufferListener {
 
 		public TreeCell() {
 			super();
+			this.setEditable(false);
 			contextMenu = new ContextMenu();
 			MenuItem testItem = new MenuItem("TEST");
 			contextMenu.getItems().add(testItem);
