@@ -6,15 +6,23 @@ import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.stage.Modality;
 import net.krazyweb.cataclysm.mapeditor.map.data.OverMapEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.utils.PropertySheetItemCreator;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.PropertySheet;
 
 import java.util.List;
 
 public class DefinitionsEditor {
 
+	private static final Logger log = LogManager.getLogger(DefinitionsEditor.class);
+
 	private List<OverMapEntry> overMapEntries;
 
 	private Dialog<Boolean> definitionsDialog;
+
+	private TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
+	TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
+	TreeItem<String> overMaps = new TreeItem<>("Overmaps");
 
 	public DefinitionsEditor(final List<OverMapEntry> overMapEntryList) {
 
@@ -31,15 +39,12 @@ public class DefinitionsEditor {
 
 		TreeItem<String> treeRoot = new TreeItem<>("");
 
-		TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
 		itemGroups.setExpanded(true);
 		treeRoot.getChildren().add(itemGroups);
 
-		TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
 		monsterGroups.setExpanded(true);
 		treeRoot.getChildren().add(monsterGroups);
 
-		TreeItem<String> overMaps = new TreeItem<>("Overmaps");
 		overMaps.setExpanded(true);
 		treeRoot.getChildren().add(overMaps);
 
@@ -74,12 +79,12 @@ public class DefinitionsEditor {
 	private class TreeCell extends TextFieldTreeCell {
 
 		private ContextMenu contextMenu;
+		private MenuItem testItem = new MenuItem("Add...");
 
 		public TreeCell() {
 			super();
 			this.setEditable(false);
 			contextMenu = new ContextMenu();
-			MenuItem testItem = new MenuItem("Add...");
 			contextMenu.getItems().add(testItem);
 		}
 
@@ -87,6 +92,15 @@ public class DefinitionsEditor {
 		@SuppressWarnings("unchecked")
 		public void updateItem(Object item, boolean empty) {
 			super.updateItem(item, empty);
+			if (getTreeItem() == null) {
+				log.debug("Tree Item is Null");
+			} else if (getTreeItem().equals(itemGroups)) {
+				testItem.setOnAction(event -> log.debug("Item Groups Add Clicked"));
+			} else if (getTreeItem().equals(monsterGroups)) {
+				testItem.setOnAction(event -> log.debug("Monster Groups Add Clicked"));
+			} else if (getTreeItem().equals(overMaps)) {
+				testItem.setOnAction(event -> log.debug("Overmaps Add Clicked"));
+			}
 			setContextMenu(contextMenu);
 		}
 
