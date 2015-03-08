@@ -10,7 +10,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.control.PropertySheet;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class DefinitionsEditor {
 
@@ -18,7 +20,7 @@ public class DefinitionsEditor {
 
 	private List<OverMapEntry> overMapEntries;
 
-	private Dialog<Boolean> definitionsDialog;
+	private Dialog<List<OverMapEntry>> definitionsDialog;
 
 	private TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
 	TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
@@ -26,7 +28,8 @@ public class DefinitionsEditor {
 
 	public DefinitionsEditor(final List<OverMapEntry> overMapEntryList) {
 
-		overMapEntries = overMapEntryList;
+		overMapEntries = new ArrayList<>();
+		overMapEntryList.forEach(entry -> overMapEntries.add(new OverMapEntry(entry)));
 
 		definitionsDialog = new Dialog<>();
 		definitionsDialog.setTitle("Edit Definitions");
@@ -59,18 +62,33 @@ public class DefinitionsEditor {
 		treeView.setCellFactory(factory -> new TreeCell());
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 			if (newValue.getParent() == overMaps) {
+				PropertySheet propertySheet = new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overMapEntries.get(newValue.getParent().getChildren().indexOf(newValue))));
+				propertySheet.setModeSwitcherVisible(false);
+				propertySheet.setSearchBoxVisible(false);
 				parent.getItems().remove(1);
-				parent.getItems().add(new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overMapEntries.get(newValue.getParent().getChildren().indexOf(newValue)))));
+				parent.getItems().add(propertySheet);
 			}
 		});
 
 		parent.getItems().add(treeView);
-		parent.getItems().add(new PropertySheet());
 
-		ButtonType closeButton = new ButtonType("Close", ButtonBar.ButtonData.OK_DONE);
-		definitionsDialog.getDialogPane().getButtonTypes().setAll(closeButton);
+		PropertySheet propertySheet = new PropertySheet();
+		propertySheet.setModeSwitcherVisible(false);
+		propertySheet.setSearchBoxVisible(false);
+		parent.getItems().add(propertySheet);
+
+		ButtonType saveButton = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
+		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+		definitionsDialog.getDialogPane().getButtonTypes().setAll(saveButton, cancelButton);
 
 		definitionsDialog.setOnCloseRequest(event -> definitionsDialog.close());
+
+		definitionsDialog.setResultConverter(dialogButton -> {
+			if (dialogButton == saveButton) {
+				return overMapEntries;
+			}
+			return null;
+		});
 
 		definitionsDialog.getDialogPane().setContent(parent);
 
@@ -106,8 +124,8 @@ public class DefinitionsEditor {
 
 	}
 
-	public void showAndWait() {
-		definitionsDialog.showAndWait();
+	public Optional<List<OverMapEntry>> showAndWait() {
+		return definitionsDialog.showAndWait();
 	}
 
 }

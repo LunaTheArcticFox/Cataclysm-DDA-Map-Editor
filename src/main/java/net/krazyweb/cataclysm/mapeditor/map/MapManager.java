@@ -5,8 +5,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
-import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTreeCell;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
 import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
@@ -360,9 +361,10 @@ public class MapManager implements UndoBufferListener {
 	public void editDefinitions() {
 
 		DefinitionsEditor definitionsEditor = new DefinitionsEditor(overMapEntries);
-		definitionsEditor.showAndWait();
 
-		//TODO Get modified entries if accepted changes
+		Optional<List<OverMapEntry>> result = definitionsEditor.showAndWait();
+		result.ifPresent(overMapEntryList -> overMapEntries = overMapEntryList);
+		//TODO Check if changed, add rest of entries
 
 		updateUndoRedoText();
 
