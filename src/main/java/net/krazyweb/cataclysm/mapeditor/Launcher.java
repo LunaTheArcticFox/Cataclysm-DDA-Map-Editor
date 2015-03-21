@@ -12,6 +12,10 @@ public class Launcher extends Application {
 
 	private static Logger log = LogManager.getLogger(Launcher.class);
 
+	public static void main(String[] args) {
+		launch(args);
+	}
+
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 		log.info("Starting Application");

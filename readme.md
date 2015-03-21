@@ -20,3 +20,9 @@ Sample Data/
 ```
 
 I'll add some real configuration to this soon so that it can be built and run without having to copy files elsewhere alongside some real build instructions. Hang tight.
+
+# How to build and run
+
+```
+mvn jfx:jar jfx:run
+```
