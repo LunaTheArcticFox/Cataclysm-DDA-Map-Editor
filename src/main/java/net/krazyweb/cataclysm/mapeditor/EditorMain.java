@@ -205,6 +205,11 @@ public class EditorMain {
 	}
 
 	@FXML
+	public void options() {
+		log.info("Options pressed!");
+	}
+
+	@FXML
 	private void revertFile() {
 		mapManager.revert();
 	}
