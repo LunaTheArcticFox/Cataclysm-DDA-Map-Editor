@@ -3,14 +3,13 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
@@ -21,7 +20,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 public class EditorMain {
 
@@ -206,7 +207,55 @@ public class EditorMain {
 
 	@FXML
 	public void options() {
-		log.info("Options pressed!");
+		Dialog<Path> optionsDialog = new Dialog<>();
+		optionsDialog.setTitle("Options");
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(15);
+		grid.setPadding(new Insets(0, 10, 10, 10));
+
+		TextField gameFolderTextField = new TextField(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER).toAbsolutePath().toString());
+		gameFolderTextField.setPrefWidth(250);
+
+		HBox gameFolderBox = new HBox();
+		gameFolderBox.setAlignment(Pos.BASELINE_CENTER);
+		gameFolderBox.setSpacing(5);
+		gameFolderBox.getChildren().add(new Label("Game folder:"));
+		gameFolderBox.getChildren().add(gameFolderTextField);
+
+		grid.add(gameFolderBox, 1, 1);
+
+		optionsDialog.getDialogPane().setContent(grid);
+
+		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		optionsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+		optionsDialog.getDialogPane().lookupButton(saveButtonType).addEventFilter(ActionEvent.ACTION, event -> {
+			if(!validateGameFolder(gameFolderTextField.getText())) {
+				event.consume();
+				//TODO: indicate that user provided invalid game folder
+			}
+		});
+
+		optionsDialog.setResultConverter(dialogButton -> {
+			if (dialogButton == saveButtonType) {
+				return Paths.get(gameFolderTextField.getText());
+			}
+			return null;
+		});
+
+		Platform.runLater(gameFolderTextField::requestFocus);
+
+		Optional<Path> result = optionsDialog.showAndWait();
+
+		result.ifPresent(gameFolderPath -> {
+			ApplicationSettings.getInstance().setPath(ApplicationSettings.Preference.GAME_FOLDER, gameFolderPath);
+		});
+	}
+
+	private boolean validateGameFolder(String pathToGameFolder) {
+		//TODO: validate path to game folder
+		return true;
 	}
 
 	@FXML

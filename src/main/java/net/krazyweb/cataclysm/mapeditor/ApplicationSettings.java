@@ -40,7 +40,8 @@ public class ApplicationSettings {
 
 		LAST_FOLDER(Path.class),
 		SHOW_GRID(Boolean.class),
-		SHOW_GROUPS(Boolean.class);
+		SHOW_GROUPS(Boolean.class),
+		GAME_FOLDER(Path.class);
 
 		private final Class<?> clazz;
 
@@ -54,6 +55,7 @@ public class ApplicationSettings {
 
 	private ApplicationSettings() {
 		preferences.put(Preference.LAST_FOLDER, Paths.get(""));
+		preferences.put(Preference.GAME_FOLDER, Paths.get(""));
 		preferences.put(Preference.SHOW_GRID, false);
 		preferences.put(Preference.SHOW_GROUPS, true);
 		try {
@@ -84,6 +86,13 @@ public class ApplicationSettings {
 			throw new InvalidTypeException(preference.name() + " is not a Path object.");
 		}
 		return (Path) preferences.get(preference);
+	}
+
+	public void setPath(final Preference preference, Path value) {
+		if (!(preferences.get(preference) instanceof Path)) {
+			throw new InvalidTypeException(preference.name() + " is not a Path object.");
+		}
+		preferences.put(preference, value);
 	}
 
 	private void load() throws IOException {
