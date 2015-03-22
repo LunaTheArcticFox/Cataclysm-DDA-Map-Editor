@@ -19,4 +19,8 @@ Sample Data/
 	terrain.json
 ```
 
-I'll add some real configuration to this soon so that it can be built and run without having to copy files elsewhere alongside some real build instructions. Hang tight.
+# Building with Maven
+
+Running ```mvn install``` will create a runnable jar file with dependencies. Be sure to copy the above ```Sample Data``` folder to wherever you're running the jar from.
+Double click the jar file to run the program.
+Building this project requires JDK 8u40 or newer due to use of the new Dialogs API in JavaFX.
