@@ -3,13 +3,17 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
@@ -17,6 +21,9 @@ import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 
 import java.io.File;
 import java.io.IOException;
@@ -206,7 +213,7 @@ public class EditorMain {
 	}
 
 	@FXML
-	public void options() {
+	private void options() {
 		Dialog<Path> optionsDialog = new Dialog<>();
 		optionsDialog.setTitle("Options");
 
@@ -215,8 +222,8 @@ public class EditorMain {
 		grid.setVgap(15);
 		grid.setPadding(new Insets(0, 10, 10, 10));
 
-		TextField gameFolderTextField = new TextField(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER).toAbsolutePath().toString());
-		gameFolderTextField.setPrefWidth(250);
+		TextField gameFolderTextField = new TextField();
+		gameFolderTextField.setPrefWidth(350);
 
 		HBox gameFolderBox = new HBox();
 		gameFolderBox.setAlignment(Pos.BASELINE_CENTER);
@@ -224,16 +231,43 @@ public class EditorMain {
 		gameFolderBox.getChildren().add(new Label("Game folder:"));
 		gameFolderBox.getChildren().add(gameFolderTextField);
 
+		ValidationSupport validationSupport = new ValidationSupport();
+		validationSupport.registerValidator(gameFolderTextField, false, Validator.createPredicateValidator(o -> {
+			return validateGameFolder(gameFolderTextField.getText());
+		}, "Is not a Cataclysm directory", Severity.ERROR));
+
+		gameFolderTextField.setText(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER).toAbsolutePath().toString());
+
+		Button chooseDirButton = new Button("...");
+		chooseDirButton.setOnAction(event -> {
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			directoryChooser.setInitialDirectory(new File(gameFolderTextField.getText()));
+
+			File chosenFile = directoryChooser.showDialog(optionsDialog.getOwner());
+			if (chosenFile != null) {
+				gameFolderTextField.setText(chosenFile.getAbsolutePath());
+			}
+		});
+		gameFolderBox.getChildren().add(chooseDirButton);
+
 		grid.add(gameFolderBox, 1, 1);
 
 		optionsDialog.getDialogPane().setContent(grid);
 
 		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+
 		optionsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-		optionsDialog.getDialogPane().lookupButton(saveButtonType).addEventFilter(ActionEvent.ACTION, event -> {
-			if(!validateGameFolder(gameFolderTextField.getText())) {
+		Node saveButton = optionsDialog.getDialogPane().lookupButton(saveButtonType);
+		saveButton.addEventFilter(ActionEvent.ACTION, event -> {
+			if (validationSupport.isInvalid()) {
 				event.consume();
-				//TODO: indicate that user provided invalid game folder
+			}
+		});
+
+		validationSupport.invalidProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				saveButton.setDisable(newValue);
 			}
 		});
 
@@ -244,8 +278,6 @@ public class EditorMain {
 			return null;
 		});
 
-		Platform.runLater(gameFolderTextField::requestFocus);
-
 		Optional<Path> result = optionsDialog.showAndWait();
 
 		result.ifPresent(gameFolderPath -> {
@@ -255,7 +287,7 @@ public class EditorMain {
 
 	private boolean validateGameFolder(String pathToGameFolder) {
 		//TODO: validate path to game folder
-		return true;
+		return pathToGameFolder.isEmpty();
 	}
 
 	@FXML

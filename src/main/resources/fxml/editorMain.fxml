@@ -25,7 +25,7 @@
 				</MenuItem>
 				<MenuItem text="_Revert" onAction="#revertFile"/>
 				<SeparatorMenuItem/>
-				<MenuItem text="Op_tions" onAction="#options">
+				<MenuItem text="Op_tions..." onAction="#options">
 					<accelerator><KeyCodeCombination alt="DOWN" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/></accelerator>
 				</MenuItem>
 				<SeparatorMenuItem/>
