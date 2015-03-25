@@ -27,6 +27,8 @@ import org.controlsfx.validation.Validator;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
@@ -228,7 +230,7 @@ public class EditorMain {
 		HBox gameFolderBox = new HBox();
 		gameFolderBox.setAlignment(Pos.BASELINE_CENTER);
 		gameFolderBox.setSpacing(5);
-		gameFolderBox.getChildren().add(new Label("Game folder:"));
+		gameFolderBox.getChildren().add(new Label("Game folder (tiled):"));
 		gameFolderBox.getChildren().add(gameFolderTextField);
 
 		ValidationSupport validationSupport = new ValidationSupport();
@@ -286,8 +288,8 @@ public class EditorMain {
 	}
 
 	private boolean validateGameFolder(String pathToGameFolder) {
-		//TODO: validate path to game folder
-		return pathToGameFolder.isEmpty();
+		//TODO: add support for Linux and Mac
+		return Files.exists(Paths.get(pathToGameFolder, "cataclysm-tiles.exe"), LinkOption.NOFOLLOW_LINKS);
 	}
 
 	@FXML
