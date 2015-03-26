@@ -55,7 +55,6 @@ public class ApplicationSettings {
 
 	private ApplicationSettings() {
 		preferences.put(Preference.LAST_FOLDER, Paths.get(""));
-		preferences.put(Preference.GAME_FOLDER, Paths.get(""));
 		preferences.put(Preference.SHOW_GRID, false);
 		preferences.put(Preference.SHOW_GROUPS, true);
 		try {
@@ -82,17 +81,22 @@ public class ApplicationSettings {
 	}
 
 	public Path getPath(final Preference preference) {
-		if (!(preferences.get(preference) instanceof Path)) {
+		if (!(preference.clazz.isAssignableFrom(Path.class))) {
 			throw new InvalidTypeException(preference.name() + " is not a Path object.");
 		}
 		return (Path) preferences.get(preference);
 	}
 
 	public void setPath(final Preference preference, Path value) {
-		if (!(preferences.get(preference) instanceof Path)) {
+		if (!(preference.clazz.isAssignableFrom(Path.class))) {
 			throw new InvalidTypeException(preference.name() + " is not a Path object.");
 		}
-		preferences.put(preference, value);
+
+		if (value != null) {
+			preferences.put(preference, value);
+		} else {
+			preferences.remove(preference);
+		}
 	}
 
 	private void load() throws IOException {

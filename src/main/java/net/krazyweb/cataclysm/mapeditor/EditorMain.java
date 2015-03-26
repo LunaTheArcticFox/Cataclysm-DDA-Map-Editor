@@ -238,12 +238,24 @@ public class EditorMain {
 			return validateGameFolder(gameFolderTextField.getText());
 		}, "Is not a Cataclysm directory", Severity.ERROR));
 
-		gameFolderTextField.setText(ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER).toAbsolutePath().toString());
+		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+		if (gameFolder != null) {
+			gameFolderTextField.setText(gameFolder.toAbsolutePath().toString());
+		} else {
+			gameFolderTextField.setText("Trigger validation workaround");
+			gameFolderTextField.setText("");
+		}
 
 		Button chooseDirButton = new Button("...");
 		chooseDirButton.setOnAction(event -> {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
-			directoryChooser.setInitialDirectory(new File(gameFolderTextField.getText()));
+			directoryChooser.setTitle("Please choose Cataclysm: DDA root directory (Tiled version)");
+			File file = new File(gameFolderTextField.getText());
+			if(file.isDirectory()) {
+				directoryChooser.setInitialDirectory(file);
+			} else {
+				directoryChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+			}
 
 			File chosenFile = directoryChooser.showDialog(optionsDialog.getOwner());
 			if (chosenFile != null) {
