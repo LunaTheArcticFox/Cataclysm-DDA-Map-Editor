@@ -31,6 +31,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static net.krazyweb.cataclysm.mapeditor.ApplicationSettings.Preference.GAME_FOLDER;
+
 public class EditorMain {
 
 	private static Logger log = LogManager.getLogger(EditorMain.class);
@@ -176,7 +178,7 @@ public class EditorMain {
 		validationSupport.registerValidator(gameFolderTextField, false,
 				Validator.createPredicateValidator(this::validateGameFolder, "Is not a Cataclysm directory", Severity.ERROR));
 
-		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+		Path gameFolder = ApplicationSettings.getInstance().getPath(GAME_FOLDER);
 		if (gameFolder != null) {
 			gameFolderTextField.setText(gameFolder.toAbsolutePath().toString());
 		} else {
@@ -228,7 +230,7 @@ public class EditorMain {
 		Optional<Path> result = optionsDialog.showAndWait();
 
 		result.ifPresent(gameFolderPath -> {
-			ApplicationSettings.getInstance().setPath(ApplicationSettings.Preference.GAME_FOLDER, gameFolderPath);
+			ApplicationSettings.getInstance().setPath(GAME_FOLDER, gameFolderPath);
 		});
 	}
 
@@ -294,7 +296,9 @@ public class EditorMain {
 	public void onInitialized(final Stage primaryStage) {
 		this.primaryStage = primaryStage;
 
-		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+		ApplicationSettings appSettings = ApplicationSettings.getInstance();
+
+		Path gameFolderPath = appSettings.getPath(GAME_FOLDER);
 		if(gameFolderPath == null) {
 			gameFolderPath = Paths.get("");
 		}
@@ -315,12 +319,12 @@ public class EditorMain {
 			}
 		}
 
-		ApplicationSettings.getInstance().setPath(ApplicationSettings.Preference.GAME_FOLDER, gameFolderPath);
+		appSettings.setPath(GAME_FOLDER, gameFolderPath);
 
-		eventBus.register(ApplicationSettings.getInstance());
+		eventBus.register(appSettings);
 
-		showGridButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
-		showGroupsButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
+		showGridButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GRID));
+		showGroupsButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
 
 		Tool.setEventBus(eventBus);
 
@@ -335,7 +339,7 @@ public class EditorMain {
 		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
 		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
 
-		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
+		new TileSet(gameFolderPath.resolve(Paths.get("gfx", "MShock32Tileset", "tile_config.json")), eventBus);
 
 		eventBus.register(this);
 

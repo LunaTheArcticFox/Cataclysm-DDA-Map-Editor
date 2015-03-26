@@ -50,10 +50,12 @@ public class TilePicker {
 
 		tileContainer.getChildren().clear();
 
+		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+
 		try {
-			loadTiles(Paths.get("Sample Data").resolve("terrain.json"));
-			loadTiles(Paths.get("Sample Data").resolve("ags_terrain.json"));
-			loadTiles(Paths.get("Sample Data").resolve("furniture.json"));
+			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain.json")));
+			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
+			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "furniture.json")));
 		} catch (IOException e) {
 			log.error("Error while loading terrain and furniture definitions:", e);
 		}
