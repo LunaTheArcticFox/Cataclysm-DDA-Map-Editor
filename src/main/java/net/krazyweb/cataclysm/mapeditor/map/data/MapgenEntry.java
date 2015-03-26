@@ -2,7 +2,6 @@ package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import com.google.common.io.Resources;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.util.Rectangle;
@@ -11,9 +10,9 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class MapgenEntry implements Jsonable {
@@ -312,34 +311,37 @@ public class MapgenEntry implements Jsonable {
 
 		Multimap<MapTile, Character> commonMappings = ArrayListMultimap.create();
 
-		try (BufferedReader reader = Files.newBufferedReader(Paths.get(Resources.getResource("tileSymbolMap.txt").toURI()))) {
+		InputStream tileSymbolMapStream = getClass().getResourceAsStream("/tileSymbolMap.txt");
+		if (tileSymbolMapStream != null) {
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(tileSymbolMapStream, StandardCharsets.UTF_8))) {
 
-			String line;
+				String line;
 
-			while ((line = reader.readLine()) != null) {
+				while ((line = reader.readLine()) != null) {
 
-				String[] mapping = line.split("(?<=[ \\S]) ");
-				MapTile tile = new MapTile();
+					String[] mapping = line.split("(?<=[ \\S]) ");
+					MapTile tile = new MapTile();
 
-				if (mapping.length == 3) {
-					tile.terrain = mapping[1];
-					tile.furniture = mapping[2];
-				} else {
-					if (mapping[1].startsWith("t_")) {
+					if (mapping.length == 3) {
 						tile.terrain = mapping[1];
+						tile.furniture = mapping[2];
 					} else {
-						tile.furniture = mapping[1];
+						if (mapping[1].startsWith("t_")) {
+							tile.terrain = mapping[1];
+						} else {
+							tile.furniture = mapping[1];
+						}
 					}
+
+					commonMappings.put(tile, mapping[0].charAt(0));
+
 				}
 
-				commonMappings.put(tile, mapping[0].charAt(0));
-
+			} catch (IOException e) {
+				log.error("Error while reading tileSymbolMap.txt:", e);
 			}
-
-			reader.close();
-
-		} catch (IOException | URISyntaxException e) {
-			log.error("Error while reading tileSymbolMap.txt:", e);
+		} else {
+			log.error("tileSymbolMap.txt not found");
 		}
 
 		List<Character> usedSymbols = new ArrayList<>();
