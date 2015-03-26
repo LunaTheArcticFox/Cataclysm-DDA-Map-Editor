@@ -53,65 +53,6 @@ public class EditorMain {
 
 	@FXML
 	private void initialize() {
-
-		eventBus.register(ApplicationSettings.getInstance());
-
-		showGridButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
-		showGroupsButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
-
-		Tool.setEventBus(eventBus);
-
-		//-> Tile picker
-		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
-		try {
-			tilePickerLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
-		}
-		eventBus.register(tilePickerLoader.getController());
-		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
-		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
-
-		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
-
-		eventBus.register(this);
-
-		FXMLLoader mapManagerLoader = new FXMLLoader(getClass().getResource("/fxml/mapManager.fxml"));
-		try {
-			mapManagerLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
-		}
-		eventBus.register(mapManagerLoader.<MapManager>getController());
-		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
-		mapManager = mapManagerLoader.<MapManager>getController();
-		mapContainer.getChildren().add(mapManagerLoader.<ScrollPane>getRoot());
-
-		//-> Toolbars
-		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
-		try {
-			mapToolbarLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
-		}
-		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
-		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
-		mapContainer.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
-
-		//Load each component in the main view and pass the model to them
-		//-> Status bar
-		FXMLLoader statusBarLoader = new FXMLLoader(getClass().getResource("/fxml/statusBar.fxml"));
-		try {
-			statusBarLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
-		}
-		eventBus.register(statusBarLoader.<MapRenderer>getController());
-		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
-		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
-
-		newFile();
-
 	}
 
 	@Subscribe
@@ -350,8 +291,89 @@ public class EditorMain {
 		 */
 	}
 
-	public void setPrimaryStage(final Stage primaryStage) {
+	public void onInitialized(final Stage primaryStage) {
 		this.primaryStage = primaryStage;
+
+		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+		if(gameFolderPath == null) {
+			gameFolderPath = Paths.get("");
+		}
+
+		while (!validateGameFolder(gameFolderPath.toAbsolutePath().toString())) {
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			directoryChooser.setTitle("Please choose Cataclysm: DDA root directory (Tiled version)");
+
+			File initialDirectory = gameFolderPath.toAbsolutePath().toFile();
+			directoryChooser.setInitialDirectory(initialDirectory);
+
+			File chosenFile = directoryChooser.showDialog(primaryStage);
+			if (chosenFile != null) {
+				gameFolderPath = chosenFile.toPath();
+			} else {
+				Platform.exit();
+				return;
+			}
+		}
+
+		ApplicationSettings.getInstance().setPath(ApplicationSettings.Preference.GAME_FOLDER, gameFolderPath);
+
+		eventBus.register(ApplicationSettings.getInstance());
+
+		showGridButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
+		showGroupsButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
+
+		Tool.setEventBus(eventBus);
+
+		//-> Tile picker
+		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
+		try {
+			tilePickerLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
+		}
+		eventBus.register(tilePickerLoader.getController());
+		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
+		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
+
+		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
+
+		eventBus.register(this);
+
+		FXMLLoader mapManagerLoader = new FXMLLoader(getClass().getResource("/fxml/mapManager.fxml"));
+		try {
+			mapManagerLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
+		}
+		eventBus.register(mapManagerLoader.<MapManager>getController());
+		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
+		mapManager = mapManagerLoader.<MapManager>getController();
+		mapContainer.getChildren().add(mapManagerLoader.<ScrollPane>getRoot());
+
+		//-> Toolbars
+		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
+		try {
+			mapToolbarLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
+		}
+		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
+		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
+		mapContainer.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
+
+		//Load each component in the main view and pass the model to them
+		//-> Status bar
+		FXMLLoader statusBarLoader = new FXMLLoader(getClass().getResource("/fxml/statusBar.fxml"));
+		try {
+			statusBarLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
+		}
+		eventBus.register(statusBarLoader.<MapRenderer>getController());
+		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
+		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
+
+		newFile();
 	}
 
 	public void requestClose() {
