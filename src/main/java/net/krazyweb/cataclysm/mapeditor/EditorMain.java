@@ -5,12 +5,10 @@ import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.stage.DirectoryChooser;
@@ -227,16 +225,15 @@ public class EditorMain {
 		TextField gameFolderTextField = new TextField();
 		gameFolderTextField.setPrefWidth(350);
 
-		HBox gameFolderBox = new HBox();
-		gameFolderBox.setAlignment(Pos.BASELINE_CENTER);
-		gameFolderBox.setSpacing(5);
-		gameFolderBox.getChildren().add(new Label("Game folder (tiled):"));
-		gameFolderBox.getChildren().add(gameFolderTextField);
+		HBox gameFolderHBox = new HBox();
+		gameFolderHBox.setAlignment(Pos.BASELINE_CENTER);
+		gameFolderHBox.setSpacing(5);
+		gameFolderHBox.getChildren().add(new Label("Game folder (tiled):"));
+		gameFolderHBox.getChildren().add(gameFolderTextField);
 
 		ValidationSupport validationSupport = new ValidationSupport();
-		validationSupport.registerValidator(gameFolderTextField, false, Validator.createPredicateValidator(o -> {
-			return validateGameFolder(gameFolderTextField.getText());
-		}, "Is not a Cataclysm directory", Severity.ERROR));
+		validationSupport.registerValidator(gameFolderTextField, false,
+				Validator.createPredicateValidator(this::validateGameFolder, "Is not a Cataclysm directory", Severity.ERROR));
 
 		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
 		if (gameFolder != null) {
@@ -250,6 +247,7 @@ public class EditorMain {
 		chooseDirButton.setOnAction(event -> {
 			DirectoryChooser directoryChooser = new DirectoryChooser();
 			directoryChooser.setTitle("Please choose Cataclysm: DDA root directory (Tiled version)");
+
 			File file = new File(gameFolderTextField.getText());
 			if(file.isDirectory()) {
 				directoryChooser.setInitialDirectory(file);
@@ -262,22 +260,16 @@ public class EditorMain {
 				gameFolderTextField.setText(chosenFile.getAbsolutePath());
 			}
 		});
-		gameFolderBox.getChildren().add(chooseDirButton);
 
-		grid.add(gameFolderBox, 1, 1);
+		gameFolderHBox.getChildren().add(chooseDirButton);
+		grid.add(gameFolderHBox, 1, 1);
 
 		optionsDialog.getDialogPane().setContent(grid);
 
 		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
-
 		optionsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
-		Node saveButton = optionsDialog.getDialogPane().lookupButton(saveButtonType);
-		saveButton.addEventFilter(ActionEvent.ACTION, event -> {
-			if (validationSupport.isInvalid()) {
-				event.consume();
-			}
-		});
 
+		Button saveButton = (Button) optionsDialog.getDialogPane().lookupButton(saveButtonType);
 		validationSupport.invalidProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
