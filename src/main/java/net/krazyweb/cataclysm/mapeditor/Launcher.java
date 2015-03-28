@@ -27,7 +27,7 @@ public class Launcher extends Application {
 			primaryStage.setResizable(true);
 			//primaryStage.getIcons().add(new Image("/package/forge.png")); //TODO Icon
 			primaryStage.setOnCloseRequest(event -> loader.<EditorMain>getController().requestClose()); //TODO Save on exit prompts
-			loader.<EditorMain>getController().onInitialized(primaryStage);
+			loader.<EditorMain>getController().initialize(primaryStage);
 			primaryStage.show();
 		} catch (Exception e) {
 			log.error("Error while starting or running application:", e);
