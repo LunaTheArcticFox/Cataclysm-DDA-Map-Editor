@@ -11,7 +11,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,10 +33,12 @@ public class TileSet {
 
 	public TileSet(final Path path, final EventBus eventBus) {
 		this.eventBus = eventBus;
+		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+		Path tilesPath = gameFolderPath.resolve(Paths.get("gfx", "MShock32Tileset", "tiles.png")).toAbsolutePath();
 		try {
-			texture = ImageIO.read(new File("Sample Data/tileset/tiles.png"));
+			texture = ImageIO.read(tilesPath.toFile());
 		} catch (IOException e) {
-			log.error("Error while attempting to read tileset image 'Sample Data/tileset/tiles.png':", e); //TODO Use Cataclysm distribution's tiles
+			log.error("Error while attempting to read tileset image '" + tilesPath.toString() + "':", e); //TODO Use Cataclysm distribution's tiles
 		}
 		try {
 			load(path);

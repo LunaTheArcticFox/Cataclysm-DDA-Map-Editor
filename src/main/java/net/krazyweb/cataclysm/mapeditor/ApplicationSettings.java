@@ -40,7 +40,8 @@ public class ApplicationSettings {
 
 		LAST_FOLDER(Path.class),
 		SHOW_GRID(Boolean.class),
-		SHOW_GROUPS(Boolean.class);
+		SHOW_GROUPS(Boolean.class),
+		GAME_FOLDER(Path.class);
 
 		private final Class<?> clazz;
 
@@ -80,10 +81,22 @@ public class ApplicationSettings {
 	}
 
 	public Path getPath(final Preference preference) {
-		if (!(preferences.get(preference) instanceof Path)) {
+		if (!(preference.clazz.isAssignableFrom(Path.class))) {
 			throw new InvalidTypeException(preference.name() + " is not a Path object.");
 		}
 		return (Path) preferences.get(preference);
+	}
+
+	public void setPath(final Preference preference, Path value) {
+		if (!(preference.clazz.isAssignableFrom(Path.class))) {
+			throw new InvalidTypeException(preference.name() + " is not a Path object.");
+		}
+
+		if (value != null) {
+			preferences.put(preference, value);
+		} else {
+			preferences.remove(preference);
+		}
 	}
 
 	private void load() throws IOException {

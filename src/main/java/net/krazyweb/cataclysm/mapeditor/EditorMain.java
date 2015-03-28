@@ -3,14 +3,15 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.CheckMenuItem;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.VBox;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
+import javafx.scene.layout.*;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
@@ -18,10 +19,19 @@ import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.controlsfx.validation.Severity;
+import org.controlsfx.validation.ValidationSupport;
+import org.controlsfx.validation.Validator;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
+
+import static net.krazyweb.cataclysm.mapeditor.ApplicationSettings.Preference.GAME_FOLDER;
 
 public class EditorMain {
 
@@ -45,65 +55,6 @@ public class EditorMain {
 
 	@FXML
 	private void initialize() {
-
-		eventBus.register(ApplicationSettings.getInstance());
-
-		showGridButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
-		showGroupsButton.setSelected(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
-
-		Tool.setEventBus(eventBus);
-
-		//-> Tile picker
-		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
-		try {
-			tilePickerLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
-		}
-		eventBus.register(tilePickerLoader.getController());
-		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
-		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
-
-		new TileSet(Paths.get("Sample Data").resolve("tileset").resolve("tile_config.json"), eventBus);
-
-		eventBus.register(this);
-
-		FXMLLoader mapManagerLoader = new FXMLLoader(getClass().getResource("/fxml/mapManager.fxml"));
-		try {
-			mapManagerLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
-		}
-		eventBus.register(mapManagerLoader.<MapManager>getController());
-		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
-		mapManager = mapManagerLoader.<MapManager>getController();
-		mapContainer.getChildren().add(mapManagerLoader.<ScrollPane>getRoot());
-
-		//-> Toolbars
-		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
-		try {
-			mapToolbarLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
-		}
-		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
-		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
-		mapContainer.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
-
-		//Load each component in the main view and pass the model to them
-		//-> Status bar
-		FXMLLoader statusBarLoader = new FXMLLoader(getClass().getResource("/fxml/statusBar.fxml"));
-		try {
-			statusBarLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
-		}
-		eventBus.register(statusBarLoader.<MapRenderer>getController());
-		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
-		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
-
-		newFile();
-
 	}
 
 	@Subscribe
@@ -205,6 +156,90 @@ public class EditorMain {
 	}
 
 	@FXML
+	private void options() {
+		Dialog<Path> optionsDialog = new Dialog<>();
+		optionsDialog.setTitle("Options");
+
+		GridPane grid = new GridPane();
+		grid.setHgap(10);
+		grid.setVgap(15);
+		grid.setPadding(new Insets(0, 10, 10, 10));
+
+		TextField gameFolderTextField = new TextField();
+		gameFolderTextField.setPrefWidth(350);
+
+		HBox gameFolderHBox = new HBox();
+		gameFolderHBox.setAlignment(Pos.BASELINE_CENTER);
+		gameFolderHBox.setSpacing(5);
+		gameFolderHBox.getChildren().add(new Label("Game folder (tiled):"));
+		gameFolderHBox.getChildren().add(gameFolderTextField);
+
+		ValidationSupport validationSupport = new ValidationSupport();
+		validationSupport.registerValidator(gameFolderTextField, false,
+				Validator.createPredicateValidator(this::validateGameFolder, "Is not a Cataclysm directory", Severity.ERROR));
+
+		Path gameFolder = ApplicationSettings.getInstance().getPath(GAME_FOLDER);
+		if (gameFolder != null) {
+			gameFolderTextField.setText(gameFolder.toAbsolutePath().toString());
+		} else {
+			gameFolderTextField.setText("Trigger validation workaround");
+			gameFolderTextField.setText("");
+		}
+
+		Button chooseDirButton = new Button("...");
+		chooseDirButton.setOnAction(event -> {
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			directoryChooser.setTitle("Please choose Cataclysm: DDA root directory (Tiled version)");
+
+			File file = new File(gameFolderTextField.getText());
+			if(file.isDirectory()) {
+				directoryChooser.setInitialDirectory(file);
+			} else {
+				directoryChooser.setInitialDirectory(Paths.get("").toAbsolutePath().toFile());
+			}
+
+			File chosenFile = directoryChooser.showDialog(optionsDialog.getOwner());
+			if (chosenFile != null) {
+				gameFolderTextField.setText(chosenFile.getAbsolutePath());
+			}
+		});
+
+		gameFolderHBox.getChildren().add(chooseDirButton);
+		grid.add(gameFolderHBox, 1, 1);
+
+		optionsDialog.getDialogPane().setContent(grid);
+
+		ButtonType saveButtonType = new ButtonType("Save", ButtonBar.ButtonData.OK_DONE);
+		optionsDialog.getDialogPane().getButtonTypes().addAll(saveButtonType, ButtonType.CANCEL);
+
+		Button saveButton = (Button) optionsDialog.getDialogPane().lookupButton(saveButtonType);
+		validationSupport.invalidProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				saveButton.setDisable(newValue);
+			}
+		});
+
+		optionsDialog.setResultConverter(dialogButton -> {
+			if (dialogButton == saveButtonType) {
+				return Paths.get(gameFolderTextField.getText());
+			}
+			return null;
+		});
+
+		Optional<Path> result = optionsDialog.showAndWait();
+
+		result.ifPresent(gameFolderPath -> {
+			ApplicationSettings.getInstance().setPath(GAME_FOLDER, gameFolderPath);
+		});
+	}
+
+	private boolean validateGameFolder(String pathToGameFolder) {
+		//TODO: add support for Linux and Mac
+		return Files.exists(Paths.get(pathToGameFolder, "cataclysm-tiles.exe"), LinkOption.NOFOLLOW_LINKS);
+	}
+
+	@FXML
 	private void revertFile() {
 		mapManager.revert();
 	}
@@ -258,8 +293,91 @@ public class EditorMain {
 		 */
 	}
 
-	public void setPrimaryStage(final Stage primaryStage) {
+	public void onInitialized(final Stage primaryStage) {
 		this.primaryStage = primaryStage;
+
+		ApplicationSettings appSettings = ApplicationSettings.getInstance();
+
+		Path gameFolderPath = appSettings.getPath(GAME_FOLDER);
+		if(gameFolderPath == null) {
+			gameFolderPath = Paths.get("");
+		}
+
+		while (!validateGameFolder(gameFolderPath.toAbsolutePath().toString())) {
+			DirectoryChooser directoryChooser = new DirectoryChooser();
+			directoryChooser.setTitle("Please choose Cataclysm: DDA root directory (Tiled version)");
+
+			File initialDirectory = gameFolderPath.toAbsolutePath().toFile();
+			directoryChooser.setInitialDirectory(initialDirectory);
+
+			File chosenFile = directoryChooser.showDialog(primaryStage);
+			if (chosenFile != null) {
+				gameFolderPath = chosenFile.toPath();
+			} else {
+				Platform.exit();
+				return;
+			}
+		}
+
+		appSettings.setPath(GAME_FOLDER, gameFolderPath);
+
+		eventBus.register(appSettings);
+
+		showGridButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GRID));
+		showGroupsButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
+
+		Tool.setEventBus(eventBus);
+
+		//-> Tile picker
+		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
+		try {
+			tilePickerLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
+		}
+		eventBus.register(tilePickerLoader.getController());
+		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
+		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
+
+		new TileSet(gameFolderPath.resolve(Paths.get("gfx", "MShock32Tileset", "tile_config.json")), eventBus);
+
+		eventBus.register(this);
+
+		FXMLLoader mapManagerLoader = new FXMLLoader(getClass().getResource("/fxml/mapManager.fxml"));
+		try {
+			mapManagerLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/mapManager.fxml':", e);
+		}
+		eventBus.register(mapManagerLoader.<MapManager>getController());
+		mapManagerLoader.<MapManager>getController().setEventBus(eventBus);
+		mapManager = mapManagerLoader.<MapManager>getController();
+		mapContainer.getChildren().add(mapManagerLoader.<ScrollPane>getRoot());
+
+		//-> Toolbars
+		FXMLLoader mapToolbarLoader = new FXMLLoader(getClass().getResource("/fxml/mapToolbar.fxml"));
+		try {
+			mapToolbarLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/mapToolbar.fxml':", e);
+		}
+		mapToolbarLoader.<MapToolbar>getController().setEventBus(eventBus);
+		mapToolbarLoader.<MapToolbar>getController().setMapManager(mapManager);
+		mapContainer.getChildren().add(0, mapToolbarLoader.<ScrollPane>getRoot());
+
+		//Load each component in the main view and pass the model to them
+		//-> Status bar
+		FXMLLoader statusBarLoader = new FXMLLoader(getClass().getResource("/fxml/statusBar.fxml"));
+		try {
+			statusBarLoader.load();
+		} catch (IOException e) {
+			log.error("Error while attempting to load '/fxml/statusBar.fxml':", e);
+		}
+		eventBus.register(statusBarLoader.<MapRenderer>getController());
+		statusBarLoader.<StatusBarController>getController().setEventBus(eventBus);
+		root.setBottom(statusBarLoader.<AnchorPane>getRoot());
+
+		newFile();
 	}
 
 	public void requestClose() {
