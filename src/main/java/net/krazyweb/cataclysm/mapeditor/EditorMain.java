@@ -57,7 +57,13 @@ public class EditorMain {
 		ApplicationSettings appSettings = ApplicationSettings.getInstance();
 
 		if(!isValidGameFolder(appSettings.getPath(GAME_FOLDER))) {
-			askForGameFolder();
+			Path gameFolder = askForGameFolder();
+			if(gameFolder != null) {
+				appSettings.setPath(GAME_FOLDER, gameFolder);
+			} else {
+				Platform.exit();
+				return;
+			}
 		}
 
 		eventBus.register(appSettings);
@@ -347,9 +353,7 @@ public class EditorMain {
 		 */
 	}
 
-	private void askForGameFolder() {
-
-		ApplicationSettings appSettings = ApplicationSettings.getInstance();
+	private Path askForGameFolder() {
 
 		Path gameFolder = Paths.get("");
 
@@ -362,17 +366,14 @@ public class EditorMain {
 			directoryChooser.setInitialDirectory(initialDirectory);
 
 			File chosenFile = directoryChooser.showDialog(primaryStage);
-			if (chosenFile != null) {
-				gameFolder = chosenFile.toPath();
-			} else {
-				Platform.exit();
-				return;
+			if (chosenFile == null) {
+				return null;
 			}
+			gameFolder = chosenFile.toPath();
 
 		} while (!isValidGameFolder(gameFolder));
 
-		appSettings.setPath(GAME_FOLDER, gameFolder);
-
+		return gameFolder;
 	}
 
 	private boolean isValidGameFolder(final Path gameFolder) {
