@@ -47,7 +47,7 @@ public class MapManager implements UndoBufferListener {
 	private List<MapgenEntry> mapInsertionOrder = new ArrayList<>();
 	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
 	private List<MonsterGroupEntry> monsterGroupEntries = new ArrayList<>();
-	private List<OverMapEntry> overMapEntries = new ArrayList<>();
+	private List<OvermapEntry> overmapEntries = new ArrayList<>();
 
 	@FXML
 	public void initialize() {
@@ -111,7 +111,7 @@ public class MapManager implements UndoBufferListener {
 
 		itemGroupEntries.clear();
 		monsterGroupEntries.clear();
-		overMapEntries.clear();
+		overmapEntries.clear();
 		maps.values().forEach(eventBus::unregister);
 		maps.clear();
 		root.getTabs().clear();
@@ -124,7 +124,7 @@ public class MapManager implements UndoBufferListener {
 
 			itemGroupEntries.addAll(dataFileReader.getItemGroupEntries());
 			monsterGroupEntries.addAll(dataFileReader.getMonsterGroupEntries());
-			overMapEntries.addAll(dataFileReader.getOverMapEntries());
+			overmapEntries.addAll(dataFileReader.getOvermapEntries());
 
 			dataFileReader.getMaps().forEach(this::loadMap);
 
@@ -176,7 +176,7 @@ public class MapManager implements UndoBufferListener {
 
 		mapInsertionOrder.add(map);
 
-		Tab tab = new Tab(map.settings.overMapTerrain); //TODO Rename tab when changed
+		Tab tab = new Tab(map.settings.overmapTerrain); //TODO Rename tab when changed
 
 		maps.put(tab, map);
 		root.getTabs().add(tab);
@@ -216,7 +216,7 @@ public class MapManager implements UndoBufferListener {
 				String line = lines.remove(lines.size() - 1);
 				lines.add(line + ",");
 			} else if (itemGroupEntries.indexOf(itemGroupEntry) == itemGroupEntries.size() - 1) {
-				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0 || monsterGroupEntries.size() > 0) {
+				if (mapgenEntries.size() > 0 || overmapEntries.size() > 0 || monsterGroupEntries.size() > 0) {
 					String line = lines.remove(lines.size() - 1);
 					lines.add(line + ",");
 				}
@@ -234,7 +234,7 @@ public class MapManager implements UndoBufferListener {
 				String line = lines.remove(lines.size() - 1);
 				lines.add(line + ",");
 			} else if (monsterGroupEntries.indexOf(monsterGroupEntry) == monsterGroupEntries.size() - 1) {
-				if (mapgenEntries.size() > 0 || overMapEntries.size() > 0) {
+				if (mapgenEntries.size() > 0 || overmapEntries.size() > 0) {
 					String line = lines.remove(lines.size() - 1);
 					lines.add(line + ",");
 				}
@@ -244,21 +244,21 @@ public class MapManager implements UndoBufferListener {
 
 		});
 
-		overMapEntries.forEach(overMapEntry -> {
+		overmapEntries.forEach(overmapEntry -> {
 
-			overMapEntry.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
+			overmapEntry.getJsonLines().forEach(line -> lines.add(Jsonable.INDENT + line));
 
-			if (overMapEntries.indexOf(overMapEntry) != overMapEntries.size() - 1) {
+			if (overmapEntries.indexOf(overmapEntry) != overmapEntries.size() - 1) {
 				String line = lines.remove(lines.size() - 1);
 				lines.add(line + ",");
-			} else if (overMapEntries.indexOf(overMapEntry) == overMapEntries.size() - 1) {
+			} else if (overmapEntries.indexOf(overmapEntry) == overmapEntries.size() - 1) {
 				if (mapgenEntries.size() > 0) {
 					String line = lines.remove(lines.size() - 1);
 					lines.add(line + ",");
 				}
 			}
 
-			overMapEntry.markSaved();
+			overmapEntry.markSaved();
 
 		});
 
@@ -351,7 +351,7 @@ public class MapManager implements UndoBufferListener {
 	}
 
 	private void refreshTabName() {
-		root.getSelectionModel().getSelectedItem().setText(mapEditor.currentMap.settings.overMapTerrain);
+		root.getSelectionModel().getSelectedItem().setText(mapEditor.currentMap.settings.overmapTerrain);
 	}
 
 	public void editMapProperties() {
@@ -360,10 +360,10 @@ public class MapManager implements UndoBufferListener {
 
 	public void editDefinitions() {
 
-		DefinitionsEditor definitionsEditor = new DefinitionsEditor(overMapEntries);
+		DefinitionsEditor definitionsEditor = new DefinitionsEditor(overmapEntries);
 
-		Optional<List<OverMapEntry>> result = definitionsEditor.showAndWait();
-		result.ifPresent(overMapEntryList -> overMapEntries = overMapEntryList);
+		Optional<List<OvermapEntry>> result = definitionsEditor.showAndWait();
+		result.ifPresent(overmapEntryList -> overmapEntries = overmapEntryList);
 		//TODO Check if changed, add rest of entries
 
 		updateUndoRedoText();
@@ -386,8 +386,8 @@ public class MapManager implements UndoBufferListener {
 				return false;
 			}
 		}
-		for (OverMapEntry overMapEntry : overMapEntries) {
-			if (!overMapEntry.isSaved()) {
+		for (OvermapEntry overmapEntry : overmapEntries) {
+			if (!overmapEntry.isSaved()) {
 				return false;
 			}
 		}

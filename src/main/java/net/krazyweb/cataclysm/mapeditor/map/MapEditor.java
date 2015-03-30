@@ -324,12 +324,12 @@ public class MapEditor {
 		grid.setVgap(15);
 		grid.setPadding(new Insets(0, 10, 10, 10));
 
-		TextField overMapTerrain = new TextField(currentMap.settings.overMapTerrain);
+		TextField overmapTerrain = new TextField(currentMap.settings.overmapTerrain);
 
 		VBox terrainBox = new VBox();
 		terrainBox.setSpacing(5);
 		terrainBox.getChildren().add(new Label("Terrain:"));
-		terrainBox.getChildren().add(overMapTerrain);
+		terrainBox.getChildren().add(overmapTerrain);
 
 		grid.add(terrainBox, 1, 1);
 
@@ -348,12 +348,12 @@ public class MapEditor {
 
 		settingsDialog.setResultConverter(dialogButton -> {
 			if (dialogButton == saveButtonType) {
-				return new MapSettings(overMapTerrain.getText(), Integer.parseInt(weight.getText()));
+				return new MapSettings(overmapTerrain.getText(), Integer.parseInt(weight.getText()));
 			}
 			return null;
 		});
 
-		Platform.runLater(overMapTerrain::requestFocus);
+		Platform.runLater(overmapTerrain::requestFocus);
 
 		Optional<MapSettings> result = settingsDialog.showAndWait();
 
@@ -381,7 +381,7 @@ public class MapEditor {
 
 	@Override
 	public String toString() {
-		return currentMap.settings.overMapTerrain;
+		return currentMap.settings.overmapTerrain;
 	}
 
 }

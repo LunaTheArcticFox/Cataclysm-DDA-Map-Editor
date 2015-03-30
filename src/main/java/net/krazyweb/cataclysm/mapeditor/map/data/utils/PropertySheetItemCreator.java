@@ -2,7 +2,7 @@ package net.krazyweb.cataclysm.mapeditor.map.data.utils;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import net.krazyweb.cataclysm.mapeditor.map.data.OverMapEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.OvermapEntry;
 import org.controlsfx.control.PropertySheet;
 
 public class PropertySheetItemCreator {
@@ -60,120 +60,152 @@ public class PropertySheetItemCreator {
 
 	}
 
-	public static ObservableList<PropertySheet.Item> getPropertySheetItems(final OverMapEntry overMapEntry) {
+	public static ObservableList<PropertySheet.Item> getPropertySheetItems(final OvermapEntry overmapEntry) {
 
 		ObservableList<PropertySheet.Item> items = FXCollections.observableArrayList();
 
 		items.add(new PropertyItem(String.class, "Overmap", "ID", "The internally used id of the overmap.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.id;
+				return overmapEntry.id;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.id = (String) value;
+				overmapEntry.id = (String) value;
 			}
 		}));
 
 		items.add(new PropertyItem(String.class, "Overmap", "Name", "The display name of the overmap in game.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.name;
+				return overmapEntry.name;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.name = (String) value;
+				overmapEntry.name = (String) value;
 			}
 		}));
 
-		items.add(new PropertyItem(Boolean.class, "Overmap", "Rotate", "When checked, this overmap will be rotated by the game automatically.", new FieldWrapper() {
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Rotate", "?", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.rotate;
+				return overmapEntry.rotate;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.rotate = (Boolean) value;
+				overmapEntry.rotate = (Boolean) value;
+			}
+		}));
+
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Line Drawing", "?", new FieldWrapper() {
+			@Override
+			public Object getValue() {
+				return overmapEntry.lineDrawing;
+			}
+			@Override
+			public void setValue(Object value) {
+				overmapEntry.lineDrawing = (Boolean) value;
 			}
 		}));
 
 		items.add(new PropertyItem(Integer.class, "Overmap", "Symbol", "The symbol visible on the overmap in game.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.symbol;
+				return overmapEntry.symbol;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.symbol = (Integer) value;
+				overmapEntry.symbol = (Integer) value;
 			}
 		}));
 
 		items.add(new PropertyItem(String.class, "Overmap", "Symbol Color", "The color of the symbol visible on the overmap in game.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.symbolColor;
+				return overmapEntry.symbolColor;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.symbolColor = (String) value;
+				overmapEntry.symbolColor = (String) value;
 			}
 		}));
 
 		items.add(new PropertyItem(Integer.class, "Overmap", "See Cost", "The difficulty of seeing past this terrain on the overmap in game.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.seeCost;
+				return overmapEntry.seeCost;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.seeCost = (Integer) value;
+				overmapEntry.seeCost = (Integer) value;
 			}
 		}));
 
-		items.add(new PropertyItem(String.class, "Overmap", "Extras", "The extras this overmap has.", new FieldWrapper() {
+		items.add(new PropertyItem(String.class, "Overmap", "Extras", "?", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.extras;
+				return overmapEntry.extras;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.extras = (String) value;
+				overmapEntry.extras = (String) value;
+			}
+		}));
+
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Known Down", "?", new FieldWrapper() {
+			@Override
+			public Object getValue() {
+				return overmapEntry.knownDown;
+			}
+			@Override
+			public void setValue(Object value) {
+				overmapEntry.knownDown = (Boolean) value;
+			}
+		}));
+
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Known Up", "?", new FieldWrapper() {
+			@Override
+			public Object getValue() {
+				return overmapEntry.knownUp;
+			}
+			@Override
+			public void setValue(Object value) {
+				overmapEntry.knownUp = (Boolean) value;
 			}
 		}));
 
 		items.add(new PropertyItem(Integer.class, "Overmap", "Monster Density", "The density of monsters generated for this overmap.", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.monsterDensity;
+				return overmapEntry.monsterDensity;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.monsterDensity = (Integer) value;
+				overmapEntry.monsterDensity = (Integer) value;
 			}
 		}));
 
-		items.add(new PropertyItem(Boolean.class, "Overmap", "Sidewalk", "When checked, this overmap will be placed adjacent to a sidewalk.", new FieldWrapper() {
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Sidewalk", "?", new FieldWrapper() {
 			@Override
 			public Object getValue() {
-				return overMapEntry.sidewalk;
+				return overmapEntry.sidewalk;
 			}
 			@Override
 			public void setValue(Object value) {
-				overMapEntry.sidewalk = (Boolean) value;
+				overmapEntry.sidewalk = (Boolean) value;
 			}
 		}));
 
-		/*
-			public String id;
-	public String name;
-	public boolean rotate;
-	public int symbol;
-	public String symbolColor;
-	public int seeCost;
-	public String extras;
-	public int monsterDensity;
-	public boolean sidewalk;
-		 */
+		items.add(new PropertyItem(Boolean.class, "Overmap", "Allow Road", "?", new FieldWrapper() {
+			@Override
+			public Object getValue() {
+				return overmapEntry.allowRoad;
+			}
+			@Override
+			public void setValue(Object value) {
+				overmapEntry.allowRoad = (Boolean) value;
+			}
+		}));
 
 		return items;
 

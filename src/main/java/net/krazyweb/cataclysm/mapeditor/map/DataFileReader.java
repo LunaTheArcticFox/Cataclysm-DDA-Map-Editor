@@ -26,7 +26,7 @@ public class DataFileReader extends Service<Boolean> {
 	private List<MapgenEntry> maps = new ArrayList<>();
 	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
 	private List<MonsterGroupEntry> monsterGroupEntries = new ArrayList<>();
-	private List<OverMapEntry> overMapEntries = new ArrayList<>();
+	private List<OvermapEntry> overmapEntries = new ArrayList<>();
 	private EventBus eventBus;
 
 	public DataFileReader(final Path path, final EventBus eventBus) {
@@ -57,8 +57,8 @@ public class DataFileReader extends Service<Boolean> {
 		return monsterGroupEntries;
 	}
 
-	public List<OverMapEntry> getOverMapEntries() {
-		return overMapEntries;
+	public List<OvermapEntry> getOvermapEntries() {
+		return overmapEntries;
 	}
 
 	private class Value<T> {
@@ -164,7 +164,7 @@ public class DataFileReader extends Service<Boolean> {
 
 		MapgenEntry map = new MapgenEntry();
 
-		map.settings.overMapTerrain = omTerrain;
+		map.settings.overmapTerrain = omTerrain;
 
 		Map<Character, String> terrainMap = mapToSymbols(object.get("terrain").fields());
 		Map<Character, String> furnitureMap = mapToSymbols(object.get("furniture").fields());
@@ -244,31 +244,35 @@ public class DataFileReader extends Service<Boolean> {
 
 	}
 
-	private void loadOverMapSection(final JsonNode root) {
+	private void loadOvermapSection(final JsonNode root) {
 
-		log.info("Loading OverMap section.");
+		log.info("Loading Overmap section.");
 		long startTime = System.nanoTime();
 
-		OverMapEntry entry = new OverMapEntry();
+		OvermapEntry entry = new OvermapEntry();
 
 		entry.id = root.get("id").asText();
 		entry.name = root.get("name").asText();
 		entry.rotate = root.get("rotate").asBoolean();
+		entry.lineDrawing = root.get("lineDrawing").asBoolean();
 		entry.symbol = root.get("sym").asInt();
 		entry.symbolColor = root.get("color").asText();
 		entry.seeCost = root.get("see_cost").asInt();
 		entry.extras = root.get("extras").asText();
+		entry.knownDown = root.get("known_down").asBoolean();
+		entry.knownUp = root.get("known_up").asBoolean();
 		entry.monsterDensity = root.get("mondensity").asInt();
 		entry.sidewalk = root.get("sidewalk").asBoolean();
+		entry.allowRoad = root.get("allow_road").asBoolean();
 		entry.markSaved();
 
-		overMapEntries.add(entry);
+		overmapEntries.add(entry);
 
 		if (root.has("mapgen")) {
 			root.get("mapgen").forEach(mapgenSection -> loadMapgenSection(mapgenSection, entry.id));
 		}
 
-		log.info("Loaded OverMap section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
+		log.info("Loaded Overmap section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
 
 	}
 
@@ -296,7 +300,7 @@ public class DataFileReader extends Service<Boolean> {
 						break;
 
 					case "overmap_terrain":
-						loadOverMapSection(root);
+						loadOvermapSection(root);
 						break;
 
 					default:

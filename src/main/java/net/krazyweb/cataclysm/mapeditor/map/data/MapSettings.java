@@ -5,7 +5,7 @@ import java.util.List;
 
 public class MapSettings implements Jsonable {
 
-	public String overMapTerrain;
+	public String overmapTerrain;
 	public int weight = 200;
 
 	public MapSettings() {
@@ -13,12 +13,12 @@ public class MapSettings implements Jsonable {
 	}
 
 	public MapSettings(final MapSettings mapSettings) {
-		overMapTerrain = mapSettings.overMapTerrain;
+		overmapTerrain = mapSettings.overmapTerrain;
 		weight = mapSettings.weight;
 	}
 
-	public MapSettings(final String overMapTerrain, final int weight) {
-		this.overMapTerrain = overMapTerrain;
+	public MapSettings(final String overmapTerrain, final int weight) {
+		this.overmapTerrain = overmapTerrain;
 		this.weight = weight;
 	}
 
@@ -30,13 +30,13 @@ public class MapSettings implements Jsonable {
 
 		MapSettings that = (MapSettings) o;
 
-		return weight == that.weight && overMapTerrain.equals(that.overMapTerrain);
+		return weight == that.weight && overmapTerrain.equals(that.overmapTerrain);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = overMapTerrain != null ? overMapTerrain.hashCode() : 0;
+		int result = overmapTerrain != null ? overmapTerrain.hashCode() : 0;
 		result = 31 * result + weight;
 		return result;
 	}
@@ -47,7 +47,7 @@ public class MapSettings implements Jsonable {
 		List<String> lines = new ArrayList<>();
 
 		lines.add("\"type\": \"mapgen\"");
-		lines.add("\"om_terrain\": [ \"" + overMapTerrain + "\" ]");
+		lines.add("\"om_terrain\": [ \"" + overmapTerrain + "\" ]");
 		lines.add("\"method\": \"json\"");
 		lines.add("\"weight\": " + weight);
 
@@ -57,7 +57,7 @@ public class MapSettings implements Jsonable {
 
 	@Override
 	public String toString() {
-		return "MapSettings[Overmap Terrain: " + overMapTerrain + ", Weight: " + weight + "]";
+		return "MapSettings[Overmap Terrain: " + overmapTerrain + ", Weight: " + weight + "]";
 	}
 
 }

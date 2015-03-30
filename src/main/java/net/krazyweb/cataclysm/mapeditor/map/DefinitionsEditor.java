@@ -4,7 +4,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTreeCell;
 import javafx.stage.Modality;
-import net.krazyweb.cataclysm.mapeditor.map.data.OverMapEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.OvermapEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.utils.PropertySheetItemCreator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,18 +18,18 @@ public class DefinitionsEditor {
 
 	private static final Logger log = LogManager.getLogger(DefinitionsEditor.class);
 
-	private List<OverMapEntry> overMapEntries;
+	private List<OvermapEntry> overmapEntries;
 
-	private Dialog<List<OverMapEntry>> definitionsDialog;
+	private Dialog<List<OvermapEntry>> definitionsDialog;
 
 	private TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
 	TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
-	TreeItem<String> overMaps = new TreeItem<>("Overmaps");
+	TreeItem<String> overmaps = new TreeItem<>("Overmaps");
 
-	public DefinitionsEditor(final List<OverMapEntry> overMapEntryList) {
+	public DefinitionsEditor(final List<OvermapEntry> overmapEntryList) {
 
-		overMapEntries = new ArrayList<>();
-		overMapEntryList.forEach(entry -> overMapEntries.add(new OverMapEntry(entry)));
+		overmapEntries = new ArrayList<>();
+		overmapEntryList.forEach(entry -> overmapEntries.add(new OvermapEntry(entry)));
 
 		definitionsDialog = new Dialog<>();
 		definitionsDialog.setTitle("Edit Definitions");
@@ -48,12 +48,12 @@ public class DefinitionsEditor {
 		monsterGroups.setExpanded(true);
 		treeRoot.getChildren().add(monsterGroups);
 
-		overMaps.setExpanded(true);
-		treeRoot.getChildren().add(overMaps);
+		overmaps.setExpanded(true);
+		treeRoot.getChildren().add(overmaps);
 
-		overMapEntries.forEach(overMapEntry -> {
-			TreeItem<String> overMap = new TreeItem<>(overMapEntry.name);
-			overMaps.getChildren().add(overMap);
+		overmapEntries.forEach(overmapEntry -> {
+			TreeItem<String> overmap = new TreeItem<>(overmapEntry.name);
+			overmaps.getChildren().add(overmap);
 		});
 
 		TreeView<String> treeView = new TreeView<>(treeRoot);
@@ -61,8 +61,8 @@ public class DefinitionsEditor {
 		treeView.setEditable(true);
 		treeView.setCellFactory(factory -> new TreeCell());
 		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.getParent() == overMaps) {
-				PropertySheet propertySheet = new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overMapEntries.get(newValue.getParent().getChildren().indexOf(newValue))));
+			if (newValue.getParent() == overmaps) {
+				PropertySheet propertySheet = new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overmapEntries.get(newValue.getParent().getChildren().indexOf(newValue))));
 				propertySheet.setModeSwitcherVisible(false);
 				propertySheet.setSearchBoxVisible(false);
 				parent.getItems().remove(1);
@@ -85,7 +85,7 @@ public class DefinitionsEditor {
 
 		definitionsDialog.setResultConverter(dialogButton -> {
 			if (dialogButton == saveButton) {
-				return overMapEntries;
+				return overmapEntries;
 			}
 			return null;
 		});
@@ -101,7 +101,6 @@ public class DefinitionsEditor {
 
 		public TreeCell() {
 			super();
-			this.setEditable(false);
 			contextMenu = new ContextMenu();
 			contextMenu.getItems().add(testItem);
 		}
@@ -110,21 +109,27 @@ public class DefinitionsEditor {
 		@SuppressWarnings("unchecked")
 		public void updateItem(Object item, boolean empty) {
 			super.updateItem(item, empty);
-			if (getTreeItem() == null) {
-				log.debug("Tree Item is Null");
-			} else if (getTreeItem().equals(itemGroups)) {
-				testItem.setOnAction(event -> log.debug("Item Groups Add Clicked"));
-			} else if (getTreeItem().equals(monsterGroups)) {
-				testItem.setOnAction(event -> log.debug("Monster Groups Add Clicked"));
-			} else if (getTreeItem().equals(overMaps)) {
-				testItem.setOnAction(event -> log.debug("Overmaps Add Clicked"));
+			setEditable(false);
+			TreeItem<String> treeItem = getTreeItem();
+			if (treeItem != null) {
+				if (treeItem.equals(itemGroups)) {
+					setContextMenu(contextMenu);
+					testItem.setOnAction(event -> log.debug("Item Groups Add Clicked"));
+				} else if (treeItem.equals(monsterGroups)) {
+					setContextMenu(contextMenu);
+					testItem.setOnAction(event -> log.debug("Monster Groups Add Clicked"));
+				} else if (treeItem.equals(overmaps)) {
+					setContextMenu(contextMenu);
+					testItem.setOnAction(event -> log.debug("Overmaps Add Clicked"));
+				} else {
+					setEditable(true);
+				}
 			}
-			setContextMenu(contextMenu);
 		}
 
 	}
 
-	public Optional<List<OverMapEntry>> showAndWait() {
+	public Optional<List<OvermapEntry>> showAndWait() {
 		return definitionsDialog.showAndWait();
 	}
 
