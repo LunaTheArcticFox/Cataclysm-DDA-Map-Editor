@@ -63,91 +63,9 @@ public class DataFileReader extends Service<Boolean> {
 		T value;
 	}
 
-	private List<PlaceGroupZone> loadPlaceGroupZones(final JsonNode placeGroupZones) {
-
-		List<PlaceGroupZone> zones = new ArrayList<>();
-
-		placeGroupZones.forEach(placeGroupDef -> {
-			Map.Entry<String, JsonNode> id = placeGroupDef.fields().next();
-			String type = id.getKey();
-			String group = id.getValue().asText();
-			PlaceGroup placeGroup = new PlaceGroup();
-			placeGroup.type = PlaceGroup.Type.valueOf(type);
-			placeGroup.group = group;
-			PlaceGroupZone zone = new PlaceGroupZone(placeGroup);
-			placeGroupDef.fields().forEachRemaining(field -> {
-				switch (field.getKey()) {
-					case "x":
-
-						if (field.getValue().isArray()) {
-
-							int x1 = field.getValue().get(0).asInt();
-							int x2 = field.getValue().get(1).asInt();
-
-							if (x1 > x2) {
-								int temp = x1;
-								x1 = x2;
-								x2 = temp;
-							}
-
-							zone.bounds.x1 = x1;
-							zone.bounds.x2 = x2;
-
-						} else {
-							zone.bounds.x1 = field.getValue().asInt();
-							zone.bounds.x2 = field.getValue().asInt();
-						}
-
-						break;
-
-					case "y":
-						if (field.getValue().isArray()) {
-
-							int y1 = field.getValue().get(0).asInt();
-							int y2 = field.getValue().get(1).asInt();
-
-							if (y1 > y2) {
-								int temp = y1;
-								y1 = y2;
-								y2 = temp;
-							}
-
-							zone.bounds.y1 = y1;
-							zone.bounds.y2 = y2;
-
-						} else {
-							zone.bounds.y1 = field.getValue().asInt();
-							zone.bounds.y2 = field.getValue().asInt();
-						}
-						break;
-
-					case "chance":
-						zone.group.chance = field.getValue().asInt();
-						break;
-
-					case "repeat":
-						if (field.getValue().isArray()) {
-							zone.repeatMin = field.getValue().get(0).asInt();
-							zone.repeatMax = field.getValue().get(1).asInt();
-						} else {
-							zone.repeatMin = field.getValue().asInt();
-						}
-						break;
-
-				}
-			});
-			zones.add(zone);
-		});
-
-		return zones;
-
-	}
-
 	private void loadMapgenSection(final JsonNode root) {
 		loadMapgenSection(root, root.has("om_terrain") ? root.get("om_terrain").get(0).asText() : "No OM Terrain");
 	}
-
-
 
 	@FunctionalInterface
 	private interface MapTileMapper {
@@ -164,72 +82,75 @@ public class DataFileReader extends Service<Boolean> {
 		map.settings.overmapTerrain = omTerrain;
 
 		Map<Character, MapTile> tiles = new HashMap<>();
+		Iterator<Map.Entry<String, JsonNode>> nodeIterator = root.get("object").fields();
 
-		for (JsonNode node : root.get("object")) {
+		while (nodeIterator.hasNext()) {
 
-			log.trace("Parsing node: " + node.asText());
+			Map.Entry<String, JsonNode> node = nodeIterator.next();
 
-			switch (node.asText()) {
+			log.trace("Parsing node: " + node.getKey());
+
+			switch (node.getKey()) {
 
 				case "fill_ter":
 					//map.fillTerrain = node.asText();
-					log.debug("Fill Terrain: " + node.asText());
+					log.debug("Fill Terrain: " + node.getValue().asText());
 					break;
 
 				case "terrain":
-					mapTiles(tiles, node, this::parseTerrain);
+					mapTiles(tiles, node.getValue(), this::parseTerrain);
 					break;
 
 				case "furniture":
-					mapTiles(tiles, node, this::parseFurniture);
+					mapTiles(tiles, node.getValue(), this::parseFurniture);
 					break;
 
 				case "gaspumps":
-					mapTiles(tiles, node, this::parseGasPumps);
+					mapTiles(tiles, node.getValue(), this::parseGasPumps);
 					break;
 
 				case "vendingmachines":
-					mapTiles(tiles, node, this::parseVendingMachines);
+					mapTiles(tiles, node.getValue(), this::parseVendingMachines);
 					break;
 
 				case "fields":
-					mapTiles(tiles, node, this::parseFields);
+					mapTiles(tiles, node.getValue(), this::parseFields);
 					break;
 
 				case "signs":
-					mapTiles(tiles, node, this::parseSigns);
+					mapTiles(tiles, node.getValue(), this::parseSigns);
 					break;
 
 				case "monsters":
-					mapTiles(tiles, node, this::parseMonsters);
+					mapTiles(tiles, node.getValue(), this::parseMonsters);
 					break;
 
 				case "toilets":
-					mapTiles(tiles, node, this::parseToilets);
+					mapTiles(tiles, node.getValue(), this::parseToilets);
 					break;
 
 				case "npcs":
-					mapTiles(tiles, node, this::parseNPCs);
+					mapTiles(tiles, node.getValue(), this::parseNPCs);
 					break;
 
 				case "items":
-					mapTiles(tiles, node, this::parseItems);
+					mapTiles(tiles, node.getValue(), this::parseItems);
 					break;
 
 				case "vehicles":
-					mapTiles(tiles, node, this::parseVehicles);
+					mapTiles(tiles, node.getValue(), this::parseVehicles);
 					break;
 
 				case "item":
-					mapTiles(tiles, node, this::parseItem);
+					mapTiles(tiles, node.getValue(), this::parseItem);
 					break;
 
 				case "traps":
-					mapTiles(tiles, node, this::parseTraps);
+					mapTiles(tiles, node.getValue(), this::parseTraps);
 					break;
 
 				case "monster":
-					mapTiles(tiles, node, this::parseMonster);
+					mapTiles(tiles, node.getValue(), this::parseMonster);
 					break;
 
 				//case "mapping":
@@ -237,7 +158,7 @@ public class DataFileReader extends Service<Boolean> {
 				//	break;
 
 				default:
-					log.info("Unrecognized mapgen field: '" + node.asText() + "'");
+					log.info("Unrecognized mapgen field: '" + node.getKey() + "'");
 					break;
 
 			}
@@ -253,6 +174,8 @@ public class DataFileReader extends Service<Boolean> {
 			}
 			y.value++;
 		});
+
+		maps.add(map);
 
 		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
 
@@ -277,8 +200,6 @@ public class DataFileReader extends Service<Boolean> {
 		});
 
 	}
-
-	//TODO Test each one of these by passing in map tile map and node with only entries in it
 
 	private TileMapping parseTerrain(final JsonNode node) {
 		if (node.isObject()) {
@@ -362,64 +283,6 @@ public class DataFileReader extends Service<Boolean> {
 		}
 
 	}
-
-	/*private void loadMapgenSection(final JsonNode root, final String omTerrain) {
-
-		log.info("Loading mapgen section.");
-		long startTime = System.nanoTime();
-
-		JsonNode object = root.get("object");
-
-		MapgenEntry map = new MapgenEntry();
-
-		map.settings.overmapTerrain = omTerrain;
-
-		Map<Character, TerrainMapping> terrainMap = parseTerrainMappings(object.get("terrain").fields());
-		Map<Character, FurnitureMapping> furnitureMap = parseMappings(TileMapping.Type.FURNITURE, object.get("furniture").fields());
-		Map<Character, GasPumpMapping> gasPumpMap = parseMappings(TileMapping.Type.GAS_PUMP, object.get("gaspumps").fields());
-		Map<Character, VendingMachineMapping> vendingMachineMap = parseMappings(TileMapping.Type.VENDING_MACHINE, object.get("vendingmachines").fields());
-		Map<Character, FieldMapping> fieldsMap = parseMappings(TileMapping.Type.FIELD, object.get("fields").fields());
-		Map<Character, SignMapping> signsMap = parseMappings(TileMapping.Type.SIGN, object.get("signs").fields());
-		Map<Character, MonstersMapping> monstersMap = parseMappings(TileMapping.Type.MONSTERS, object.get("monsters").fields());
-		Map<Character, ToiletMapping> toiletMap = parseMappings(TileMapping.Type.TOILET, object.get("toilets").fields());
-		Map<Character, NPCMapping> npcMap = parseMappings(TileMapping.Type.NPC, object.get("npcs").fields());
-		Map<Character, ItemsMapping> itemsMap = parseMappings(TileMapping.Type.ITEMS, object.get("items").fields());
-		Map<Character, VehicleMapping> vehicleMap = parseMappings(TileMapping.Type.VEHICLE, object.get("vehicles").fields());
-		Map<Character, ItemMapping> itemMap = parseMappings(TileMapping.Type.ITEM, object.get("item").fields());
-		Map<Character, TrapMapping> trapMap = parseMappings(TileMapping.Type.TRAP, object.get("traps").fields());
-		Map<Character, MonsterMapping> monsterMap = parseMappings(TileMapping.Type.MONSTER, object.get("monster").fields());
-
-		//Map<Character, String> furnitureMap = parseMappings(TileMapping.Type, object.get("mapping").fields());
-
-		String fillTer = object.has("fill_ter") ? object.get("fill_ter").asText() : "t_grass";
-
-		Value<Integer> y = new Value<>();
-		y.value = 0;
-		object.get("rows").forEach(row -> {
-			String rowString = row.asText();
-			for (int i = 0; i < rowString.length(); i++) {
-				map.tiles[i][y.value] = terrainMap.get(rowString.charAt(i));
-				map.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
-				if (map.tiles[i][y.value] == null) {
-					map.tiles[i][y.value] = fillTer;
-				}
-				if (map.furniture[i][y.value] == null) {
-					map.furniture[i][y.value] = "f_null";
-				}
-			}
-			y.value++;
-		});
-
-		if (object.has("place_groups")) {
-			map.placeGroupZones.addAll(loadPlaceGroupZones(object.get("place_groups")));
-		}
-
-		map.markSaved();
-		maps.add(map);
-
-		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
-
-	}*/
 
 	private void loadItemGroupSection(final JsonNode root) {
 

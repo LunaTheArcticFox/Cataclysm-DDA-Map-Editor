@@ -24,24 +24,23 @@ public class TileSet {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	//TODO Un-static this
-	public static Map<String, Image> textures = new TreeMap<>();
+	public static Map<String, Image> textures = new TreeMap<>(); //TODO Un-static this
 
-	private BufferedImage texture = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
+	private int tileSize = 24;
+	private BufferedImage texture = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 
 	private EventBus eventBus;
 
 	public TileSet(final Path path, final EventBus eventBus) {
 		this.eventBus = eventBus;
-		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
-		Path tilesPath = gameFolderPath.resolve(Paths.get("gfx", "MShock32Tileset", "tiles.png")).toAbsolutePath();
+		Path tilesPath = path.resolve("tiles.png").toAbsolutePath();
 		try {
 			texture = ImageIO.read(tilesPath.toFile());
 		} catch (IOException e) {
 			log.error("Error while attempting to read tileset image '" + tilesPath.toString() + "':", e); //TODO Use Cataclysm distribution's tiles
 		}
 		try {
-			load(path);
+			load(path.resolve("tile_config.json"));
 		} catch (IOException e) {
 			log.error("Error while attempting to read tileset definitions:", e);
 		}
@@ -106,15 +105,15 @@ public class TileSet {
 		BufferedImage backgroundImage = null;
 
 		if (foreground >= 0) {
-			foregroundImage = texture.getSubimage(x * 32, y * 32, 32, 32);
+			foregroundImage = texture.getSubimage(x * tileSize, y * tileSize, tileSize, tileSize);
 		}
 
 		if (background >= 0) {
 			x = background % 16;
 			y = background / 16;
-			backgroundImage = texture.getSubimage(x * 32, y * 32, 32, 32);
+			backgroundImage = texture.getSubimage(x * tileSize, y * tileSize, tileSize, tileSize);
 			if (foregroundImage != null) {
-				BufferedImage tempImage = new BufferedImage(32, 32, BufferedImage.TYPE_4BYTE_ABGR);
+				BufferedImage tempImage = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				tempImage.getGraphics().drawImage(backgroundImage, 0, 0, null);
 				tempImage.getGraphics().drawImage(foregroundImage, 0, 0, null);
 				backgroundImage = tempImage;

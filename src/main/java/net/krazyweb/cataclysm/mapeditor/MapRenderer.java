@@ -192,9 +192,8 @@ public class MapRenderer {
 	}
 
 	private void updateStatus(final int x, final int y) {
-		//TODO Delegate String responsibility to StatusBarController
 		if (x >= 0 && y >= 0 && x < MapEditor.SIZE && y < MapEditor.SIZE) {
-			eventBus.post(new TileHoverEvent(map.getTileAt(x, y).toString(), x, y));
+			eventBus.post(new TileHoverEvent(map.getTileAt(x, y), x, y));
 		}
 	}
 

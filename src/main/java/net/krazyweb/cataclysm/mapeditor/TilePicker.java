@@ -72,15 +72,16 @@ public class TilePicker {
 
 		root.forEach(node -> {
 
+			MapTile mapTile = new MapTile();
+			mapTile.add(new TerrainMapping(node.get("id").asText()));
+
 			ImageView view = new ImageView(TileSet.textures.get(node.get("id").asText()));
 			view.setPickOnBounds(true);
 			view.setOnMousePressed(mouseEvent -> {
-				MapTile mapTile = new MapTile();
-				mapTile.add(new TerrainMapping(node.get("id").asText()));
 				eventBus.post(new TilePickedEvent(mapTile));
 			});
 			view.setOnMouseMoved(mouseEvent -> {
-				eventBus.post(new TileHoverEvent(node.get("id").asText() + " (" + node.get("name").asText() + ")", 0, 0));
+				eventBus.post(new TileHoverEvent(mapTile, 0, 0));
 			});
 			tileContainer.getChildren().add(view);
 

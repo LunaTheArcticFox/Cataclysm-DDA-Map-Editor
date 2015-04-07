@@ -84,7 +84,7 @@ public class EditorMain {
 		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
 		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
 
-		new TileSet(appSettings.getPath(GAME_FOLDER).resolve(Paths.get("gfx", "MShock32Tileset", "tile_config.json")), eventBus);
+		new TileSet(appSettings.getPath(GAME_FOLDER).resolve(Paths.get("gfx", "ChestHoleTileset")), eventBus);
 
 		eventBus.register(this);
 

@@ -25,7 +25,7 @@ public class StatusBarController {
 
 	@Subscribe
 	public void tileHoverEventListener(final TileHoverEvent event) {
-		statusBar.setText(event.getX() + ", " + event.getY() + "\t\t" + event.getTileName());
+		statusBar.setText(event.getX() + ", " + event.getY() + "\t\t" + event.getTile());
 	}
 
 	@Subscribe
