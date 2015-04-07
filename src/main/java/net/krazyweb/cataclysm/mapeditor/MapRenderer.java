@@ -24,6 +24,7 @@ import javafx.util.Duration;
 import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
@@ -69,7 +70,7 @@ public class MapRenderer {
 	private MapEditor map;
 	private EventBus eventBus;
 	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
-	private Tile currentTile = Tile.tiles.get("t_grass"); //TODO Set to last tile used on startup
+	private MapTile currentTile; //TODO Set to last tile used on startup, create default MapTile in init()
 
 	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
@@ -193,7 +194,7 @@ public class MapRenderer {
 	private void updateStatus(final int x, final int y) {
 		//TODO Delegate String responsibility to StatusBarController
 		if (x >= 0 && y >= 0 && x < MapEditor.SIZE && y < MapEditor.SIZE) {
-			eventBus.post(new TileHoverEvent(map.getTerrainAt(x, y) + " | " + map.getFurnitureAt(x, y), x, y));
+			eventBus.post(new TileHoverEvent(map.getTileAt(x, y).toString(), x, y));
 		}
 	}
 
@@ -369,13 +370,13 @@ public class MapRenderer {
 
 		//TODO Use tileset fallback if configured
 		//Fallback for tiles not supported by tileset
-		if (Tile.tiles.get(map.getTerrainAt(x, y)) == null) {
+		//if (Tile.tiles.get(map.getTileAt(x, y)) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
 			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
 			return;
-		}
+		//}
 
-		//TODO Use tileset fallback if configured
+		/*//TODO Use tileset fallback if configured
 		if (Tile.tiles.get(map.getFurnitureAt(x, y)) == null) {
 			graphicsContext.setFill(new Color(0.8, 0.2, 0.6, 0.5));
 			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
@@ -404,7 +405,7 @@ public class MapRenderer {
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile().getID());
 				graphicsContext.drawImage(texture, x * 32, y * 32); //TODO Use tileset size
 			}
-		}
+		}*/
 
 	}
 

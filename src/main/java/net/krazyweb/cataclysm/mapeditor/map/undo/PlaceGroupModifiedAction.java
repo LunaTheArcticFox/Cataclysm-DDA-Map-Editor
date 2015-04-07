@@ -11,10 +11,11 @@ public class PlaceGroupModifiedAction implements Action {
 
 	private MapEditor map;
 	private PlaceGroup placeGroup;
-	private String beforeType, afterType, beforeGroup, afterGroup;
+	private PlaceGroup.Type beforeType, afterType;
+	private String beforeGroup, afterGroup;
 	private int beforeChance, afterChance;
 
-	public PlaceGroupModifiedAction(final MapEditor map, final PlaceGroup placeGroup, final String type, final String group, final int chance) {
+	public PlaceGroupModifiedAction(final MapEditor map, final PlaceGroup placeGroup, final PlaceGroup.Type type, final String group, final int chance) {
 		this.map = map;
 		this.placeGroup = placeGroup;
 		this.beforeType = placeGroup.type;

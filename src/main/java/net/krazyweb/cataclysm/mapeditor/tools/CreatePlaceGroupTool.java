@@ -5,10 +5,10 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroup;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
+import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroup;
 import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 
 import java.util.HashSet;
@@ -22,7 +22,7 @@ public class CreatePlaceGroupTool extends Tool {
 	private boolean dragging = false;
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void release(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		if (event.getButton() == MouseButton.PRIMARY) {
 			startX = convertCoord(event.getX());
@@ -32,7 +32,7 @@ public class CreatePlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void dragStart(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		if (event.getButton() == MouseButton.PRIMARY) {
 			dragging = true;
 			startX = convertCoord(event.getX());
@@ -41,7 +41,7 @@ public class CreatePlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void dragEnd(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		dragging = false;
 		if (event.getButton() == MouseButton.PRIMARY) {
 			createPlaceGroupZone(convertCoord(event.getX()), convertCoord(event.getY()), map);
@@ -49,12 +49,12 @@ public class CreatePlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
+	public Set<Point> getHighlight(final int x, final int y, final MapTile tile, final MapEditor map) {
 		return dragging ? getArea(x, y) : super.getHighlight(x, y, tile, map);
 	}
 
 	@Override
-	public Image getHighlightTile(final Tile tile) {
+	public Image getHighlightTile(final MapTile tile) {
 		return null;
 	}
 

@@ -2,10 +2,10 @@ package net.krazyweb.cataclysm.mapeditor.map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.eventbus.EventBus;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import net.krazyweb.cataclysm.mapeditor.map.data.*;
+import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -27,11 +27,9 @@ public class DataFileReader extends Service<Boolean> {
 	private List<ItemGroupEntry> itemGroupEntries = new ArrayList<>();
 	private List<MonsterGroupEntry> monsterGroupEntries = new ArrayList<>();
 	private List<OvermapEntry> overmapEntries = new ArrayList<>();
-	private EventBus eventBus;
 
-	public DataFileReader(final Path path, final EventBus eventBus) {
+	public DataFileReader(final Path path) {
 		this.path = path;
-		this.eventBus = eventBus;
 	}
 
 	@Override
@@ -65,12 +63,6 @@ public class DataFileReader extends Service<Boolean> {
 		T value;
 	}
 
-	private Map<Character, String> mapToSymbols(final Iterator<Map.Entry<String, JsonNode>> tiles) {
-		Map<Character, String> symbolMap = new HashMap<>();
-		tiles.forEachRemaining(tile -> symbolMap.put(tile.getKey().charAt(0), tile.getValue().asText()));
-		return symbolMap;
-	}
-
 	private List<PlaceGroupZone> loadPlaceGroupZones(final JsonNode placeGroupZones) {
 
 		List<PlaceGroupZone> zones = new ArrayList<>();
@@ -80,7 +72,7 @@ public class DataFileReader extends Service<Boolean> {
 			String type = id.getKey();
 			String group = id.getValue().asText();
 			PlaceGroup placeGroup = new PlaceGroup();
-			placeGroup.type = type;
+			placeGroup.type = PlaceGroup.Type.valueOf(type);
 			placeGroup.group = group;
 			PlaceGroupZone zone = new PlaceGroupZone(placeGroup);
 			placeGroupDef.fields().forEachRemaining(field -> {
@@ -155,7 +147,223 @@ public class DataFileReader extends Service<Boolean> {
 		loadMapgenSection(root, root.has("om_terrain") ? root.get("om_terrain").get(0).asText() : "No OM Terrain");
 	}
 
-	private void loadMapgenSection(final JsonNode root, final String omTerrain) {
+
+
+	@FunctionalInterface
+	private interface MapTileMapper {
+		TileMapping parse(final JsonNode root);
+	}
+
+	protected void loadMapgenSection(final JsonNode root, final String omTerrain) {
+
+		log.info("Loading mapgen section.");
+		long startTime = System.nanoTime();
+
+		MapgenEntry map = new MapgenEntry();
+		map.settings.weight = root.get("weight").asInt();
+		map.settings.overmapTerrain = omTerrain;
+
+		Map<Character, MapTile> tiles = new HashMap<>();
+
+		for (JsonNode node : root.get("object")) {
+
+			log.trace("Parsing node: " + node.asText());
+
+			switch (node.asText()) {
+
+				case "fill_ter":
+					//map.fillTerrain = node.asText();
+					log.debug("Fill Terrain: " + node.asText());
+					break;
+
+				case "terrain":
+					mapTiles(tiles, node, this::parseTerrain);
+					break;
+
+				case "furniture":
+					mapTiles(tiles, node, this::parseFurniture);
+					break;
+
+				case "gaspumps":
+					mapTiles(tiles, node, this::parseGasPumps);
+					break;
+
+				case "vendingmachines":
+					mapTiles(tiles, node, this::parseVendingMachines);
+					break;
+
+				case "fields":
+					mapTiles(tiles, node, this::parseFields);
+					break;
+
+				case "signs":
+					mapTiles(tiles, node, this::parseSigns);
+					break;
+
+				case "monsters":
+					mapTiles(tiles, node, this::parseMonsters);
+					break;
+
+				case "toilets":
+					mapTiles(tiles, node, this::parseToilets);
+					break;
+
+				case "npcs":
+					mapTiles(tiles, node, this::parseNPCs);
+					break;
+
+				case "items":
+					mapTiles(tiles, node, this::parseItems);
+					break;
+
+				case "vehicles":
+					mapTiles(tiles, node, this::parseVehicles);
+					break;
+
+				case "item":
+					mapTiles(tiles, node, this::parseItem);
+					break;
+
+				case "traps":
+					mapTiles(tiles, node, this::parseTraps);
+					break;
+
+				case "monster":
+					mapTiles(tiles, node, this::parseMonster);
+					break;
+
+				//case "mapping":
+				//	mapAllPurposeMapping();
+				//	break;
+
+				default:
+					log.info("Unrecognized mapgen field: '" + node.asText() + "'");
+					break;
+
+			}
+
+		}
+
+		Value<Integer> y = new Value<>();
+		y.value = 0;
+		root.get("object").get("rows").forEach(row -> {
+			String rowString = row.asText();
+			for (int i = 0; i < rowString.length(); i++) {
+				map.tiles[i][y.value] = tiles.get(rowString.charAt(i));
+			}
+			y.value++;
+		});
+
+		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
+
+	}
+
+	private void mapTiles(final Map<Character, MapTile> tiles, final JsonNode root, final MapTileMapper mapper) {
+
+		root.forEach(mapping -> {
+
+			MapTile tile = getTileForCharacter(tiles, mapping.asText().charAt(0));
+
+			List<JsonNode> nodes = new ArrayList<>();
+
+			if (mapping.isArray()) {
+				mapping.forEach(nodes::add);
+			} else {
+				nodes.add(mapping);
+			}
+
+			nodes.forEach(node -> tile.add(mapper.parse(node)));
+
+		});
+
+	}
+
+	//TODO Test each one of these by passing in map tile map and node with only entries in it
+
+	private TileMapping parseTerrain(final JsonNode node) {
+		if (node.isObject()) {
+			return new TerrainMapping(node.get("ter").asText());
+		} else {
+			return new TerrainMapping(node.asText());
+		}
+	}
+
+	private TileMapping parseFurniture(final JsonNode node) {
+		if (node.isObject()) {
+			return new FurnitureMapping(node.get("furn").asText());
+		} else {
+			return new FurnitureMapping(node.asText());
+		}
+	}
+
+	private TileMapping parseGasPumps(final JsonNode node) {
+		JsonNode amount = node.get("amount");
+		return new GasPumpMapping(amount.get(0).asInt(), amount.get(1).asInt());
+	}
+
+	private TileMapping parseVendingMachines(final JsonNode node) {
+		return new VendingMachineMapping(node.get("item_group").asText());
+	}
+
+	private TileMapping parseFields(final JsonNode node) {
+		return new FieldMapping(node.get("field").asText(), node.get("age").asInt(), node.get("density").asInt());
+	}
+
+	private TileMapping parseSigns(final JsonNode node) {
+		return new SignMapping(node.get("signage").asText());
+	}
+
+	private TileMapping parseMonsters(final JsonNode node) {
+		return new MonstersMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
+	}
+
+	private TileMapping parseToilets(final JsonNode node) {
+		JsonNode amount = node.get("amount");
+		return new ToiletMapping(amount.get(0).asInt(), amount.get(1).asInt());
+	}
+
+	private TileMapping parseNPCs(final JsonNode node) {
+		return new NPCMapping(node.get("class").asText());
+	}
+
+	private TileMapping parseItems(final JsonNode node) {
+		return new ItemsMapping(node.get("item").asText(), node.get("chance").asInt());
+	}
+
+	private TileMapping parseVehicles(final JsonNode node) {
+		int fuel = node.has("fuel") ? node.get("fuel").asInt() : 0;
+		return new VehicleMapping(node.get("vehicle").asText(), node.get("chance").asInt(), node.get("status").asInt(), fuel);
+	}
+
+	private TileMapping parseItem(final JsonNode node) {
+		return new ItemMapping(node.get("item").asText(), node.get("chance").asInt());
+	}
+
+	private TileMapping parseTraps(final JsonNode node) {
+		if (node.isObject()) {
+			return new TrapMapping(node.get("trap").asText());
+		} else {
+			return new TrapMapping(node.asText());
+		}
+	}
+
+	private TileMapping parseMonster(final JsonNode node) {
+		return new MonsterMapping(node.get("monster").asText(), node.get("friendly").asBoolean(), node.get("name").asText());
+	}
+
+	private MapTile getTileForCharacter(final Map<Character, MapTile> tiles, final Character character) {
+
+		if (tiles.containsKey(character)) {
+			return tiles.get(character);
+		} else {
+			MapTile tile = new MapTile();
+			tiles.put(character, tile);
+			return tile;
+		}
+
+	}
+
+	/*private void loadMapgenSection(final JsonNode root, final String omTerrain) {
 
 		log.info("Loading mapgen section.");
 		long startTime = System.nanoTime();
@@ -166,8 +374,22 @@ public class DataFileReader extends Service<Boolean> {
 
 		map.settings.overmapTerrain = omTerrain;
 
-		Map<Character, String> terrainMap = mapToSymbols(object.get("terrain").fields());
-		Map<Character, String> furnitureMap = mapToSymbols(object.get("furniture").fields());
+		Map<Character, TerrainMapping> terrainMap = parseTerrainMappings(object.get("terrain").fields());
+		Map<Character, FurnitureMapping> furnitureMap = parseMappings(TileMapping.Type.FURNITURE, object.get("furniture").fields());
+		Map<Character, GasPumpMapping> gasPumpMap = parseMappings(TileMapping.Type.GAS_PUMP, object.get("gaspumps").fields());
+		Map<Character, VendingMachineMapping> vendingMachineMap = parseMappings(TileMapping.Type.VENDING_MACHINE, object.get("vendingmachines").fields());
+		Map<Character, FieldMapping> fieldsMap = parseMappings(TileMapping.Type.FIELD, object.get("fields").fields());
+		Map<Character, SignMapping> signsMap = parseMappings(TileMapping.Type.SIGN, object.get("signs").fields());
+		Map<Character, MonstersMapping> monstersMap = parseMappings(TileMapping.Type.MONSTERS, object.get("monsters").fields());
+		Map<Character, ToiletMapping> toiletMap = parseMappings(TileMapping.Type.TOILET, object.get("toilets").fields());
+		Map<Character, NPCMapping> npcMap = parseMappings(TileMapping.Type.NPC, object.get("npcs").fields());
+		Map<Character, ItemsMapping> itemsMap = parseMappings(TileMapping.Type.ITEMS, object.get("items").fields());
+		Map<Character, VehicleMapping> vehicleMap = parseMappings(TileMapping.Type.VEHICLE, object.get("vehicles").fields());
+		Map<Character, ItemMapping> itemMap = parseMappings(TileMapping.Type.ITEM, object.get("item").fields());
+		Map<Character, TrapMapping> trapMap = parseMappings(TileMapping.Type.TRAP, object.get("traps").fields());
+		Map<Character, MonsterMapping> monsterMap = parseMappings(TileMapping.Type.MONSTER, object.get("monster").fields());
+
+		//Map<Character, String> furnitureMap = parseMappings(TileMapping.Type, object.get("mapping").fields());
 
 		String fillTer = object.has("fill_ter") ? object.get("fill_ter").asText() : "t_grass";
 
@@ -176,10 +398,10 @@ public class DataFileReader extends Service<Boolean> {
 		object.get("rows").forEach(row -> {
 			String rowString = row.asText();
 			for (int i = 0; i < rowString.length(); i++) {
-				map.terrain[i][y.value] = terrainMap.get(rowString.charAt(i));
+				map.tiles[i][y.value] = terrainMap.get(rowString.charAt(i));
 				map.furniture[i][y.value] = furnitureMap.get(rowString.charAt(i));
-				if (map.terrain[i][y.value] == null) {
-					map.terrain[i][y.value] = fillTer;
+				if (map.tiles[i][y.value] == null) {
+					map.tiles[i][y.value] = fillTer;
 				}
 				if (map.furniture[i][y.value] == null) {
 					map.furniture[i][y.value] = "f_null";
@@ -197,7 +419,7 @@ public class DataFileReader extends Service<Boolean> {
 
 		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
 
-	}
+	}*/
 
 	private void loadItemGroupSection(final JsonNode root) {
 

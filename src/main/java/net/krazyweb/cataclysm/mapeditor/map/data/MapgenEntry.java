@@ -4,15 +4,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
-import net.krazyweb.util.Rectangle;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 public class MapgenEntry implements Jsonable {
@@ -27,8 +21,7 @@ public class MapgenEntry implements Jsonable {
 
 	private static Logger log = LogManager.getLogger(MapgenEntry.class);
 
-	public String[][] terrain = new String[MapEditor.SIZE][MapEditor.SIZE];
-	public String[][] furniture = new String[MapEditor.SIZE][MapEditor.SIZE];
+	public MapTile[][] tiles = new MapTile[MapEditor.SIZE][MapEditor.SIZE];
 	public List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 	public MapSettings settings = new MapSettings();
 
@@ -40,10 +33,7 @@ public class MapgenEntry implements Jsonable {
 
 	public MapgenEntry(final MapgenEntry mapgenEntry) {
 		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				terrain[x][y] = mapgenEntry.terrain[x][y];
-				furniture[x][y] = mapgenEntry.furniture[x][y];
-			}
+			System.arraycopy(mapgenEntry.tiles[x], 0, tiles[x], 0, MapEditor.SIZE);
 		}
 		mapgenEntry.placeGroupZones.forEach(zone -> placeGroupZones.add(new PlaceGroupZone(zone)));
 		settings = new MapSettings(mapgenEntry.settings);
@@ -75,7 +65,7 @@ public class MapgenEntry implements Jsonable {
 
 		for (int x = 0; x < MapEditor.SIZE; x++) {
 			for (int y = 0; y < MapEditor.SIZE; y++) {
-				if (!mapgenEntry.terrain[x][y].equals(terrain[x][y]) || !mapgenEntry.furniture[x][y].equals(furniture[x][y])) {
+				if (!mapgenEntry.tiles[x][y].equals(tiles[x][y])) {
 					return false;
 				}
 			}
@@ -87,111 +77,10 @@ public class MapgenEntry implements Jsonable {
 
 	@Override
 	public int hashCode() {
-		int result = Arrays.hashCode(terrain);
-		result = 31 * result + Arrays.hashCode(furniture);
+		int result = Arrays.deepHashCode(tiles);
 		result = 31 * result + placeGroupZones.hashCode();
 		result = 31 * result + settings.hashCode();
 		return result;
-	}
-
-	private List<String> createRandomGrass() {
-
-		boolean[][] grassArray = new boolean[MapEditor.SIZE][MapEditor.SIZE];
-
-		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				grassArray[x][y] = terrain[x][y].equals("t_grass") && furniture[x][y].equals("f_null");
-			}
-		}
-
-		List<Rectangle> grassRectangles = new ArrayList<>();
-
-		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-
-				if (!grassArray[x][y]) {
-					continue;
-				}
-
-				int y2 = getGrassY2(x, y, grassArray);
-				int x2 = getGrassX2(x, y, y2, grassArray);
-
-				Rectangle r = new Rectangle();
-				r.x1 = x;
-				r.y1 = y;
-				r.x2 = x2;
-				r.y2 = y2;
-
-				for (int ix = r.x1; ix <= r.x2; ix++) {
-					for (int iy = r.y1; iy <= r.y2; iy++) {
-						grassArray[ix][iy] = false;
-					}
-				}
-
-				grassRectangles.add(r);
-
-			}
-		}
-
-		List<String> grassEntries = new ArrayList<>();
-
-		for (Rectangle r : grassRectangles) {
-
-			String grassEntry = "{ \"point\": \"terrain\", \"id\": \"t_dirt\", ";
-
-			if (r.x1 == r.x2) {
-				grassEntry += "\"x\": " + r.x1 + ", ";
-			} else {
-				grassEntry += "\"x\": [ " + r.x1 + ", " + r.x2 + " ], ";
-			}
-
-			if (r.y1 == r.y2) {
-				grassEntry += "\"y\": " + r.y1 + ", ";
-			} else {
-				grassEntry += "\"y\": [ " + r.y1 + ", " + r.y2 + " ], ";
-			}
-
-			int area = r.getArea();
-			int repeatMin = Math.max(Math.min((int) (area / 3.5), 8), 0);
-			int repeatMax = Math.min(Math.max((int) (area / 2.5), 1), 14);
-
-			grassEntry += "\"repeat\": [ " + repeatMin + ", " + repeatMax + " ] },";
-			grassEntries.add(grassEntry);
-
-		}
-
-		return grassEntries;
-
-	}
-
-	private int getGrassY2(final int x, final int y, final boolean[][] grassArray) {
-		int y2 = y;
-		for (int iy = y; iy < MapEditor.SIZE; iy++) {
-			if (grassArray[x][iy]) {
-				y2 = iy;
-			} else {
-				break;
-			}
-		}
-		return y2;
-	}
-
-	private int getGrassX2(final int x, final int y, final int y2, final boolean[][] grassArray) {
-		int x2 = x;
-		for (int ix = x; ix < MapEditor.SIZE; ix++) {
-			boolean nonGrassFound = false;
-			for (int iy = y; iy <= y2; iy++) {
-				if (!grassArray[ix][iy]) {
-					nonGrassFound = true;
-				}
-			}
-			if (!nonGrassFound) {
-				x2 = ix;
-			} else {
-				break;
-			}
-		}
-		return x2;
 	}
 
 	@Override
@@ -209,13 +98,13 @@ public class MapgenEntry implements Jsonable {
 		for (int y = 0; y < MapEditor.SIZE; y++) {
 			String row = "";
 			for (int x = 0; x < MapEditor.SIZE; x++) {
-				row += mappings.get(new MapTile(terrain[x][y], furniture[x][y]));
+				row += mappings.get(tiles[x][y]);
 			}
 			lines.add(INDENT + INDENT + INDENT + "\"" + row + "\"" + ((y == MapEditor.SIZE - 1) ? "" : ","));
 		}
 
 		lines.add(INDENT + INDENT + "],");
-		lines.add(INDENT + INDENT + "\"terrain\": {");
+		/*lines.add(INDENT + INDENT + "\"terrain\": {");
 
 		List<String> tempLines = new ArrayList<>();
 
@@ -298,7 +187,7 @@ public class MapgenEntry implements Jsonable {
 
 		lines.addAll(tempLines);
 
-		lines.add(INDENT + INDENT + "]");
+		lines.add(INDENT + INDENT + "]");*/
 		lines.add(INDENT + "}");
 		lines.add("}");
 
@@ -311,7 +200,7 @@ public class MapgenEntry implements Jsonable {
 
 		Multimap<MapTile, Character> commonMappings = ArrayListMultimap.create();
 
-		InputStream tileSymbolMapStream = getClass().getResourceAsStream("/tileSymbolMap.txt");
+		/*InputStream tileSymbolMapStream = getClass().getResourceAsStream("/tileSymbolMap.txt");
 		if (tileSymbolMapStream != null) {
 			try (BufferedReader reader = new BufferedReader(new InputStreamReader(tileSymbolMapStream, StandardCharsets.UTF_8))) {
 
@@ -345,12 +234,20 @@ public class MapgenEntry implements Jsonable {
 		}
 
 		List<Character> usedSymbols = new ArrayList<>();
-		List<MapTile> resolveLater = new ArrayList<>();
+		List<MapTile> resolveLater = new ArrayList<>();*/
 		Map<MapTile, Character> mappings = new HashMap<>();
+		int index = 0;
 
 		for (int x = 0; x < MapEditor.SIZE; x++) {
 			for (int y = 0; y < MapEditor.SIZE; y++) {
-				MapTile tile = new MapTile(terrain[x][y], furniture[x][y]);
+				if (!mappings.containsKey(tiles[x][y])) {
+					mappings.put(tiles[x][y], SYMBOLS[index++]);
+				}
+			}
+		}
+		/*for (int x = 0; x < MapEditor.SIZE; x++) {
+			for (int y = 0; y < MapEditor.SIZE; y++) {
+				MapTile tile = new MapTile(tiles[x][y]);
 				if (!mappings.containsKey(tile)) {
 					if (commonMappings.containsKey(tile)) {
 						boolean found = false;
@@ -379,7 +276,7 @@ public class MapgenEntry implements Jsonable {
 					break;
 				}
 			}
-		});
+		});*/
 
 		return mappings;
 

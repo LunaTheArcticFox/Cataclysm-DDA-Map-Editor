@@ -1,16 +1,16 @@
 package net.krazyweb.cataclysm.mapeditor.events;
 
-import net.krazyweb.cataclysm.mapeditor.Tile;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 
 public class TilePickedEvent {
 
-	private final Tile tile;
+	private final MapTile tile;
 
-	public TilePickedEvent(final Tile tile) {
+	public TilePickedEvent(final MapTile tile) {
 		this.tile = tile;
 	}
 
-	public Tile getTile() {
+	public MapTile getTile() {
 		return tile;
 	}
 

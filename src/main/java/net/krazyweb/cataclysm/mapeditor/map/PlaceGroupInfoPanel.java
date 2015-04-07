@@ -42,7 +42,7 @@ public class PlaceGroupInfoPanel {
 
 	public PlaceGroupInfoPanel(final String title, final PlaceGroup placeGroup) {
 		this(title);
-		type.setText(placeGroup.type);
+		type.setText(placeGroup.type.name());
 		group.setText(placeGroup.group);
 		chance.setText(String.valueOf(placeGroup.chance));
 	}
@@ -51,8 +51,8 @@ public class PlaceGroupInfoPanel {
 		return wizard.showAndWait();
 	}
 
-	public String getType() {
-		return type.getText();
+	public PlaceGroup.Type getType() {
+		return PlaceGroup.Type.valueOf(type.getText());
 	}
 
 	public String getGroup() {

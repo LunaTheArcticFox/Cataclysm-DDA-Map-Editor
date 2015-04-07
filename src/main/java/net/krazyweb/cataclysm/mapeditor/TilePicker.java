@@ -12,6 +12,8 @@ import javafx.scene.layout.TilePane;
 import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -70,16 +72,12 @@ public class TilePicker {
 
 		root.forEach(node -> {
 
-			Tile tile = Tile.tiles.get(node.get("id").asText());
-
-			if (tile == null) {
-				return;
-			}
-
-			ImageView view = new ImageView(TileSet.textures.get(tile.getTile().getID()));
+			ImageView view = new ImageView(TileSet.textures.get(node.get("id").asText()));
 			view.setPickOnBounds(true);
 			view.setOnMousePressed(mouseEvent -> {
-				eventBus.post(new TilePickedEvent(tile));
+				MapTile mapTile = new MapTile();
+				mapTile.add(new TerrainMapping(node.get("id").asText()));
+				eventBus.post(new TilePickedEvent(mapTile));
 			});
 			view.setOnMouseMoved(mouseEvent -> {
 				eventBus.post(new TileHoverEvent(node.get("id").asText() + " (" + node.get("name").asText() + ")", 0, 0));

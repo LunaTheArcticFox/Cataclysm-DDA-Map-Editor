@@ -3,13 +3,13 @@ package net.krazyweb.cataclysm.mapeditor.tools;
 import javafx.scene.Node;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 
 public class PencilTool extends Tool {
 
 	@Override
-	public void click(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void click(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		if (event.getButton() == MouseButton.PRIMARY) {
 			/*if (event.isAltDown()) {
 				CataclysmMap.Layer layer = CataclysmMap.Layer.FURNITURE;
@@ -25,17 +25,17 @@ public class PencilTool extends Tool {
 	}
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void release(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		map.finishEdit("Pencil");
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void dragEnd(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		map.finishEdit("Pencil");
 	}
 
 	@Override
-	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void drag(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 		click(event, tile, rootNode, map);
 	}
 

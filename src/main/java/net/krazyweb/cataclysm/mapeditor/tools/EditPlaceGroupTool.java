@@ -7,8 +7,8 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
-import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.PlaceGroupInfoPanel;
 import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.util.Rectangle;
@@ -26,7 +26,7 @@ public class EditPlaceGroupTool extends Tool {
 	private PlaceGroupZone placeGroupZone;
 
 	@Override
-	public void release(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void release(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 
 		if (!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS)) {
 			return;
@@ -36,9 +36,13 @@ public class EditPlaceGroupTool extends Tool {
 		int y = convertCoord(event.getY());
 
 		if (event.getButton() == MouseButton.PRIMARY) {
+
 			PlaceGroupZone zone = map.getPlaceGroupZoneAt(x, y);
+
 			if (zone != null) {
+
 				map.removePlaceGroupZone(zone);
+
 				if (zone == placeGroupZone) {
 					map.addPlaceGroupZone(zone);
 					placeGroupZone = map.getPlaceGroupZoneAt(x, y);
@@ -46,7 +50,9 @@ public class EditPlaceGroupTool extends Tool {
 					map.addPlaceGroupZone(0, zone);
 					placeGroupZone = zone;
 				}
+
 			}
+
 		} else {
 
 			if ((placeGroupZone = map.getPlaceGroupZoneAt(x, y)) != null) {
@@ -60,6 +66,7 @@ public class EditPlaceGroupTool extends Tool {
 				menu.setAutoHide(true);
 
 				edit.setOnAction(action -> editPlaceGroupZone(map.getPlaceGroupZoneAt(x, y), map));
+
 				duplicate.setOnAction(action -> {
 					map.startEdit();
 					PlaceGroupZone newZone = new PlaceGroupZone(placeGroupZone);
@@ -67,11 +74,13 @@ public class EditPlaceGroupTool extends Tool {
 					map.addPlaceGroupZone(0, newZone);
 					map.finishEdit("Duplicate PlaceGroup");
 				});
+
 				delete.setOnAction(action -> {
 					map.startEdit();
 					map.removePlaceGroupZone(placeGroupZone);
 					map.finishEdit("Delete PlaceGroup");
 				});
+
 				cancel.setOnAction(action -> menu.hide());
 
 				menu.show(rootNode, event.getScreenX(), event.getScreenY());
@@ -83,7 +92,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragStart(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void dragStart(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 
 		lastX = convertCoord(event.getX());
 		lastY = convertCoord(event.getY());
@@ -102,7 +111,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void drag(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void drag(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 
 		if (event.getButton() != MouseButton.PRIMARY ||
 				!ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GROUPS)) {
@@ -128,7 +137,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public void dragEnd(final MouseEvent event, final Tile tile, final Node rootNode, final MapEditor map) {
+	public void dragEnd(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {
 
 		if (event.getButton() != MouseButton.PRIMARY || placeGroupZone == null) {
 			return;
@@ -143,7 +152,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public Set<Point> getHighlight(final int x, final int y, final Tile tile, final MapEditor map) {
+	public Set<Point> getHighlight(final int x, final int y, final MapTile tile, final MapEditor map) {
 
 		Set<Point> area = new HashSet<>();
 
@@ -168,7 +177,7 @@ public class EditPlaceGroupTool extends Tool {
 	}
 
 	@Override
-	public Image getHighlightTile(final Tile tile) {
+	public Image getHighlightTile(final MapTile tile) {
 		return null;
 	}
 

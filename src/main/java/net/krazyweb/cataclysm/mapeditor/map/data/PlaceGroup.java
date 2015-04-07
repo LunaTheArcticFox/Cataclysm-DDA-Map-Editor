@@ -2,7 +2,11 @@ package net.krazyweb.cataclysm.mapeditor.map.data;
 
 public class PlaceGroup {
 
-	public String type;
+	public static enum Type {
+		GAS_PUMP, VENDING_MACHINE, FIELD, SIGN, MONSTER, TOILET, NPC, ITEM, VEHICLE, TRAP, FURNITURE, TERRAIN
+	}
+
+	public Type type;
 	public String group;
 	public int chance;
 
@@ -40,7 +44,7 @@ public class PlaceGroup {
 
 	@Override
 	public String toString() {
-		return "[Type: " + type + ", Group: " + group + ", Chance: " + chance + "]";
+		return "[Type: " + type.name() + ", Group: " + group + ", Chance: " + chance + "]";
 	}
 
 }

@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
-import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapSettings;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapgenEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroup;
@@ -22,11 +21,11 @@ import java.util.stream.Collectors;
 
 public class MapEditor {
 
+	private static final Logger log = LogManager.getLogger(MapEditor.class);
+
 	public static final int SIZE = 24;
 
-	private static Logger log = LogManager.getLogger(MapEditor.class);
-
-	private static enum Orientation {
+	private enum Orientation {
 		EITHER, VERTICAL, HORIZONTAL
 	}
 
@@ -49,7 +48,7 @@ public class MapEditor {
 			Orientation.EITHER
 	};
 
-	public static enum Layer {
+	public enum Layer {
 		TERRAIN, FURNITURE
 	}
 
@@ -74,28 +73,26 @@ public class MapEditor {
 		if (editing) {
 			undoEvent.addAction(new RotateMapAction(this));
 		}
-		transposeArray(currentMap.terrain);
-		reverseColumns(currentMap.terrain);
-		transposeArray(currentMap.furniture);
-		reverseColumns(currentMap.furniture);
+		transposeArray(currentMap.tiles);
+		reverseColumns(currentMap.tiles);
 		currentMap.placeGroupZones.forEach(PlaceGroupZone::rotate);
 		renderer.redraw();
 	}
 
-	private void transposeArray(final String[][] array) {
+	private void transposeArray(final MapTile[][] array) {
 		for(int i = 0; i < SIZE; i++) {
 			for(int j = i + 1; j < SIZE; j++) {
-				String temp = array[i][j];
+				MapTile temp = array[i][j];
 				array[i][j] = array[j][i];
 				array[j][i] = temp;
 			}
 		}
 	}
 
-	private void reverseColumns(final String[][] array) {
+	private void reverseColumns(final MapTile[][] array) {
 		for(int j = 0; j < array.length; j++){
 			for(int i = 0; i < array[j].length / 2; i++) {
-				String temp = array[i][j];
+				MapTile temp = array[i][j];
 				array[i][j] = array[array.length - i - 1][j];
 				array[array.length - i - 1][j] = temp;
 			}
@@ -116,58 +113,29 @@ public class MapEditor {
 		editing = false;
 	}
 
-	public void setTile(final int x, final int y, final Tile tile) {
+	public void setTile(final int x, final int y, final MapTile tile) {
 
 		if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
 			return;
 		}
 
-		String terrainBefore = getTerrainAt(x, y);
-		String furnitureBefore = getFurnitureAt(x, y);
+		MapTile before = currentMap.tiles[x][y];
 
-		//TODO get terrain type instead of just checking if furniture for things like items (?)
-		if (tile.isFurniture()) {
-			if (editing && !changedTiles.contains(new Point(x, y))) {
-				undoEvent.addAction(new TileChangeAction(this, Layer.FURNITURE, new Point(x, y), furnitureBefore, tile.getID()));
-				changedTiles.add(new Point(x, y));
-			}
-			currentMap.furniture[x][y] = tile.getID();
-		} else {
-			if (editing && !changedTiles.contains(new Point(x, y))) {
-				undoEvent.addAction(new TileChangeAction(this, Layer.TERRAIN, new Point(x, y), terrainBefore, tile.getID()));
-				changedTiles.add(new Point(x, y));
-			}
-			currentMap.terrain[x][y] = tile.getID();
+		if (editing && !changedTiles.contains(new Point(x, y))) {
+			undoEvent.addAction(new TileChangeAction(this, new Point(x, y), before, tile));
+			changedTiles.add(new Point(x, y));
 		}
 
-		updateTile(x, y);
-		updateTilesSurrounding(x, y);
+		currentMap.tiles[x][y] = tile;
 
-		if (!getTerrainAt(x, y).equals(terrainBefore) || !getFurnitureAt(x, y).equals(furnitureBefore)) {
+		if (!currentMap.tiles[x][y].equals(before)) {
 			renderer.redraw(x, y);
 		}
 
 	}
 
-	public void setTile(final Point location, final Layer layer, final String tile) {
-
-		if (location.x < 0 || location.y < 0 || location.x >= SIZE || location.y >= SIZE) {
-			return;
-		}
-
-		String terrainBefore = getTerrainAt(location.x, location.y);
-		String furnitureBefore = getFurnitureAt(location.x, location.y);
-
-		if (layer == Layer.TERRAIN) {
-			currentMap.terrain[location.x][location.y] = tile;
-		} else {
-			currentMap.furniture[location.x][location.y] = tile;
-		}
-
-		if (!getTerrainAt(location.x, location.y).equals(terrainBefore) || !getFurnitureAt(location.x, location.y).equals(furnitureBefore)) {
-			renderer.redraw(location.x, location.y);
-		}
-
+	public void setTile(final Point location, final MapTile tile) {
+		setTile(location.x, location.y, tile);
 	}
 
 	public void addPlaceGroupZone(final int index, final PlaceGroupZone zone) {
@@ -202,7 +170,7 @@ public class MapEditor {
 		renderer.redrawPlaceGroups();
 	}
 
-	public void modifyPlaceGroup(final PlaceGroup placeGroup, final String type, final String group, final int chance) {
+	public void modifyPlaceGroup(final PlaceGroup placeGroup, final PlaceGroup.Type type, final String group, final int chance) {
 		if (editing) {
 			undoEvent.addAction(new PlaceGroupModifiedAction(this, placeGroup, type, group, chance));
 		}
@@ -228,78 +196,60 @@ public class MapEditor {
 		return new ArrayList<>(currentMap.placeGroupZones);
 	}
 
-	private void updateTilesSurrounding(final int x, final int y) {
+	/*private void updateTilesSurrounding(final int x, final int y) {
 		updateTile(x - 1, y);
 		updateTile(x + 1, y);
 		updateTile(x, y - 1);
 		updateTile(x, y + 1);
-	}
+	}*/
 
-	private void updateTile(final int x, final int y) {
+	/*private void updateTile(final int x, final int y) {
 
 		String tile = getTerrainAt(x, y);
 
 		if (tile.endsWith("_v") || tile.endsWith("_h")) {
 			int bitwiseMapping = getBitwiseMapping(x, y, Layer.TERRAIN);
-			currentMap.terrain[x][y] = tile.substring(0, tile.lastIndexOf("_"));
-			currentMap.terrain[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
+			currentMap.tiles[x][y] = tile.substring(0, tile.lastIndexOf("_"));
+			currentMap.tiles[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
 		}
 
-	}
+	}*/
 
-	public int getBitwiseMapping(final int x, final int y, final Layer layer) {
+	public int getBitwiseMapping(final int x, final int y) {
 
-		String current = getTileAt(x, y, layer);
+		//String current = getTileAt(x, y);
 
 		byte tilemap = 0;
 
-		if (current.isEmpty()) {
+		/*if (current.isEmpty()) {
 			return 0;
 		}
 
-		if (getTileAt(x, y + 1, layer) != null && Tile.tilesConnect(getTileAt(x, y + 1, layer), current)) {
+		if (getTileAt(x, y + 1) != null && Tile.tilesConnect(getTileAt(x, y + 1), current)) {
 			tilemap += 1;
 		}
 
-		if (getTileAt(x + 1, y, layer) != null && Tile.tilesConnect(getTileAt(x + 1, y, layer), current)) {
+		if (getTileAt(x + 1, y) != null && Tile.tilesConnect(getTileAt(x + 1, y), current)) {
 			tilemap += 2;
 		}
 
-		if (getTileAt(x, y - 1, layer) != null && Tile.tilesConnect(getTileAt(x, y - 1, layer), current)) {
+		if (getTileAt(x, y - 1) != null && Tile.tilesConnect(getTileAt(x, y - 1), current)) {
 			tilemap += 4;
 		}
 
-		if (getTileAt(x - 1, y, layer) != null && Tile.tilesConnect(getTileAt(x - 1, y, layer), current)) {
+		if (getTileAt(x - 1, y) != null && Tile.tilesConnect(getTileAt(x - 1, y), current)) {
 			tilemap += 8;
-		}
+		}*/
 
 		return tilemap;
 
 	}
 
-	public String getTileAt(final int x, final int y, final Layer layer) {
+	public MapTile getTileAt(final int x, final int y) {
 		if (x < 0 || y < 0 || x >= SIZE || y >= SIZE) {
-			return "";
+			return null;
 		}
-		if (layer == Layer.TERRAIN) {
-			if (currentMap.terrain[x][y] == null) {
-				return "";
-			}
-			return currentMap.terrain[x][y];
-		} else {
-			if (currentMap.furniture[x][y] == null) {
-				return "";
-			}
-			return currentMap.furniture[x][y];
-		}
-	}
-
-	public String getTerrainAt(final int x, final int y) {
-		return getTileAt(x, y, Layer.TERRAIN);
-	}
-
-	public String getFurnitureAt(final int x, final int y) {
-		return getTileAt(x, y, Layer.FURNITURE);
+		return currentMap.tiles[x][y];
 	}
 
 	protected void setMapgenEntry(final MapgenEntry mapgenEntry) {

@@ -119,7 +119,7 @@ public class MapManager implements UndoBufferListener {
 			updateUndoRedoText();
 		}
 
-		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
+		DataFileReader dataFileReader = new DataFileReader(path);
 		dataFileReader.setOnSucceeded(event -> {
 
 			itemGroupEntries.addAll(dataFileReader.getItemGroupEntries());
@@ -158,7 +158,7 @@ public class MapManager implements UndoBufferListener {
 
 	public void addMap(final Path path) {
 
-		DataFileReader dataFileReader = new DataFileReader(path, eventBus);
+		DataFileReader dataFileReader = new DataFileReader(path);
 		dataFileReader.setOnSucceeded(event -> {
 			dataFileReader.getMaps().forEach(this::loadMap);
 			mapEditor.setMapgenEntry(maps.get(root.getTabs().get(root.getTabs().size() - 1)));

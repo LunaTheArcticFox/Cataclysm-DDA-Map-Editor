@@ -3,6 +3,6 @@ package net.krazyweb.cataclysm.mapeditor.map.data;
 import java.util.List;
 
 public interface Jsonable {
-	public static final String INDENT = "    ";
-	public List<String> getJsonLines();
+	String INDENT = "    ";
+	List<String> getJsonLines();
 }
