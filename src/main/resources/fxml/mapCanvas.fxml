@@ -5,9 +5,9 @@
 <?import javafx.scene.layout.StackPane?>
 <StackPane fx:id="root" prefWidth="100" prefHeight="100" fx:controller="net.krazyweb.cataclysm.mapeditor.MapRenderer" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
 	<Group>
-		<Canvas fx:id="terrain"  height="768.0" width="768.0"/>
-		<Canvas fx:id="groups"   height="768.0" width="768.0"/>
-		<Canvas fx:id="grid"     height="768.0" width="768.0"/>
-		<Canvas fx:id="overlays" height="768.0" width="768.0"/>
+		<Canvas fx:id="terrain"  height="576.0" width="576.0"/>
+		<Canvas fx:id="groups"   height="576.0" width="576.0"/>
+		<Canvas fx:id="grid"     height="576.0" width="576.0"/>
+		<Canvas fx:id="overlays" height="576.0" width="576.0"/>
 	</Group>
 </StackPane>

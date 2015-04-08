@@ -36,7 +36,7 @@ public abstract class Tool {
 	}
 
 	protected int convertCoord(final double eventPosition) {
-		return (int) eventPosition / 32; //TODO Use tileset size
+		return (int) eventPosition / TileSet.tileSize; //TODO Use tileset size
 	}
 
 }

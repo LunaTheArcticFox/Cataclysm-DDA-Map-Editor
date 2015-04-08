@@ -1,5 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
+import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
 import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TileMapping;
 
 import java.util.ArrayList;
@@ -32,6 +33,15 @@ public class MapTile {
 	@Override
 	public int hashCode() {
 		return tileMappings.hashCode();
+	}
+
+	public String getTileID() {
+		for (TileMapping mapping : tileMappings) {
+			if (mapping instanceof TerrainMapping) {
+				return ((TerrainMapping) mapping).terrain;
+			}
+		}
+		return "";
 	}
 
 }

@@ -329,6 +329,10 @@ public class MapEditor {
 
 	}
 
+	public MapTile getFillTerrain() {
+		return currentMap.fillTerrain;
+	}
+
 	@Override
 	public String toString() {
 		return currentMap.settings.overmapTerrain;

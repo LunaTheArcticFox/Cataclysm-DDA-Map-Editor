@@ -26,7 +26,7 @@ public class TileSet {
 
 	public static Map<String, Image> textures = new TreeMap<>(); //TODO Un-static this
 
-	private int tileSize = 24;
+	public static int tileSize = 24; //TODO Un-static, move current tileset to app settings
 	private BufferedImage texture = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 
 	private EventBus eventBus;

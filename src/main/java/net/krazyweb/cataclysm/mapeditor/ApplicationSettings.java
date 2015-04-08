@@ -36,7 +36,7 @@ public class ApplicationSettings {
 
 	private static ApplicationSettings instance;
 
-	public static enum Preference {
+	public enum Preference {
 
 		LAST_FOLDER(Path.class),
 		SHOW_GRID(Boolean.class),
@@ -45,7 +45,7 @@ public class ApplicationSettings {
 
 		private final Class<?> clazz;
 
-		private Preference(Class<?> clazz) {
+		Preference(Class<?> clazz) {
 			this.clazz = clazz;
 		}
 

@@ -22,6 +22,7 @@ public class MapgenEntry implements Jsonable {
 	private static Logger log = LogManager.getLogger(MapgenEntry.class);
 
 	public MapTile[][] tiles = new MapTile[MapEditor.SIZE][MapEditor.SIZE];
+	public MapTile fillTerrain;
 	public List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 	public MapSettings settings = new MapSettings();
 
@@ -37,6 +38,7 @@ public class MapgenEntry implements Jsonable {
 		}
 		mapgenEntry.placeGroupZones.forEach(zone -> placeGroupZones.add(new PlaceGroupZone(zone)));
 		settings = new MapSettings(mapgenEntry.settings);
+		fillTerrain = mapgenEntry.fillTerrain;
 	}
 
 	public boolean isSaved() {
@@ -53,31 +55,19 @@ public class MapgenEntry implements Jsonable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		MapgenEntry mapgenEntry = (MapgenEntry) o;
+		MapgenEntry that = (MapgenEntry) o;
 
-		if (placeGroupZones != null ? !placeGroupZones.equals(mapgenEntry.placeGroupZones) : mapgenEntry.placeGroupZones != null) {
-			return false;
-		}
-
-		if (settings != null ? !settings.equals(mapgenEntry.settings) : mapgenEntry.settings != null) {
-			return false;
-		}
-
-		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				if (!mapgenEntry.tiles[x][y].equals(tiles[x][y])) {
-					return false;
-				}
-			}
-		}
-
-		return true;
+		if (!Arrays.deepEquals(tiles, that.tiles)) return false;
+		if (fillTerrain != null ? !fillTerrain.equals(that.fillTerrain) : that.fillTerrain != null) return false;
+		if (!placeGroupZones.equals(that.placeGroupZones)) return false;
+		return settings.equals(that.settings);
 
 	}
 
 	@Override
 	public int hashCode() {
 		int result = Arrays.deepHashCode(tiles);
+		result = 31 * result + (fillTerrain != null ? fillTerrain.hashCode() : 0);
 		result = 31 * result + placeGroupZones.hashCode();
 		result = 31 * result + settings.hashCode();
 		return result;

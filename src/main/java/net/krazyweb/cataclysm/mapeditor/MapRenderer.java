@@ -75,32 +75,32 @@ public class MapRenderer {
 	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
-		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
 		tool.release(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
-		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 		tool.drag(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
-		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 		tool.dragStart(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
-		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 		tool.dragEnd(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / 32, (int) event.getY() / 32, currentTile, map)); //TODO Tile Size
-		updateStatus((int) event.getX() / 32, (int) event.getY() / 32);
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	@FXML
@@ -132,7 +132,7 @@ public class MapRenderer {
 		drawTile(x + 1, y);
 		drawTile(x - 1, y);
 		drawTile(x,     y + 1);
-		drawTile(x,     y - 1);
+		drawTile(x, y - 1);
 	}
 
 	public void redrawPlaceGroups() {
@@ -220,24 +220,24 @@ public class MapRenderer {
 					if (point.x == point1.x - 1 && point.y == point1.y - 1) {
 						adjDiag = true;
 					} else if (point.x == point1.x - 1 && point.y == point1.y) {
-						patches.add(new Rectangle(point.x * 32 + 31.5, point.y * 32 + 0.5, 2, 31)); //TODO Use tileset size
+						patches.add(new Rectangle(point.x * TileSet.tileSize + 31.5, point.y * TileSet.tileSize + 0.5, 2, 31)); //TODO Use tileset size
 						adjRight = true;
 					} else if (point.x == point1.x && point.y == point1.y - 1) {
-						patches.add(new Rectangle(point.x * 32 + 0.5, point.y * 32 + 31.5, 31, 2)); //TODO Use tileset size
+						patches.add(new Rectangle(point.x * TileSet.tileSize + 0.5, point.y * TileSet.tileSize + 31.5, 31, 2)); //TODO Use tileset size
 						adjBelow = true;
 					}
 				}
 			}
 
 			Rectangle r = new Rectangle(
-					point.x * 32 + 0.5,
-					point.y * 32 + 0.5,
-					32 + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
-					32 + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0)); //TODO Use tileset size
+					point.x * TileSet.tileSize + 0.5,
+					point.y * TileSet.tileSize + 0.5,
+					TileSet.tileSize + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
+					TileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0)); //TODO Use tileset size
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
 
-			context.drawImage(tool.getHighlightTile(currentTile), point.x * 32, point.y * 32); //TODO Bitwise map tile previews
+			context.drawImage(tool.getHighlightTile(currentTile), point.x * TileSet.tileSize, point.y * TileSet.tileSize); //TODO Bitwise map tile previews
 
 		}
 		for (Rectangle r : patches) {
@@ -269,20 +269,20 @@ public class MapRenderer {
 		context.setLineWidth(1);
 
 		for (int i = 0; i < MapEditor.SIZE; i++) {
-			double loc = i * 32 + 0.5;
+			double loc = i * TileSet.tileSize + 0.5;
 			context.moveTo(loc, 0);
-			context.lineTo(loc, 768);
+			context.lineTo(loc, TileSet.tileSize * MapEditor.SIZE);
 			context.moveTo(0, loc);
-			context.lineTo(768, loc);
+			context.lineTo(TileSet.tileSize * MapEditor.SIZE, loc);
 			context.stroke();
 		}
 
-		double loc = MapEditor.SIZE * 32 - 0.5;
+		double loc = MapEditor.SIZE * TileSet.tileSize - 0.5;
 
 		context.moveTo(loc, 0);
-		context.lineTo(loc, 768);
+		context.lineTo(loc, TileSet.tileSize * MapEditor.SIZE);
 		context.moveTo(0, loc);
-		context.lineTo(768, loc);
+		context.lineTo(TileSet.tileSize * MapEditor.SIZE, loc);
 		context.stroke();
 
 	}
@@ -304,8 +304,8 @@ public class MapRenderer {
 		this.map = map;
 
 		overlays.setOnMouseMoved(mouseEvent -> {
-			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32, currentTile, map));
-			updateStatus((int) mouseEvent.getX() / 32, (int) mouseEvent.getY() / 32);
+			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / TileSet.tileSize, (int) mouseEvent.getY() / TileSet.tileSize, currentTile, map));
+			updateStatus((int) mouseEvent.getX() / TileSet.tileSize, (int) mouseEvent.getY() / TileSet.tileSize);
 		});
 
 		overlays.setOnMouseExited(mouseEvent -> clearOverlay());
@@ -341,21 +341,21 @@ public class MapRenderer {
 
 	private void drawPlaceGroups() {
 		GraphicsContext graphicsContext = groups.getGraphicsContext2D();
-		graphicsContext.clearRect(0, 0, 768, 768); //TODO Use calculated size
+		graphicsContext.clearRect(0, 0, TileSet.tileSize * MapEditor.SIZE, TileSet.tileSize * MapEditor.SIZE); //TODO Use calculated size
 		List<PlaceGroupZone> placeGroupZones = map.getPlaceGroupZones();
 		for (int i = placeGroupZones.size() - 1; i >= 0; i--) {
 			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
 			graphicsContext.setFill(placeGroupZone.fillColor);
 			graphicsContext.setStroke(placeGroupZone.strokeColor);
-			graphicsContext.fillRect(placeGroupZone.bounds.x1 * 32 + 0.5, placeGroupZone.bounds.y1 * 32 + 0.5, placeGroupZone.bounds.getWidth() * 32 - 1, placeGroupZone.bounds.getHeight() * 32 - 1); //TODO Use tileset size
-			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * 32 + 0.5, placeGroupZone.bounds.y1 * 32 + 0.5, placeGroupZone.bounds.getWidth() * 32 - 1, placeGroupZone.bounds.getHeight() * 32 - 1); //TODO Use tileset size
+			graphicsContext.fillRect(placeGroupZone.bounds.x1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * TileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * TileSet.tileSize - 1); //TODO Use tileset size
+			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * TileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * TileSet.tileSize - 1); //TODO Use tileset size
 		}
 	}
 
 	private void drawTile(final int x, final int y) {
 
 		terrain.getGraphicsContext2D().setFill(Color.BLACK);
-		terrain.getGraphicsContext2D().fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
+		terrain.getGraphicsContext2D().fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
 
 		drawTile(x, y, terrain.getGraphicsContext2D());
 
@@ -367,30 +367,47 @@ public class MapRenderer {
 			return;
 		}
 
-		//TODO Use tileset fallback if configured
-		//Fallback for tiles not supported by tileset
-		//if (Tile.tiles.get(map.getTileAt(x, y)) == null) {
-			graphicsContext.setFill(Color.FUCHSIA);
-			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
-			return;
-		//}
+		if (map.getTileAt(x, y) == null) {
 
-		/*//TODO Use tileset fallback if configured
-		if (Tile.tiles.get(map.getFurnitureAt(x, y)) == null) {
-			graphicsContext.setFill(new Color(0.8, 0.2, 0.6, 0.5));
-			graphicsContext.fillRect(x * 32, y * 32, 32, 32); //TODO Use tileset size
+			int bitwiseMapping = map.getBitwiseMapping(x, y);
+			Image texture = TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
+			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
+			drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
+
 			return;
 		}
 
-		//TODO Don't duplicate these sections
+		//TODO Use tileset fallback if configured
+		//Fallback for tiles not supported by tileset
+		if (Tile.tiles.get(map.getTileAt(x, y).getTileID()) == null) {
+			graphicsContext.setFill(Color.FUCHSIA);
+			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
+			return;
+		}
+
+		//TODO Use tileset fallback if configured
+		/*if (Tile.tiles.get(map.getFurnitureAt(x, y)) == null) {
+			graphicsContext.setFill(new Color(0.8, 0.2, 0.6, 0.5));
+			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
+			return;
+		}*/
+
+
+		int bitwiseMapping = map.getBitwiseMapping(x, y);
+		Image texture = TileSet.textures.get(Tile.tiles.get(map.getTileAt(x, y).getTileID()).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
+		int rotation = BITWISE_ROTATIONS[bitwiseMapping];
+		drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
+
+
+		/*//TODO Don't duplicate these sections
 		if (Tile.tiles.get(map.getTerrainAt(x, y)).isMultiTile()) {
 			int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.TERRAIN);
 			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-			drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size
+			drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
 		} else {
 			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile().getID());
-			graphicsContext.drawImage(texture, x * 32, y * 32); //TODO Use tileset size
+			graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
 		}
 
 		//TODO Don't duplicate these sections
@@ -399,10 +416,10 @@ public class MapRenderer {
 				int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.FURNITURE);
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
 				int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-				drawRotatedImage(graphicsContext, texture, rotation, x * 32, y * 32); //TODO Use tileset size
+				drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
 			} else {
 				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile().getID());
-				graphicsContext.drawImage(texture, x * 32, y * 32); //TODO Use tileset size
+				graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
 			}
 		}*/
 
