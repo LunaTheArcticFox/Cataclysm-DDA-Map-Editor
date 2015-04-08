@@ -3,8 +3,6 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.EventBus;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.scene.image.Image;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +22,7 @@ public class TileSet {
 
 	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
-	public static Map<String, Image> textures = new TreeMap<>(); //TODO Un-static this
+	public static Map<String, BufferedImage> textures = new TreeMap<>(); //TODO Un-static this
 
 	public static int tileSize = 24; //TODO Un-static, move current tileset to app settings
 	private BufferedImage texture = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
@@ -33,11 +31,11 @@ public class TileSet {
 
 	public TileSet(final Path path, final EventBus eventBus) {
 		this.eventBus = eventBus;
-		Path tilesPath = path.resolve("tiles.png").toAbsolutePath();
+		Path tilesPath = path.resolve("tiles.png").toAbsolutePath(); //TODO Read config for tileset path
 		try {
 			texture = ImageIO.read(tilesPath.toFile());
 		} catch (IOException e) {
-			log.error("Error while attempting to read tileset image '" + tilesPath.toString() + "':", e); //TODO Use Cataclysm distribution's tiles
+			log.error("Error while attempting to read tileset image '" + tilesPath.toString() + "':", e);
 		}
 		try {
 			load(path.resolve("tile_config.json"));
@@ -65,6 +63,10 @@ public class TileSet {
 				background = tileDef.get("bg").asInt();
 			}
 
+			if (tileDef.has("rotates")) {
+				tile.rotates = tileDef.get("rotates").asBoolean();
+			}
+
 			createTileImage(tile.getID(), foreground, background);
 
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
@@ -81,6 +83,10 @@ public class TileSet {
 
 					if (additionalTileDef.has("bg")) {
 						backgroundID = additionalTileDef.get("bg").asInt();
+					}
+
+					if (additionalTileDef.has("rotates")) {
+						additionalTile.rotates = additionalTileDef.get("rotates").asBoolean();
 					}
 
 					createTileImage(additionalTile.getID(), foregroundID, backgroundID);
@@ -121,9 +127,9 @@ public class TileSet {
 		}
 
 		if (backgroundImage != null) {
-			textures.put(id, SwingFXUtils.toFXImage(backgroundImage, null));
+			textures.put(id, backgroundImage);
 		} else if (foregroundImage != null) {
-			textures.put(id, SwingFXUtils.toFXImage(foregroundImage, null));
+			textures.put(id, foregroundImage);
 		}
 
 	}

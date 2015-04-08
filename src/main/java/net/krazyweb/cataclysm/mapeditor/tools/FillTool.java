@@ -36,7 +36,9 @@ public class FillTool extends Tool {
 		MapTile targetTile = map.getTileAt(x, y);
 
 		Stack<Point> fillQueue = new Stack<>();
-		if (!targetTile.equals(tile)) {
+		if (targetTile != null && !targetTile.equals(tile)) {
+			fillQueue.push(new Point(x, y));
+		} else if (targetTile == null && tile != null) {
 			fillQueue.push(new Point(x, y));
 		}
 
@@ -66,6 +68,11 @@ public class FillTool extends Tool {
 	private boolean shouldFill(final int x, final int y, final MapTile replacementTile, final MapTile targetTile, final MapEditor map, final Set<Point> toFill) {
 		if (x < 0 || y < 0 || x >= MapEditor.SIZE || y >= MapEditor.SIZE) {
 			return false;
+		}
+		if (!toFill.contains(new Point(x, y)) && map.getTileAt(x, y) != null && targetTile == null) {
+			return false;
+		} else if (!toFill.contains(new Point(x, y)) && targetTile == null) {
+			return true;
 		}
 		return !toFill.contains(new Point(x, y)) && !map.getTileAt(x, y).equals(replacementTile) && map.getTileAt(x, y) != null && map.getTileAt(x, y).equals(targetTile);
 	}

@@ -50,16 +50,22 @@ public class TilePicker {
 	@Subscribe
 	public void tilesetLoadedListener(final TilesetLoadedEvent event) {
 
-		tileContainer.getChildren().clear();
-
-		Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
-
 		try {
-			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain.json")));
-			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
-			loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "furniture.json")));
-		} catch (IOException e) {
-			log.error("Error while loading terrain and furniture definitions:", e);
+
+			tileContainer.getChildren().clear();
+
+			Path gameFolderPath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+
+			try {
+				loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain.json")));
+				loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
+				loadTiles(gameFolderPath.resolve(Paths.get("data", "json", "furniture.json")));
+			} catch (IOException e) {
+				log.error("Error while loading terrain and furniture definitions:", e);
+			}
+
+		} catch (Exception e) {
+			log.error("", e);
 		}
 
 	}
@@ -73,9 +79,25 @@ public class TilePicker {
 		root.forEach(node -> {
 
 			MapTile mapTile = new MapTile();
-			mapTile.add(new TerrainMapping(node.get("id").asText()));
+			TerrainMapping mapping = new TerrainMapping(node.get("id").asText());
 
-			ImageView view = new ImageView(TileSet.textures.get(node.get("id").asText()));
+			if (node.has("flags")) {
+				for (JsonNode flag : node.get("flags")) {
+					String parsedFlag = flag.asText().replaceAll("\"", "");
+					Tile tile = Tile.tiles.get(node.get("id").asText());
+					if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
+						log.trace("Connects to Walls: " + node.get("id").asText());
+						if (tile != null) {
+							tile.connectsToWalls = true;
+						}
+						break;
+					}
+				}
+			}
+
+			mapTile.add(mapping);
+
+			ImageView view = new ImageView(mapTile.getTexture(0, 0));//new ImageView(TileSet.textures.get(node.get("id").asText()));
 			view.setPickOnBounds(true);
 			view.setOnMousePressed(mouseEvent -> {
 				eventBus.post(new TilePickedEvent(mapTile));

@@ -6,61 +6,47 @@ import java.util.TreeMap;
 
 public class Tile {
 
-	private static final Map<String, String> tileGroups = new HashMap<>();
-
-	public static enum AdditionalTileType {
+	public enum AdditionalTileType {
 		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED, BROKEN, OPEN
 	}
 
+	public static final Tile.AdditionalTileType[] BITWISE_TYPES = {
+			Tile.AdditionalTileType.UNCONNECTED,
+			Tile.AdditionalTileType.END_PIECE,
+			Tile.AdditionalTileType.END_PIECE,
+			Tile.AdditionalTileType.CORNER,
+			Tile.AdditionalTileType.END_PIECE,
+			Tile.AdditionalTileType.EDGE,
+			Tile.AdditionalTileType.CORNER,
+			Tile.AdditionalTileType.T_CONNECTION,
+			Tile.AdditionalTileType.END_PIECE,
+			Tile.AdditionalTileType.CORNER,
+			Tile.AdditionalTileType.EDGE,
+			Tile.AdditionalTileType.T_CONNECTION,
+			Tile.AdditionalTileType.CORNER,
+			Tile.AdditionalTileType.T_CONNECTION,
+			Tile.AdditionalTileType.T_CONNECTION,
+			Tile.AdditionalTileType.CENTER
+	};
+
+	public static final int[] BITWISE_ROTATIONS = {
+			0, 0, 270, 0, 180, 0, 270, 270, 90, 90, 90, 0, 180, 90, 180, 0
+	};
+
 	public static Map<String, Tile> tiles = new TreeMap<>();
 
-	private String id;
+	private final String id;
+	public boolean connectsToWalls = false;
+	public boolean rotates = false;
 
 	private Map<AdditionalTileType, Tile> additionalTiles = new HashMap<>();
 
 	public Tile(final String id) {
 		this.id = id;
-		tileGroups.put("t_wall_h", "wallGroup");
-		tileGroups.put("t_wall_v", "wallGroup");
-		tileGroups.put("t_window", "wallGroup");
-		tileGroups.put("t_window_taped", "wallGroup");
-		tileGroups.put("t_window_domestic", "wallGroup");
-		tileGroups.put("t_window_domestic_taped", "wallGroup");
-		tileGroups.put("t_window_open", "wallGroup");
-		tileGroups.put("t_curtains", "wallGroup");
-		tileGroups.put("t_window_alarm", "wallGroup");
-		tileGroups.put("t_window_alarm_taped", "wallGroup");
-		tileGroups.put("t_window_empty", "wallGroup");
-		tileGroups.put("t_window_frame", "wallGroup");
-		tileGroups.put("t_window_boarded", "wallGroup");
-		tileGroups.put("t_window_boarded_noglass", "wallGroup");
-		tileGroups.put("t_window_reinforced", "wallGroup");
-		tileGroups.put("t_window_reinforced_noglass", "wallGroup");
-		tileGroups.put("t_window_enhanced", "wallGroup");
-		tileGroups.put("t_window_enhanced_noglass", "wallGroup");
-		tileGroups.put("t_window_bars_alarm", "wallGroup");
-		tileGroups.put("t_door_glass_c", "wallGroup");
-		tileGroups.put("t_door_c", "wallGroup");
-		tileGroups.put("t_door_c_peep", "wallGroup");
-		tileGroups.put("t_door_b", "wallGroup");
-		tileGroups.put("t_door_b_peep", "wallGroup");
-		tileGroups.put("t_door_o", "wallGroup");
-		tileGroups.put("t_door_o_peep", "wallGroup");
-		tileGroups.put("t_rdoor_c", "wallGroup");
-		tileGroups.put("t_rdoor_b", "wallGroup");
-		tileGroups.put("t_rdoor_o", "wallGroup");
-		tileGroups.put("t_door_locked", "wallGroup");
-		tileGroups.put("t_door_locked_interior", "wallGroup");
-		tileGroups.put("t_door_locked_peep", "wallGroup");
-		tileGroups.put("t_door_locked_alarm", "wallGroup");
-		tileGroups.put("t_door_frame", "wallGroup");
-		tileGroups.put("t_mdoor_frame", "wallGroup");
-		tileGroups.put("t_door_boarded", "wallGroup");
-		tileGroups.put("t_door_boarded_damaged", "wallGroup");
-		tileGroups.put("t_door_boarded_peep", "wallGroup");
-		tileGroups.put("t_rdoor_boarded", "wallGroup");
-		tileGroups.put("t_rdoor_boarded_damaged", "wallGroup");
-		tileGroups.put("t_door_boarded_damaged_peep", "wallGroup");
+	}
+
+	public static Tile get(final String tileId) {
+		return tiles.get(tileId);
 	}
 
 	public String getID() {
@@ -75,10 +61,6 @@ public class Tile {
 		return !additionalTiles.isEmpty();
 	}
 
-	public boolean isFurniture() {
-		return id.startsWith("f_");
-	}
-
 	public Tile getTile() {
 		return this;
 	}
@@ -89,20 +71,6 @@ public class Tile {
 		} else {
 			return getTile();
 		}
-	}
-
-	public static boolean tilesConnect(final String tile1, final String tile2) {
-
-		if (tile1.equals(tile2)) {
-			return true;
-		}
-
-		if (tileGroups.containsKey(tile1) && tileGroups.containsKey(tile2)) {
-			return tileGroups.get(tile1).equals(tileGroups.get(tile2));
-		}
-
-		return (tile1.endsWith("_v") || tile1.endsWith("_h")) && (tile2.endsWith("_v") || tile2.endsWith("_h")) && tile1.startsWith(tile2.substring(0, tile2.lastIndexOf("_")));
-
 	}
 
 }

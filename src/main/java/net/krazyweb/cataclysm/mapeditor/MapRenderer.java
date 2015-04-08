@@ -6,6 +6,7 @@ import javafx.animation.Interpolator;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Bounds;
@@ -19,7 +20,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
-import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
@@ -35,29 +35,6 @@ import java.util.List;
 import java.util.Set;
 
 public class MapRenderer {
-
-	private static final Tile.AdditionalTileType[] BITWISE_TYPES = {
-			Tile.AdditionalTileType.UNCONNECTED,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.EDGE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.EDGE,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.CENTER
-	};
-
-	private static final int[] BITWISE_ROTATIONS = {
-			0, 0, 270, 0, 180, 0, 270, 270, 90, 90, 90, 0, 180, 90, 180, 0
-	};
 
 	@FXML
 	private StackPane root;
@@ -75,39 +52,39 @@ public class MapRenderer {
 	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
 		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
 		tool.release(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
 		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 		tool.drag(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
 		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 		tool.dragStart(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
 		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 		tool.dragEnd(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map)); //TODO Tile Size
+		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
 		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
 	};
 
 	@FXML
 	private void initialize() {
 		root.setEffect(new DropShadow(5, 0, 3, new Color(0, 0, 0, 0.2)));
-		grid.setManaged(false); //TODO Use setting as of last run, default to hidden
-		grid.setVisible(false); //TODO Use setting as of last run, default to hidden
+		grid.setManaged(false);
+		grid.setVisible(false);
 		drawGrid();
 		grid.setManaged(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
 		grid.setVisible(ApplicationSettings.getInstance().getBoolean(ApplicationSettings.Preference.SHOW_GRID));
@@ -220,10 +197,10 @@ public class MapRenderer {
 					if (point.x == point1.x - 1 && point.y == point1.y - 1) {
 						adjDiag = true;
 					} else if (point.x == point1.x - 1 && point.y == point1.y) {
-						patches.add(new Rectangle(point.x * TileSet.tileSize + 31.5, point.y * TileSet.tileSize + 0.5, 2, 31)); //TODO Use tileset size
+						patches.add(new Rectangle(point.x * TileSet.tileSize + TileSet.tileSize - 0.5, point.y * TileSet.tileSize + 0.5, 2, TileSet.tileSize - 1));
 						adjRight = true;
 					} else if (point.x == point1.x && point.y == point1.y - 1) {
-						patches.add(new Rectangle(point.x * TileSet.tileSize + 0.5, point.y * TileSet.tileSize + 31.5, 31, 2)); //TODO Use tileset size
+						patches.add(new Rectangle(point.x * TileSet.tileSize + 0.5, point.y * TileSet.tileSize + TileSet.tileSize - 0.5, TileSet.tileSize - 1, 2));
 						adjBelow = true;
 					}
 				}
@@ -233,7 +210,7 @@ public class MapRenderer {
 					point.x * TileSet.tileSize + 0.5,
 					point.y * TileSet.tileSize + 0.5,
 					TileSet.tileSize + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
-					TileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0)); //TODO Use tileset size
+					TileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0));
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
 
@@ -341,7 +318,7 @@ public class MapRenderer {
 
 	private void drawPlaceGroups() {
 		GraphicsContext graphicsContext = groups.getGraphicsContext2D();
-		graphicsContext.clearRect(0, 0, TileSet.tileSize * MapEditor.SIZE, TileSet.tileSize * MapEditor.SIZE); //TODO Use calculated size
+		graphicsContext.clearRect(0, 0, TileSet.tileSize * MapEditor.SIZE, TileSet.tileSize * MapEditor.SIZE);
 		List<PlaceGroupZone> placeGroupZones = map.getPlaceGroupZones();
 		for (int i = placeGroupZones.size() - 1; i >= 0; i--) {
 			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
@@ -355,7 +332,7 @@ public class MapRenderer {
 	private void drawTile(final int x, final int y) {
 
 		terrain.getGraphicsContext2D().setFill(Color.BLACK);
-		terrain.getGraphicsContext2D().fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
+		terrain.getGraphicsContext2D().fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize);
 
 		drawTile(x, y, terrain.getGraphicsContext2D());
 
@@ -368,12 +345,9 @@ public class MapRenderer {
 		}
 
 		if (map.getTileAt(x, y) == null) {
-
-			int bitwiseMapping = map.getBitwiseMapping(x, y);
-			Image texture = TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
-			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-			drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-
+			int bitwiseMapping = map.getTerrainBitwiseMapping(x, y);
+			Image texture = SwingFXUtils.toFXImage(TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(Tile.BITWISE_TYPES[bitwiseMapping]).getID()), null);
+			graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize);
 			return;
 		}
 
@@ -381,63 +355,15 @@ public class MapRenderer {
 		//Fallback for tiles not supported by tileset
 		if (Tile.tiles.get(map.getTileAt(x, y).getTileID()) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
-			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
+			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize);
 			return;
 		}
 
-		//TODO Use tileset fallback if configured
-		/*if (Tile.tiles.get(map.getFurnitureAt(x, y)) == null) {
-			graphicsContext.setFill(new Color(0.8, 0.2, 0.6, 0.5));
-			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize); //TODO Use tileset size
-			return;
-		}*/
+		int terrainBitwiseMapping = map.getTerrainBitwiseMapping(x, y);
+		int furnitureBitwiseMapping = map.getFurnitureBitwiseMapping(x, y);
+		Image texture = map.getTileAt(x, y).getTexture(terrainBitwiseMapping, furnitureBitwiseMapping);
+		graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize);
 
-
-		int bitwiseMapping = map.getBitwiseMapping(x, y);
-		Image texture = TileSet.textures.get(Tile.tiles.get(map.getTileAt(x, y).getTileID()).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
-		int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-		drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-
-
-		/*//TODO Don't duplicate these sections
-		if (Tile.tiles.get(map.getTerrainAt(x, y)).isMultiTile()) {
-			int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.TERRAIN);
-			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
-			int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-			drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-		} else {
-			Image texture = TileSet.textures.get(Tile.tiles.get(map.getTerrainAt(x, y)).getTile().getID());
-			graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-		}
-
-		//TODO Don't duplicate these sections
-		if (map.getFurnitureAt(x, y) != null) {
-			if (Tile.tiles.get(map.getFurnitureAt(x, y)).isMultiTile()) {
-				int bitwiseMapping = map.getBitwiseMapping(x, y, MapEditor.Layer.FURNITURE);
-				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile(BITWISE_TYPES[bitwiseMapping]).getID());
-				int rotation = BITWISE_ROTATIONS[bitwiseMapping];
-				drawRotatedImage(graphicsContext, texture, rotation, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-			} else {
-				Image texture = TileSet.textures.get(Tile.tiles.get(map.getFurnitureAt(x, y)).getTile().getID());
-				graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize); //TODO Use tileset size
-			}
-		}*/
-
-	}
-
-	private void rotate(final GraphicsContext graphicsContext, final double angle, final double x, final double y) {
-		Rotate rotation = new Rotate(angle, x, y);
-		graphicsContext.setTransform(rotation.getMxx(), rotation.getMyx(), rotation.getMxy(), rotation.getMyy(), rotation.getTx(), rotation.getTy());
-	}
-
-	private void drawRotatedImage(final GraphicsContext graphicsContext, final Image image, final double angle, final int x, final int y) {
-		if (image == null) {
-			return;
-		}
-		graphicsContext.save(); // saves the current state on stack, including the current transform
-		rotate(graphicsContext, angle, x + image.getWidth() / 2, y + image.getHeight() / 2);
-		graphicsContext.drawImage(image, x, y);
-		graphicsContext.restore(); // back to original state (before rotation)
 	}
 
 }

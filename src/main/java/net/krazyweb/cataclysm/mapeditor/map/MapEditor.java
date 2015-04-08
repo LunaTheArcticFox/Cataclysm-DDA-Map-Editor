@@ -25,33 +25,6 @@ public class MapEditor {
 
 	public static final int SIZE = 24;
 
-	private enum Orientation {
-		EITHER, VERTICAL, HORIZONTAL
-	}
-
-	private static final Orientation[] BITWISE_FORCE_ORIENTATION = {
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.VERTICAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.HORIZONTAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER,
-			Orientation.VERTICAL,
-			Orientation.HORIZONTAL,
-			Orientation.EITHER
-	};
-
-	public enum Layer {
-		TERRAIN, FURNITURE
-	}
-
 	protected MapgenEntry currentMap;
 
 	private MapRenderer renderer;
@@ -196,50 +169,52 @@ public class MapEditor {
 		return new ArrayList<>(currentMap.placeGroupZones);
 	}
 
-	/*private void updateTilesSurrounding(final int x, final int y) {
-		updateTile(x - 1, y);
-		updateTile(x + 1, y);
-		updateTile(x, y - 1);
-		updateTile(x, y + 1);
-	}*/
+	@FunctionalInterface
+	private interface ConnectionTester {
+		boolean connects(final MapTile tile1, final MapTile tile2);
+	}
 
-	/*private void updateTile(final int x, final int y) {
+	public int getTerrainBitwiseMapping(final int x, final int y) {
+		return getBitwiseMapping(x, y, this::terrainConnects);
+	}
 
-		String tile = getTerrainAt(x, y);
+	public int getFurnitureBitwiseMapping(final int x, final int y) {
+		return getBitwiseMapping(x, y, this::furnitureConnects);
+	}
 
-		if (tile.endsWith("_v") || tile.endsWith("_h")) {
-			int bitwiseMapping = getBitwiseMapping(x, y, Layer.TERRAIN);
-			currentMap.tiles[x][y] = tile.substring(0, tile.lastIndexOf("_"));
-			currentMap.tiles[x][y] += BITWISE_FORCE_ORIENTATION[bitwiseMapping] == Orientation.HORIZONTAL ? "_h" : "_v";
-		}
+	private boolean terrainConnects(final MapTile tile1, final MapTile tile2) {
+		return tile1.terrainConnectsTo(tile2);
+	}
 
-	}*/
+	private boolean furnitureConnects(final MapTile tile1, final MapTile tile2) {
+		return tile1.furnitureConnectsTo(tile2);
+	}
 
-	public int getBitwiseMapping(final int x, final int y) {
+	private int getBitwiseMapping(final int x, final int y, final ConnectionTester connectionTester) {
 
-		//String current = getTileAt(x, y);
+		MapTile current = getTileAt(x, y);
 
 		byte tilemap = 0;
 
-		/*if (current.isEmpty()) {
+		if (current == null) {
 			return 0;
 		}
 
-		if (getTileAt(x, y + 1) != null && Tile.tilesConnect(getTileAt(x, y + 1), current)) {
+		if (connectionTester.connects(current, getTileAt(x, y + 1))) {
 			tilemap += 1;
 		}
 
-		if (getTileAt(x + 1, y) != null && Tile.tilesConnect(getTileAt(x + 1, y), current)) {
+		if (connectionTester.connects(current, getTileAt(x + 1, y))) {
 			tilemap += 2;
 		}
 
-		if (getTileAt(x, y - 1) != null && Tile.tilesConnect(getTileAt(x, y - 1), current)) {
+		if (connectionTester.connects(current, getTileAt(x, y - 1))) {
 			tilemap += 4;
 		}
 
-		if (getTileAt(x - 1, y) != null && Tile.tilesConnect(getTileAt(x - 1, y), current)) {
+		if (connectionTester.connects(current, getTileAt(x - 1, y))) {
 			tilemap += 8;
-		}*/
+		}
 
 		return tilemap;
 

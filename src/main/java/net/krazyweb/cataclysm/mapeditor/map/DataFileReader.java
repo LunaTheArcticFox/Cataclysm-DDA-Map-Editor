@@ -184,21 +184,25 @@ public class DataFileReader extends Service<Boolean> {
 
 	private void mapTiles(final Map<Character, MapTile> tiles, final JsonNode root, final MapTileMapper mapper) {
 
-		root.forEach(mapping -> {
+		Iterator<Map.Entry<String, JsonNode>> nodeIterator = root.fields();
 
-			MapTile tile = getTileForCharacter(tiles, mapping.asText().charAt(0));
+		while (nodeIterator.hasNext()) {
+
+			Map.Entry<String, JsonNode> mapping = nodeIterator.next();
+
+			MapTile tile = getTileForCharacter(tiles, mapping.getKey().charAt(0));
 
 			List<JsonNode> nodes = new ArrayList<>();
 
-			if (mapping.isArray()) {
-				mapping.forEach(nodes::add);
+			if (mapping.getValue().isArray()) {
+				mapping.getValue().forEach(nodes::add);
 			} else {
-				nodes.add(mapping);
+				nodes.add(mapping.getValue());
 			}
 
 			nodes.forEach(node -> tile.add(mapper.parse(node)));
 
-		});
+		}
 
 	}
 
@@ -340,7 +344,7 @@ public class DataFileReader extends Service<Boolean> {
 		entry.id = root.get("id").asText();
 		entry.name = root.get("name").asText();
 		entry.rotate = root.get("rotate").asBoolean();
-		entry.lineDrawing = root.get("lineDrawing").asBoolean();
+		if (root.has("lineDrawing")) { entry.lineDrawing = root.get("lineDrawing").asBoolean(); }
 		entry.symbol = root.get("sym").asInt();
 		entry.symbolColor = root.get("color").asText();
 		entry.seeCost = root.get("see_cost").asInt();

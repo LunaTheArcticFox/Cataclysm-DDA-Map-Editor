@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
 import com.google.common.eventbus.EventBus;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -32,7 +33,7 @@ public abstract class Tool {
 	}
 
 	public Image getHighlightTile(final MapTile tile) {
-		return TileSet.textures.get("t_grass"); //TODO Use maptile texture
+		return SwingFXUtils.toFXImage(TileSet.textures.get("t_grass"), null); //TODO Use maptile texture
 	}
 
 	protected int convertCoord(final double eventPosition) {
