@@ -6,6 +6,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.TilePane;
@@ -13,6 +14,7 @@ import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.tilemappings.FurnitureMapping;
 import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -79,32 +81,40 @@ public class TilePicker {
 		root.forEach(node -> {
 
 			MapTile mapTile = new MapTile();
-			TerrainMapping mapping = new TerrainMapping(node.get("id").asText());
 
-			if (node.has("flags")) {
-				for (JsonNode flag : node.get("flags")) {
-					String parsedFlag = flag.asText().replaceAll("\"", "");
-					Tile tile = Tile.tiles.get(node.get("id").asText());
-					if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
-						log.trace("Connects to Walls: " + node.get("id").asText());
-						if (tile != null) {
-							tile.connectsToWalls = true;
+			if (node.get("id").asText().startsWith("t_")) {
+
+				TerrainMapping mapping = new TerrainMapping(node.get("id").asText());
+
+				if (node.has("flags")) {
+					for (JsonNode flag : node.get("flags")) {
+						String parsedFlag = flag.asText().replaceAll("\"", "");
+						Tile tile = Tile.tiles.get(node.get("id").asText());
+						if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
+							log.trace("Connects to Walls: " + node.get("id").asText());
+							if (tile != null) {
+								tile.connectsToWalls = true;
+							}
+							break;
 						}
-						break;
 					}
 				}
+
+				mapTile.add(mapping);
+
+			} else if (node.get("id").asText().startsWith("f_")) {
+				mapTile.add(new FurnitureMapping(node.get("id").asText()));
 			}
 
-			mapTile.add(mapping);
-
-			ImageView view = new ImageView(mapTile.getTexture(0, 0));//new ImageView(TileSet.textures.get(node.get("id").asText()));
+			ImageView view = new ImageView(mapTile.getTexture(0, 0));
 			view.setPickOnBounds(true);
-			view.setOnMousePressed(mouseEvent -> {
-				eventBus.post(new TilePickedEvent(mapTile));
-			});
-			view.setOnMouseMoved(mouseEvent -> {
-				eventBus.post(new TileHoverEvent(mapTile, 0, 0));
-			});
+			view.setOnMousePressed(mouseEvent -> eventBus.post(new TilePickedEvent(mapTile)));
+			view.setOnMouseMoved(mouseEvent -> eventBus.post(new TileHoverEvent(mapTile, 0, 0)));
+
+			//TODO Create own Tooltip class with finer control over positioning and timing
+			Tooltip tooltip = new Tooltip(mapTile.tileMappings.toString());
+			Tooltip.install(view, tooltip);
+
 			tileContainer.getChildren().add(view);
 
 		});

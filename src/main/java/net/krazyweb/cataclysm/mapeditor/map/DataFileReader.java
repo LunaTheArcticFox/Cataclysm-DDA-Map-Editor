@@ -341,6 +341,7 @@ public class DataFileReader extends Service<Boolean> {
 
 		OvermapEntry entry = new OvermapEntry();
 
+		//TODO Determine which of these are actually optional
 		entry.id = root.get("id").asText();
 		entry.name = root.get("name").asText();
 		entry.rotate = root.get("rotate").asBoolean();
@@ -349,11 +350,11 @@ public class DataFileReader extends Service<Boolean> {
 		entry.symbolColor = root.get("color").asText();
 		entry.seeCost = root.get("see_cost").asInt();
 		entry.extras = root.get("extras").asText();
-		entry.knownDown = root.get("known_down").asBoolean();
-		entry.knownUp = root.get("known_up").asBoolean();
+		if (root.has("known_down")) { entry.knownDown = root.get("known_down").asBoolean(); }
+		if (root.has("known_up")) { entry.knownUp = root.get("known_up").asBoolean(); }
 		entry.monsterDensity = root.get("mondensity").asInt();
 		entry.sidewalk = root.get("sidewalk").asBoolean();
-		entry.allowRoad = root.get("allow_road").asBoolean();
+		if (root.has("allow_road")) { entry.allowRoad = root.get("allow_road").asBoolean(); }
 		entry.markSaved();
 
 		overmapEntries.add(entry);

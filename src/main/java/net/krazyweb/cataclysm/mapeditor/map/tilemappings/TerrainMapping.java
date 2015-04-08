@@ -40,4 +40,9 @@ public class TerrainMapping extends TileMapping {
 		return new TerrainMapping(terrain);
 	}
 
+	@Override
+	public String toString() {
+		return terrain;
+	}
+
 }

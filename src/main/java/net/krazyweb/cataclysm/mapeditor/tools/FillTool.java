@@ -74,7 +74,7 @@ public class FillTool extends Tool {
 		} else if (!toFill.contains(new Point(x, y)) && targetTile == null) {
 			return true;
 		}
-		return !toFill.contains(new Point(x, y)) && !map.getTileAt(x, y).equals(replacementTile) && map.getTileAt(x, y) != null && map.getTileAt(x, y).equals(targetTile);
+		return !toFill.contains(new Point(x, y)) && map.getTileAt(x, y) != null && !map.getTileAt(x, y).equals(replacementTile) && map.getTileAt(x, y).equals(targetTile);
 	}
 
 }

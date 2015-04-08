@@ -30,6 +30,7 @@ import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -357,6 +358,11 @@ public class MapRenderer {
 			graphicsContext.setFill(Color.FUCHSIA);
 			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize);
 			return;
+		}
+
+		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null) {
+			BufferedImage terrainImage = TileSet.textures.get(Tile.get(map.getFillTerrain().displayTerrain).getTile(Tile.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
+			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * TileSet.tileSize, y * TileSet.tileSize);
 		}
 
 		int terrainBitwiseMapping = map.getTerrainBitwiseMapping(x, y);

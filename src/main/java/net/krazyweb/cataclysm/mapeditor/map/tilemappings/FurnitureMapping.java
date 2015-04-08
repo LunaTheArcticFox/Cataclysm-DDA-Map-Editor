@@ -40,4 +40,9 @@ public class FurnitureMapping extends TileMapping {
 		return new FurnitureMapping(furniture);
 	}
 
+	@Override
+	public String toString() {
+		return furniture;
+	}
+
 }

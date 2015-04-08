@@ -73,11 +73,11 @@ public class MapTile {
 
 		if (displayTerrain != null && displayFurniture != null) {
 
-			if (!(Tile.tiles.get(displayTerrain).isMultiTile() || Tile.get(displayTerrain).rotates)) {
+			if (!(Tile.get(displayTerrain).isMultiTile() || Tile.get(displayTerrain).rotates)) {
 				terrainTransform = new AffineTransform();
 			}
 
-			if (!(Tile.tiles.get(displayFurniture).isMultiTile() || Tile.get(displayFurniture).rotates)) {
+			if (!(Tile.get(displayFurniture).isMultiTile() || Tile.get(displayFurniture).rotates)) {
 				furnitureTransform = new AffineTransform();
 			}
 
@@ -94,11 +94,11 @@ public class MapTile {
 
 			if (Tile.tiles.containsKey(displayTerrain)) {
 
-				if (!(Tile.tiles.get(displayTerrain).isMultiTile() || Tile.get(displayTerrain).rotates)) {
+				if (!(Tile.get(displayTerrain).isMultiTile() || Tile.get(displayTerrain).rotates)) {
 					terrainTransform = new AffineTransform();
 				}
 
-				BufferedImage terrainImage = TileSet.textures.get(Tile.tiles.get(displayTerrain).getTile(Tile.BITWISE_TYPES[terrainBitwise]).getID());
+				BufferedImage terrainImage = TileSet.textures.get(Tile.get(displayTerrain).getTile(Tile.BITWISE_TYPES[terrainBitwise]).getID());
 				BufferedImage tempImage = new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				tempImage.createGraphics().drawImage(terrainImage, terrainTransform, null);
 
@@ -110,11 +110,11 @@ public class MapTile {
 
 			if (Tile.tiles.containsKey(displayFurniture)) {
 
-				if (!(Tile.tiles.get(displayFurniture).isMultiTile() || Tile.get(displayFurniture).rotates)) {
+				if (!(Tile.get(displayFurniture).isMultiTile() || Tile.get(displayFurniture).rotates)) {
 					furnitureTransform = new AffineTransform();
 				}
 
-				BufferedImage furnitureImage = TileSet.textures.get(Tile.tiles.get(displayFurniture).getTile(Tile.BITWISE_TYPES[furnitureBitwise]).getID());
+				BufferedImage furnitureImage = TileSet.textures.get(Tile.get(displayFurniture).getTile(Tile.BITWISE_TYPES[furnitureBitwise]).getID());
 				BufferedImage tempImage = new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				tempImage.createGraphics().drawImage(furnitureImage, furnitureTransform, null);
 				return SwingFXUtils.toFXImage(tempImage, null);
