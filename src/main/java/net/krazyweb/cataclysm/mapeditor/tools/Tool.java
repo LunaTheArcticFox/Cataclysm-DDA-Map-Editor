@@ -1,6 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
 import com.google.common.eventbus.EventBus;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
@@ -8,6 +9,7 @@ import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 
+import java.awt.image.BufferedImage;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -32,7 +34,11 @@ public abstract class Tool {
 	}
 
 	public Image getHighlightTile(final MapTile tile) {
-		return tile.getTexture(0, 0); //TODO Bitwise map texture
+		if (tile != null) {
+			return tile.getTexture(0, 0); //TODO Bitwise map texture
+		} else {
+			return SwingFXUtils.toFXImage(new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
+		}
 	}
 
 	protected int convertCoord(final double eventPosition) {
