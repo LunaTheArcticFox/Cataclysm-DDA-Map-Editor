@@ -16,8 +16,8 @@ public class EraserTool extends Tool {
 		//TODO Pick tiles better
 		if (event.getButton() == MouseButton.PRIMARY) {
 			map.startEdit();
-			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), tile);
-			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), tile);
+			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), null);
+			map.setTile(convertCoord(event.getX()), convertCoord(event.getY()), null);
 		}
 	}
 

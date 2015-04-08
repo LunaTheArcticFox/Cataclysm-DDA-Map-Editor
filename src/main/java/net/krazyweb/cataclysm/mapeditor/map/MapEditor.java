@@ -101,7 +101,7 @@ public class MapEditor {
 
 		currentMap.tiles[x][y] = tile;
 
-		if (!currentMap.tiles[x][y].equals(before)) {
+		if (before == null || currentMap.tiles[x][y] == null || !currentMap.tiles[x][y].equals(before)) {
 			renderer.redraw(x, y);
 		}
 
