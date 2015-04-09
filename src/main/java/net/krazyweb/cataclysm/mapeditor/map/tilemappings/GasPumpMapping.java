@@ -7,6 +7,10 @@ public class GasPumpMapping extends TileMapping {
 
 	public int minAmount, maxAmount;
 
+	public GasPumpMapping() {
+
+	}
+
 	public GasPumpMapping(final int minAmount, final int maxAmount) {
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
