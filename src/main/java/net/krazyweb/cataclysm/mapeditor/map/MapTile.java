@@ -144,4 +144,16 @@ public class MapTile {
 		return tileMappings.hashCode();
 	}
 
+	@Override
+	public String toString() {
+		String output = "MapTile[";
+		for (int i = 0; i < tileMappings.size(); i++) {
+			output += tileMappings.get(i);
+			if (i != tileMappings.size() - 1) {
+				output += ", ";
+			}
+		}
+		return output + "]";
+	}
+
 }

@@ -244,8 +244,12 @@ public class DataFileReader extends Service<Boolean> {
 	}
 
 	private TileMapping parseToilets(final JsonNode node) {
-		JsonNode amount = node.get("amount");
-		return new ToiletMapping(amount.get(0).asInt(), amount.get(1).asInt());
+		if (node.has("amount")) {
+			JsonNode amount = node.get("amount");
+			return new ToiletMapping(amount.get(0).asInt(), amount.get(1).asInt());
+		} else {
+			return new ToiletMapping();
+		}
 	}
 
 	private TileMapping parseNPCs(final JsonNode node) {

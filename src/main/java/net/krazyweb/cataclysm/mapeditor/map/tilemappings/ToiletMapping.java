@@ -7,6 +7,10 @@ public class ToiletMapping extends TileMapping {
 
 	public int minAmount, maxAmount;
 
+	public ToiletMapping() {
+
+	}
+
 	public ToiletMapping(final int minAmount, final int maxAmount) {
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
