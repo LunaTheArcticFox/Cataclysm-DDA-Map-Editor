@@ -220,29 +220,75 @@ public class TileSymbolGenerator {
 			return 0;
 		});
 
-		List<TileMapping> tempMappings = new ArrayList<>();
+		List<String> tempTerrain = new ArrayList<>();
+		List<String> tempFurniture = new ArrayList<>();
+		Value<String> tempSpecial = new Value<>();
+		tempSpecial.value = "";
 
 		countedTiles.forEach(t -> {
 
-			List<TileMapping> tempMappings1 = new ArrayList<>();
+			List<String> terrain = new ArrayList<>();
+			List<String> furniture = new ArrayList<>();
+			String special = "";
 
 			for (TileMapping mapping : t.mapTile.tileMappings) {
-				if (mapping instanceof TerrainMapping || mapping instanceof FurnitureMapping || mapping instanceof ToiletMapping) {
-					tempMappings1.add(mapping);
+				if (mapping instanceof TerrainMapping) {
+					if (!((TerrainMapping) mapping).terrain.equals("t_null")) {
+						terrain.add(((TerrainMapping) mapping).terrain);
+					}
+				}
+				if (mapping instanceof FurnitureMapping) {
+					if (!((FurnitureMapping) mapping).furniture.equals("f_null")) {
+						furniture.add(((FurnitureMapping) mapping).furniture);
+					}
+				}
+				if (mapping instanceof SignMapping) {
+					special = "sign";
+				}
+				if (mapping instanceof GasPumpMapping) {
+					special = "gaspump";
+				}
+				if (mapping instanceof VendingMachineMapping) {
+					special = "vendingmachine";
+				}
+				if (mapping instanceof ToiletMapping) {
+					special = "toilet";
 				}
 			}
 
-			if (tempMappings.hashCode() != tempMappings1.hashCode()) {
-				tempMappings.clear();
-				tempMappings.addAll(tempMappings1);
-				System.out.println(tempMappings);
+			if (tempTerrain.hashCode() != terrain.hashCode() || tempFurniture.hashCode() != furniture.hashCode() || !special.equals(tempSpecial.value)) {
+				tempTerrain.clear();
+				tempFurniture.clear();
+				tempTerrain.addAll(terrain);
+				tempFurniture.addAll(furniture);
+				tempSpecial.value = special;
+				if (!terrain.isEmpty()) {
+					System.out.print("t:");
+					for (String terr : terrain) {
+						System.out.print(terr + " ");
+					}
+					System.out.println();
+				}
+				if (!furniture.isEmpty()) {
+					System.out.print("f:");
+					for (String furn : furniture) {
+						System.out.print(furn + " ");
+					}
+					System.out.println();
+				}
+				if (!special.isEmpty()) {
+					System.out.println("s:" + special);
+				}
 			}
 
-			System.out.println("\t" + t.character + " " + t.count + " " + t.mapTile.hashCode()/* + " " + t.mapTile*/);
-			//System.out.println(t.count + "\t" + t.character + "\t" + t.mapTile);
+			System.out.println("\t" + t.character + " " + t.count);
 
 		});
 
+	}
+
+	private class Value<T> {
+		T value;
 	}
 
 	//TODO Hook into DataFileReader to not duplicate all this
