@@ -4,9 +4,15 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class MapgenEntry implements Jsonable {
@@ -185,88 +191,139 @@ public class MapgenEntry implements Jsonable {
 
 	}
 
+	private class SymbolMap {
+		private MapTile tile;
+		private Character character;
+		private int priority;
+	}
+
 	//TODO Clean this all up
 	private Map<MapTile, Character> mapSymbols() {
 
 		Multimap<MapTile, Character> commonMappings = ArrayListMultimap.create();
+		Map<MapTile, Character> mappings = new HashMap<>();
+		Set<MapTile> uniqueTiles = new HashSet<>();
 
-		/*InputStream tileSymbolMapStream = getClass().getResourceAsStream("/tileSymbolMap.txt");
-		if (tileSymbolMapStream != null) {
-			try (BufferedReader reader = new BufferedReader(new InputStreamReader(tileSymbolMapStream, StandardCharsets.UTF_8))) {
+		for (int x = 0; x < MapEditor.SIZE; x++) {
+			uniqueTiles.addAll(Arrays.asList(tiles[x]).subList(0, MapEditor.SIZE));
+		}
 
+		for (MapTile mapTile : uniqueTiles) {
+
+			List<String> tileTerrain = new ArrayList<>();
+			List<String> tileFurniture = new ArrayList<>();
+			String tileExtra = "";
+
+			List<String> closestMatch = new ArrayList<>();
+			int closestCount = Integer.MAX_VALUE;
+
+			for (TileMapping mapping : mapTile.tileMappings) {
+				if (mapping instanceof TerrainMapping) {
+					tileTerrain.add(((TerrainMapping) mapping).terrain);
+				}
+				if (mapping instanceof FurnitureMapping) {
+					tileFurniture.add(((FurnitureMapping) mapping).furniture);
+				}
+				if (mapping instanceof ToiletMapping) {
+					tileExtra = "toilet";
+				}
+				if (mapping instanceof GasPumpMapping) {
+					tileExtra = "gaspump";
+				}
+				if (mapping instanceof SignMapping) {
+					tileExtra = "sign";
+				}
+				if (mapping instanceof VendingMachineMapping) {
+					tileExtra = "vendingmachine";
+				}
+			}
+
+			try {
+
+				BufferedReader reader = new BufferedReader(new FileReader(Paths.get("data/tileMappings.txt").toFile()));
 				String line;
+
+				List<String> mappingTerrain = new ArrayList<>();
+				List<String> mappingFurniture = new ArrayList<>();
+				String mappingExtra = "";
+				Character closestCharacter = ' ';
 
 				while ((line = reader.readLine()) != null) {
 
-					String[] mapping = line.split("(?<=[ \\S]) ");
-					MapTile tile = new MapTile();
+					if (line.startsWith("	")) {
 
-					if (mapping.length == 3) {
-						tile.terrain = mapping[1];
-						tile.furniture = mapping[2];
-					} else {
-						if (mapping[1].startsWith("t_")) {
-							tile.terrain = mapping[1];
-						} else {
-							tile.furniture = mapping[1];
+						if (!(mappingTerrain.isEmpty() && mappingFurniture.isEmpty() && mappingExtra.isEmpty())) {
+
+							Character c = line.substring(1).charAt(0);
+
+							Collection<String> terrainDisjunction = CollectionUtils.disjunction(tileTerrain, mappingTerrain);
+							Collection<String> furnitureDisjunction = CollectionUtils.disjunction(tileFurniture, mappingFurniture);
+							int score = terrainDisjunction.size() + furnitureDisjunction.size();
+
+							Set<String> mTerrain = new HashSet<>(mappingTerrain);
+							Set<String> tTerrain = new HashSet<>(tileTerrain);
+							mTerrain.removeAll(tTerrain);
+
+							Set<String> mFurniture = new HashSet<>(mappingFurniture);
+							Set<String> tFurniture = new HashSet<>(tileFurniture);
+							mFurniture.removeAll(tFurniture);
+
+							score += mTerrain.size() + mFurniture.size();
+
+							if (!(mappingExtra.isEmpty() && tileExtra.isEmpty()) && !mappingExtra.equals(tileExtra)) {
+								score += 10;
+							}
+
+							if (mTerrain.size() == mappingTerrain.size() && mFurniture.size() == mappingFurniture.size() && !(!mappingExtra.isEmpty() && mappingExtra.equals(tileExtra))) {
+								score += 10000;
+							}
+
+							log.trace(mTerrain);
+							log.trace(mFurniture);
+							log.trace(score + "\t" + mappingTerrain + " " + mappingFurniture + " " + mappingExtra);
+
+							if (score <= closestCount && score < 10000) {
+								closestCount = score;
+								closestMatch.clear();
+								closestCharacter = c;
+								closestMatch.addAll(mappingTerrain);
+								closestMatch.addAll(mappingFurniture);
+								closestMatch.add(mappingExtra);
+							}
+
 						}
+
+						mappingTerrain = new ArrayList<>();
+						mappingFurniture = new ArrayList<>();
+						mappingExtra = "";
+
 					}
 
-					commonMappings.put(tile, mapping[0].charAt(0));
+					if (line.startsWith("t:")) {
+						Collections.addAll(mappingTerrain, line.substring(2).trim().split(","));
+					}
+
+					if (line.startsWith("f:")) {
+						Collections.addAll(mappingFurniture, line.substring(2).trim().split(","));
+					}
+
+					if (line.startsWith("s:")) {
+						mappingExtra = line.substring(2).trim();
+					}
 
 				}
+
+				mappings.put(mapTile, closestCharacter);
+
+				log.debug("===========");
+				log.debug(mapTile);
+				log.debug(closestMatch);
 
 			} catch (IOException e) {
-				log.error("Error while reading tileSymbolMap.txt:", e);
+				e.printStackTrace();
 			}
-		} else {
-			log.error("tileSymbolMap.txt not found");
-		}
 
-		List<Character> usedSymbols = new ArrayList<>();
-		List<MapTile> resolveLater = new ArrayList<>();*/
-		Map<MapTile, Character> mappings = new HashMap<>();
-		int index = 0;
-
-		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				if (!mappings.containsKey(tiles[x][y])) {
-					mappings.put(tiles[x][y], SYMBOLS[index++]);
-				}
-			}
 		}
-		/*for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				MapTile tile = new MapTile(tiles[x][y]);
-				if (!mappings.containsKey(tile)) {
-					if (commonMappings.containsKey(tile)) {
-						boolean found = false;
-						for (Character symbol : commonMappings.get(tile)) {
-							if (!usedSymbols.contains(symbol)) {
-								usedSymbols.add(symbol);
-								mappings.put(tile, symbol);
-								found = true;
-								break;
-							}
-						}
-						if (!found) {
-							resolveLater.add(tile);
-						}
-					} else {
-						resolveLater.add(tile);
-					}
-				}
-			}
-		}
-
-		resolveLater.forEach(tile -> {
-			for (char symbol : SYMBOLS) {
-				if (!usedSymbols.contains(symbol)) {
-					mappings.put(tile, symbol);
-					break;
-				}
-			}
-		});*/
 
 		return mappings;
 

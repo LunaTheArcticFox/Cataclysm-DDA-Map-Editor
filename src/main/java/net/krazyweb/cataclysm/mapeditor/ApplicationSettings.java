@@ -32,7 +32,7 @@ public class ApplicationSettings {
 
 	private static final Path PATH = Paths.get("preferences.json");
 
-	public static final Path DEFAULT_NEW_FILE = Paths.get("templates").resolve("default.json");
+	public static final Path DEFAULT_NEW_FILE = Paths.get("data").resolve("default.json");
 
 	private static ApplicationSettings instance;
 

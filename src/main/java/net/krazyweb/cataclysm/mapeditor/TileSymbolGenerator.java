@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.*;
 
 public class TileSymbolGenerator {
@@ -225,6 +227,8 @@ public class TileSymbolGenerator {
 		Value<String> tempSpecial = new Value<>();
 		tempSpecial.value = "";
 
+		FileWriter writer = new FileWriter(Paths.get("data/tileMappings.txt").toFile());
+
 		countedTiles.forEach(t -> {
 
 			List<String> terrain = new ArrayList<>();
@@ -256,34 +260,43 @@ public class TileSymbolGenerator {
 				}
 			}
 
-			if (tempTerrain.hashCode() != terrain.hashCode() || tempFurniture.hashCode() != furniture.hashCode() || !special.equals(tempSpecial.value)) {
-				tempTerrain.clear();
-				tempFurniture.clear();
-				tempTerrain.addAll(terrain);
-				tempFurniture.addAll(furniture);
-				tempSpecial.value = special;
-				if (!terrain.isEmpty()) {
-					System.out.print("t:");
-					for (String terr : terrain) {
-						System.out.print(terr + " ");
+			try {
+
+				if (tempTerrain.hashCode() != terrain.hashCode() || tempFurniture.hashCode() != furniture.hashCode() || !special.equals(tempSpecial.value)) {
+					tempTerrain.clear();
+					tempFurniture.clear();
+					tempTerrain.addAll(terrain);
+					tempFurniture.addAll(furniture);
+					tempSpecial.value = special;
+					if (!terrain.isEmpty()) {
+						writer.append("t:");
+						for (String terr : terrain) {
+							writer.append(terr).append(" ");
+						}
+						writer.append("\n");
 					}
-					System.out.println();
-				}
-				if (!furniture.isEmpty()) {
-					System.out.print("f:");
-					for (String furn : furniture) {
-						System.out.print(furn + " ");
+					if (!furniture.isEmpty()) {
+						writer.append("f:");
+						for (String furn : furniture) {
+							writer.append(furn).append(" ");
+						}
+						writer.append("\n");
 					}
-					System.out.println();
+					if (!special.isEmpty()) {
+						writer.append("s:").append(special);
+						writer.append("\n");
+					}
 				}
-				if (!special.isEmpty()) {
-					System.out.println("s:" + special);
-				}
+
+				writer.append("\t").append(t.character).append(" ").append(String.valueOf(t.count)).append("\n");
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
-			System.out.println("\t" + t.character + " " + t.count);
-
 		});
+
+		writer.close();
 
 	}
 
