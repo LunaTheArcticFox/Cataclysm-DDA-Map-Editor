@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TileSymbolGenerator {
 
@@ -68,14 +69,32 @@ public class TileSymbolGenerator {
 
 			try {
 
+				List<JsonNode> mapgensToParse =  new ArrayList<>();
+
 				new ObjectMapper().readTree(mapgenFile.toFile()).forEach(rootNode -> {
 
-					if (!rootNode.has("object")) {
+					if (!rootNode.has("object") && !rootNode.has("mapgen")) {
 						return;
 					}
 
+					if (rootNode.has("object")) {
+						mapgensToParse.add(rootNode.get("object"));
+					} else {
+						if (rootNode.get("mapgen").isArray()) {
+							for (JsonNode node : rootNode.get("mapgen")) {
+								mapgensToParse.add(node.get("object"));
+							}
+						} else {
+							mapgensToParse.add(rootNode.get("mapgen").get("object"));
+						}
+					}
+
+				});
+
+				mapgensToParse.forEach(mapgenNode -> {
+
 					Map<Character, MapTile> tiles = new HashMap<>();
-					Iterator<Map.Entry<String, JsonNode>> nodeIterator = rootNode.get("object").fields();
+					Iterator<Map.Entry<String, JsonNode>> nodeIterator = mapgenNode.fields();
 
 					while (nodeIterator.hasNext()) {
 
@@ -186,17 +205,17 @@ public class TileSymbolGenerator {
 			List<TileMapping> tempMappings1 = new ArrayList<>();
 			List<TileMapping> tempMappings2 = new ArrayList<>();
 
-			for (TileMapping mapping : o1.mapTile.tileMappings) {
-				if (mapping instanceof TerrainMapping || mapping instanceof FurnitureMapping || mapping instanceof ToiletMapping) {
-					tempMappings1.add(mapping);
-				}
-			}
+			tempMappings1.addAll(
+					o1.mapTile.tileMappings.stream()
+					.filter(mapping -> mapping instanceof TerrainMapping || mapping instanceof FurnitureMapping || mapping instanceof ToiletMapping)
+					.collect(Collectors.toList())
+			);
 
-			for (TileMapping mapping : o2.mapTile.tileMappings) {
-				if (mapping instanceof TerrainMapping || mapping instanceof FurnitureMapping || mapping instanceof ToiletMapping) {
-					tempMappings2.add(mapping);
-				}
-			}
+			tempMappings2.addAll(
+					o2.mapTile.tileMappings.stream()
+					.filter(mapping -> mapping instanceof TerrainMapping || mapping instanceof FurnitureMapping || mapping instanceof ToiletMapping)
+					.collect(Collectors.toList())
+			);
 
 			if (tempMappings1.hashCode() == tempMappings2.hashCode()) {
 				if (o1.count > o2.count) {
@@ -269,18 +288,20 @@ public class TileSymbolGenerator {
 					tempFurniture.addAll(furniture);
 					tempSpecial.value = special;
 					if (!terrain.isEmpty()) {
-						writer.append("t:");
+						String s = "t:";
 						for (String terr : terrain) {
-							writer.append(terr).append(" ");
+							s += terr + ",";
 						}
-						writer.append("\n");
+						s = s.substring(0, s.lastIndexOf(","));
+						writer.append(s).append("\n");
 					}
 					if (!furniture.isEmpty()) {
-						writer.append("f:");
+						String s = "f:";
 						for (String furn : furniture) {
-							writer.append(furn).append(" ");
+							s += furn + ",";
 						}
-						writer.append("\n");
+						s = s.substring(0, s.lastIndexOf(","));
+						writer.append(s).append("\n");
 					}
 					if (!special.isEmpty()) {
 						writer.append("s:").append(special);

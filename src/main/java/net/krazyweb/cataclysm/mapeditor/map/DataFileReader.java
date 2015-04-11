@@ -200,7 +200,12 @@ public class DataFileReader extends Service<Boolean> {
 				nodes.add(mapping.getValue());
 			}
 
-			nodes.forEach(node -> tile.add(mapper.parse(node)));
+			nodes.forEach(node -> {
+				TileMapping t = mapper.parse(node);
+				if (t != null) {
+					tile.add(t);
+				}
+			});
 
 		}
 
@@ -208,18 +213,28 @@ public class DataFileReader extends Service<Boolean> {
 
 	private TileMapping parseTerrain(final JsonNode node) {
 		if (node.isObject()) {
-			return new TerrainMapping(node.get("ter").asText());
+			if (!node.get("ter").asText().equals("t_null")) {
+				return new TerrainMapping(node.get("ter").asText());
+			}
 		} else {
-			return new TerrainMapping(node.asText());
+			if (!node.asText().equals("t_null")) {
+				return new TerrainMapping(node.asText());
+			}
 		}
+		return null;
 	}
 
 	private TileMapping parseFurniture(final JsonNode node) {
 		if (node.isObject()) {
-			return new FurnitureMapping(node.get("furn").asText());
+			if (!node.get("furn").asText().equals("f_null")) {
+				return new FurnitureMapping(node.get("furn").asText());
+			}
 		} else {
-			return new FurnitureMapping(node.asText());
+			if (!node.asText().equals("f_null")) {
+				return new FurnitureMapping(node.asText());
+			}
 		}
+		return null;
 	}
 
 	private TileMapping parseGasPumps(final JsonNode node) {

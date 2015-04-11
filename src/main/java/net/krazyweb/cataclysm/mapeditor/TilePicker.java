@@ -19,6 +19,7 @@ import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -104,6 +105,12 @@ public class TilePicker {
 
 			} else if (node.get("id").asText().startsWith("f_")) {
 				mapTile.add(new FurnitureMapping(node.get("id").asText()));
+			}
+
+			//TODO Properly handle missing tile textures (Load tiles and tileset differently)
+			if (Tile.get(node.get("id").asText()) == null) {
+				Tile.tiles.put(node.get("id").asText(), new Tile(node.get("id").asText()));
+				TileSet.textures.put(node.get("id").asText(), new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR));
 			}
 
 			ImageView view = new ImageView(mapTile.getTexture(0, 0));

@@ -250,6 +250,18 @@ public class MapgenEntry implements Jsonable {
 
 				while ((line = reader.readLine()) != null) {
 
+					if (line.startsWith("t:")) {
+						Collections.addAll(mappingTerrain, line.substring(2).trim().split(","));
+					}
+
+					if (line.startsWith("f:")) {
+						Collections.addAll(mappingFurniture, line.substring(2).trim().split(","));
+					}
+
+					if (line.startsWith("s:")) {
+						mappingExtra = line.substring(2).trim();
+					}
+
 					if (line.startsWith("	")) {
 
 						if (!(mappingTerrain.isEmpty() && mappingFurniture.isEmpty() && mappingExtra.isEmpty())) {
@@ -297,18 +309,6 @@ public class MapgenEntry implements Jsonable {
 						mappingFurniture = new ArrayList<>();
 						mappingExtra = "";
 
-					}
-
-					if (line.startsWith("t:")) {
-						Collections.addAll(mappingTerrain, line.substring(2).trim().split(","));
-					}
-
-					if (line.startsWith("f:")) {
-						Collections.addAll(mappingFurniture, line.substring(2).trim().split(","));
-					}
-
-					if (line.startsWith("s:")) {
-						mappingExtra = line.substring(2).trim();
 					}
 
 				}

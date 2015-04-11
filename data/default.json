@@ -5,7 +5,6 @@
         "method": "json",
         "weight": 200,
         "object": {
-			"fill_ter": "t_grass",
             "rows": [
                 "                        ",
                 "                        ",
@@ -33,6 +32,7 @@
                 "                        "
             ],
             "terrain": {
+                " ": [ "t_grass", "t_grass", "t_dirt" ]
             },
             "furniture": {
             }

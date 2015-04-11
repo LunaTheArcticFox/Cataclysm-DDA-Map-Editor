@@ -347,7 +347,12 @@ public class MapRenderer {
 
 		if (map.getTileAt(x, y) == null) {
 			int bitwiseMapping = map.getTerrainBitwiseMapping(x, y);
-			Image texture = SwingFXUtils.toFXImage(TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(Tile.BITWISE_TYPES[bitwiseMapping]).getID()), null);
+			Image texture;
+			if (map.getFillTerrain() == null) { //TODO Properly handle missing fill terrain
+				texture = SwingFXUtils.toFXImage(new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
+			} else {
+				texture = SwingFXUtils.toFXImage(TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(Tile.BITWISE_TYPES[bitwiseMapping]).getID()), null);
+			}
 			graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize);
 			return;
 		}
@@ -360,7 +365,7 @@ public class MapRenderer {
 			return;
 		}
 
-		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null) {
+		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null && map.getFillTerrain() != null) { //TODO Properly handle missing fill terrain?
 			BufferedImage terrainImage = TileSet.textures.get(Tile.get(map.getFillTerrain().displayTerrain).getTile(Tile.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
 			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * TileSet.tileSize, y * TileSet.tileSize);
 		}
