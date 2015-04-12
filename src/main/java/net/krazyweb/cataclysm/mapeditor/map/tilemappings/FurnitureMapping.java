@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FurnitureMapping extends TileMapping {
 
 	public String furniture;
@@ -12,10 +9,8 @@ public class FurnitureMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add(furniture);
-		return lines;
+	public String getJson() {
+		return "\"" + furniture + "\"";
 	}
 
 	@Override

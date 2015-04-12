@@ -3,6 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.map.data;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
+import net.krazyweb.util.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +13,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class MapgenEntry implements Jsonable {
@@ -82,60 +84,23 @@ public class MapgenEntry implements Jsonable {
 	public List<String> getJsonLines() {
 
 		List<String> lines = new ArrayList<>();
-
-		lines.add("{");
-		settings.getJsonLines().forEach(line -> lines.add(INDENT + line + ","));
-		lines.add(INDENT + "\"object\": {");
-		lines.add(INDENT + INDENT + "\"rows\": [");
-
 		Map<MapTile, Character> mappings = mapSymbols();
 
-		for (int y = 0; y < MapEditor.SIZE; y++) {
-			String row = "";
-			for (int x = 0; x < MapEditor.SIZE; x++) {
-				row += mappings.get(tiles[x][y]);
-			}
-			lines.add(INDENT + INDENT + INDENT + "\"" + row + "\"" + ((y == MapEditor.SIZE - 1) ? "" : ","));
+		lines.add("{");
+
+		settings.getJsonLines().forEach(line -> lines.add(INDENT + line + ","));
+
+		lines.add(INDENT + "\"object\": {");
+
+		if (fillTerrain != null) {
+			lines.add(INDENT + INDENT + "\"fill_ter\": \"" + fillTerrain.displayTerrain + "\",");
 		}
 
-		lines.add(INDENT + INDENT + "],");
-		/*lines.add(INDENT + INDENT + "\"terrain\": {");
+		lines.addAll(getRows(mappings));
+		lines.addAll(getTerrainLines(mappings));
+		lines.addAll(getFurnitureLines(mappings));
 
-		List<String> tempLines = new ArrayList<>();
-
-		mappings.entrySet().forEach(entry -> {
-			if (entry.getKey().terrain != null) {
-				tempLines.add(INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": \"" + entry.getKey().terrain + "\",");
-			}
-		});
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "},");
-		lines.add(INDENT + INDENT + "\"furniture\": {");
-
-		tempLines.clear();
-
-		mappings.entrySet().forEach(entry -> {
-			if (entry.getKey().furniture != null) {
-				tempLines.add(INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": \"" + entry.getKey().furniture + "\",");
-			}
-		});
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "},");
-		lines.add(INDENT + INDENT + "\"place_specials\": [");
+		/*lines.add(INDENT + INDENT + "\"place_specials\": [");
 
 		tempLines.clear();
 
@@ -190,6 +155,132 @@ public class MapgenEntry implements Jsonable {
 
 	}
 
+	private List<String> getRows(final Map<MapTile, Character> mappings) {
+
+		List<String> lines = new ArrayList<>();
+
+		lines.add(INDENT + INDENT + "\"rows\": [");
+
+		for (int y = 0; y < MapEditor.SIZE; y++) {
+			String row = "";
+			for (int x = 0; x < MapEditor.SIZE; x++) {
+				if (tiles[x][y] == null) {
+					row += mappings.get(fillTerrain);
+				} else {
+					row += mappings.get(tiles[x][y]);
+				}
+			}
+			lines.add(INDENT + INDENT + INDENT + "\"" + row + "\"" + ((y == MapEditor.SIZE - 1) ? "" : ","));
+		}
+
+		lines.add(INDENT + INDENT + "],");
+
+		return lines;
+
+	}
+
+	private List<String> getTerrainLines(final Map<MapTile, Character> mappings) {
+
+		List<String> lines = new ArrayList<>();
+
+		lines.add(INDENT + INDENT + "\"terrain\": {");
+
+		List<String> tempLines = new ArrayList<>();
+
+		mappings.entrySet().forEach(entry -> {
+
+			if (entry.getKey().equals(fillTerrain)) {
+				return;
+			}
+
+			List<String> terrain = entry.getKey().tileMappings
+					.stream()
+					.filter(tileMapping -> tileMapping instanceof TerrainMapping)
+					.map(TileMapping::getJson)
+					.collect(Collectors.toList());
+
+			if (terrain.size() > 0) {
+
+				String line = INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": ";
+
+				if (terrain.size() > 1) {
+					line += "[ ";
+				}
+
+				line += StringUtils.join(", ", terrain);
+
+				if (terrain.size() > 1) {
+					line += " ]";
+				}
+
+				tempLines.add(line + ",");
+
+			}
+
+		});
+
+		if (tempLines.size() > 0) {
+			String line = tempLines.remove(tempLines.size() - 1);
+			tempLines.add(line.substring(0, line.length() - 1));
+		}
+
+		lines.addAll(tempLines);
+
+		lines.add(INDENT + INDENT + "},");
+
+		return lines;
+
+	}
+
+	private List<String> getFurnitureLines(final Map<MapTile, Character> mappings) {
+
+		List<String> lines = new ArrayList<>();
+
+		lines.add(INDENT + INDENT + "\"furniture\": {");
+
+		List<String> tempLines = new ArrayList<>();
+
+		mappings.entrySet().forEach(entry -> {
+
+			List<String> furniture = entry.getKey().tileMappings
+					.stream()
+					.filter(tileMapping -> tileMapping instanceof FurnitureMapping)
+					.map(TileMapping::getJson)
+					.collect(Collectors.toList());
+
+			if (furniture.size() > 0) {
+
+				String line = INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": ";
+
+				if (furniture.size() > 1) {
+					line += "[ ";
+				}
+
+				line += StringUtils.join(", ", furniture);
+
+				if (furniture.size() > 1) {
+					line += " ]";
+				}
+
+				tempLines.add(line + ",");
+
+			}
+
+		});
+
+		if (tempLines.size() > 0) {
+			String line = tempLines.remove(tempLines.size() - 1);
+			tempLines.add(line.substring(0, line.length() - 1));
+		}
+
+		lines.addAll(tempLines);
+
+		lines.add(INDENT + INDENT + "}");
+
+		return lines;
+
+	}
+
 	private class CharacterMapping {
 
 		private Character character;
@@ -219,7 +310,7 @@ public class MapgenEntry implements Jsonable {
 
 		@Override
 		public String toString() {
-			return priority + " " + character;
+			return "[" + priority + ", '" + character + "']";
 		}
 
 	}
@@ -240,10 +331,21 @@ public class MapgenEntry implements Jsonable {
 		Set<MapTile> uniqueTiles = new HashSet<>();
 
 		for (int x = 0; x < MapEditor.SIZE; x++) {
-			uniqueTiles.addAll(Arrays.asList(tiles[x]).subList(0, MapEditor.SIZE));
+			for (int y = 0; y < MapEditor.SIZE; y++) {
+				if (tiles[x][y] != null) {
+					uniqueTiles.add(tiles[x][y]);
+				}
+			}
 		}
 
 		log.debug(uniqueTiles.size());
+
+		if (fillTerrain != null) {
+			//Fill Terrain should monopolize the " " mapping for ease of map reading.
+			List<CharacterMapping> fillTerrainMapping = new ArrayList<>();
+			fillTerrainMapping.add(new CharacterMapping(' ', Integer.MAX_VALUE));
+			commonMappings.put(fillTerrain, fillTerrainMapping);
+		}
 
 		for (MapTile mapTile : uniqueTiles) {
 
@@ -252,9 +354,6 @@ public class MapgenEntry implements Jsonable {
 			List<String> tileTerrain = new ArrayList<>();
 			List<String> tileFurniture = new ArrayList<>();
 			String tileExtra = "";
-
-			List<String> closestMatch = new ArrayList<>();
-			int closestCount = Integer.MAX_VALUE;
 
 			for (TileMapping mapping : mapTile.tileMappings) {
 				if (mapping instanceof TerrainMapping) {
@@ -277,6 +376,8 @@ public class MapgenEntry implements Jsonable {
 				}
 			}
 
+			List<String> closestMatch = new ArrayList<>();
+
 			try {
 
 				BufferedReader reader = new BufferedReader(new FileReader(Paths.get("data/tileMappings.txt").toFile()));
@@ -286,26 +387,28 @@ public class MapgenEntry implements Jsonable {
 				List<String> mappingFurniture = new ArrayList<>();
 				String mappingExtra = "";
 				boolean inDefinition = true;
-				boolean inClosestMatch = false;
+				boolean inMatch = false;
+
+				int score = 0;
 
 				while ((line = reader.readLine()) != null) {
 
 					if (line.startsWith("t:")) {
 						Collections.addAll(mappingTerrain, line.substring(2).trim().split(","));
 						inDefinition = true;
-						inClosestMatch = false;
+						inMatch = false;
 					}
 
 					if (line.startsWith("f:")) {
 						Collections.addAll(mappingFurniture, line.substring(2).trim().split(","));
 						inDefinition = true;
-						inClosestMatch = false;
+						inMatch = false;
 					}
 
 					if (line.startsWith("s:")) {
 						mappingExtra = line.substring(2).trim();
 						inDefinition = true;
-						inClosestMatch = false;
+						inMatch = false;
 					}
 
 					if (line.startsWith("	")) {
@@ -320,7 +423,7 @@ public class MapgenEntry implements Jsonable {
 
 							Collection<String> terrainDisjunction = CollectionUtils.disjunction(tileTerrain, mappingTerrain);
 							Collection<String> furnitureDisjunction = CollectionUtils.disjunction(tileFurniture, mappingFurniture);
-							int score = terrainDisjunction.size() + furnitureDisjunction.size();
+							score = terrainDisjunction.size() + furnitureDisjunction.size();
 
 							Set<String> mTerrain = new HashSet<>(mappingTerrain);
 							Set<String> tTerrain = new HashSet<>(tileTerrain);
@@ -344,11 +447,10 @@ public class MapgenEntry implements Jsonable {
 							log.trace(score + "\t" + mappingTerrain + " " + mappingFurniture + " " + mappingExtra);
 							log.trace("===");
 
-							if (score <= closestCount && !reject) {
-								inClosestMatch = true;
-								closestCount = score;
+							if (!reject) {
+								inMatch = true;
 								closestMatch.clear();
-								commonMappings.get(mapTile).clear();
+								//commonMappings.get(mapTile).clear();
 								closestMatch.addAll(mappingTerrain);
 								closestMatch.addAll(mappingFurniture);
 								closestMatch.add(mappingExtra);
@@ -356,8 +458,11 @@ public class MapgenEntry implements Jsonable {
 
 						}
 
-						if (inClosestMatch) {
-							commonMappings.get(mapTile).add(new CharacterMapping(character, rank));
+						if (inMatch) {
+							//Subtract score here so that the closest matched tiles win
+							//(ex: [t_grass] vs. [t_grass, t_grass, t_dirt])
+							//[t_grass] should win since it's the most specific
+							commonMappings.get(mapTile).add(new CharacterMapping(character, rank - score));
 						}
 
 						mappingTerrain = new ArrayList<>();
@@ -384,7 +489,17 @@ public class MapgenEntry implements Jsonable {
 
 		while (!commonMappings.isEmpty()) {
 
-			commonMappings.values().forEach(characterMapping -> characterMapping.removeAll(usedCharacters));
+			commonMappings.values().forEach(characterMapping -> {
+				characterMapping.removeAll(usedCharacters);
+				Collections.sort(characterMapping, (o1, o2) -> {
+					if (o1.priority > o2.priority) {
+						return -1;
+					} else if (o1.priority < o2.priority) {
+						return 1;
+					}
+					return 0;
+				});
+			});
 
 			Stream<Map.Entry<MapTile, List<CharacterMapping>>> sorted = commonMappings.entrySet().stream()
 					.sorted(Map.Entry.comparingByValue((charMap1, charMap2) -> {

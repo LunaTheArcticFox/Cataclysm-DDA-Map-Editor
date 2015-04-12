@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TerrainMapping extends TileMapping {
 
 	public String terrain;
@@ -12,10 +9,8 @@ public class TerrainMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add(terrain);
-		return lines;
+	public String getJson() {
+		return "\"" + terrain + "\"";
 	}
 
 	@Override
