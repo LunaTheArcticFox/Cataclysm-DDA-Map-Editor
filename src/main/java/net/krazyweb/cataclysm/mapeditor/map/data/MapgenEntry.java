@@ -1,7 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data;
 
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Multimap;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
@@ -14,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Stream;
 
 public class MapgenEntry implements Jsonable {
 
@@ -22,7 +21,7 @@ public class MapgenEntry implements Jsonable {
 			'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P',
 			'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '!',
 			'@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '=', '+', '[', '{', ']', '}', ':', ';', '"', '\'',
-			'<', ',', '>', '.', '?', '/', '`', '~', '\\', '|', ' ',
+			'<', ',', '>', '.', '?', '/', '`', '~', '\\', '|', ' '
 	};
 
 	private static Logger log = LogManager.getLogger(MapgenEntry.class);
@@ -191,16 +190,52 @@ public class MapgenEntry implements Jsonable {
 
 	}
 
-	private class SymbolMap {
-		private MapTile tile;
+	private class CharacterMapping {
+
 		private Character character;
 		private int priority;
+
+		private CharacterMapping(final Character character, final int priority) {
+			this.character = character;
+			this.priority = priority;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			CharacterMapping that = (CharacterMapping) o;
+
+			return !(character != null ? !character.equals(that.character) : that.character != null);
+
+		}
+
+		@Override
+		public int hashCode() {
+			return character != null ? character.hashCode() : 0;
+		}
+
+		@Override
+		public String toString() {
+			return priority + " " + character;
+		}
+
 	}
 
-	//TODO Clean this all up
+	//TODO Clean this all up and optimize where possible if needed
 	private Map<MapTile, Character> mapSymbols() {
 
-		Multimap<MapTile, Character> commonMappings = ArrayListMultimap.create();
+		TreeMap<MapTile, List<CharacterMapping>> commonMappings = new TreeMap<>((o1, o2) -> {
+			if (o1.hashCode() > o2.hashCode()) {
+				return -1;
+			} else if (o1.hashCode() < o2.hashCode()) {
+				return 1;
+			}
+			return 0;
+		});
+
 		Map<MapTile, Character> mappings = new HashMap<>();
 		Set<MapTile> uniqueTiles = new HashSet<>();
 
@@ -208,8 +243,12 @@ public class MapgenEntry implements Jsonable {
 			uniqueTiles.addAll(Arrays.asList(tiles[x]).subList(0, MapEditor.SIZE));
 		}
 
+		log.debug(uniqueTiles.size());
+
 		for (MapTile mapTile : uniqueTiles) {
 
+			commonMappings.put(mapTile, new ArrayList<>());
+			log.debug(commonMappings.size());
 			List<String> tileTerrain = new ArrayList<>();
 			List<String> tileFurniture = new ArrayList<>();
 			String tileExtra = "";
@@ -246,27 +285,38 @@ public class MapgenEntry implements Jsonable {
 				List<String> mappingTerrain = new ArrayList<>();
 				List<String> mappingFurniture = new ArrayList<>();
 				String mappingExtra = "";
-				Character closestCharacter = ' ';
+				boolean inDefinition = true;
+				boolean inClosestMatch = false;
 
 				while ((line = reader.readLine()) != null) {
 
 					if (line.startsWith("t:")) {
 						Collections.addAll(mappingTerrain, line.substring(2).trim().split(","));
+						inDefinition = true;
+						inClosestMatch = false;
 					}
 
 					if (line.startsWith("f:")) {
 						Collections.addAll(mappingFurniture, line.substring(2).trim().split(","));
+						inDefinition = true;
+						inClosestMatch = false;
 					}
 
 					if (line.startsWith("s:")) {
 						mappingExtra = line.substring(2).trim();
+						inDefinition = true;
+						inClosestMatch = false;
 					}
 
 					if (line.startsWith("	")) {
 
-						if (!(mappingTerrain.isEmpty() && mappingFurniture.isEmpty() && mappingExtra.isEmpty())) {
+						Character character = line.charAt(1);
+						int rank = Integer.parseInt(line.substring(3));
 
-							Character c = line.substring(1).charAt(0);
+						if (inDefinition) {
+
+							inDefinition = false;
+							boolean reject = false;
 
 							Collection<String> terrainDisjunction = CollectionUtils.disjunction(tileTerrain, mappingTerrain);
 							Collection<String> furnitureDisjunction = CollectionUtils.disjunction(tileFurniture, mappingFurniture);
@@ -287,22 +337,27 @@ public class MapgenEntry implements Jsonable {
 							}
 
 							if (mTerrain.size() == mappingTerrain.size() && mFurniture.size() == mappingFurniture.size() && !(!mappingExtra.isEmpty() && mappingExtra.equals(tileExtra))) {
-								score += 10000;
+								reject = true;
 							}
 
-							log.trace(mTerrain);
-							log.trace(mFurniture);
+							log.trace(mTerrain + ", " + mFurniture);
 							log.trace(score + "\t" + mappingTerrain + " " + mappingFurniture + " " + mappingExtra);
+							log.trace("===");
 
-							if (score <= closestCount && score < 10000) {
+							if (score <= closestCount && !reject) {
+								inClosestMatch = true;
 								closestCount = score;
 								closestMatch.clear();
-								closestCharacter = c;
+								commonMappings.get(mapTile).clear();
 								closestMatch.addAll(mappingTerrain);
 								closestMatch.addAll(mappingFurniture);
 								closestMatch.add(mappingExtra);
 							}
 
+						}
+
+						if (inClosestMatch) {
+							commonMappings.get(mapTile).add(new CharacterMapping(character, rank));
 						}
 
 						mappingTerrain = new ArrayList<>();
@@ -313,15 +368,68 @@ public class MapgenEntry implements Jsonable {
 
 				}
 
-				mappings.put(mapTile, closestCharacter);
-
 				log.debug("===========");
 				log.debug(mapTile);
 				log.debug(closestMatch);
+				log.debug(commonMappings.get(mapTile));
+				log.debug("===========");
 
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+
+		}
+
+		List<CharacterMapping> usedCharacters = new ArrayList<>();
+
+		while (!commonMappings.isEmpty()) {
+
+			commonMappings.values().forEach(characterMapping -> characterMapping.removeAll(usedCharacters));
+
+			Stream<Map.Entry<MapTile, List<CharacterMapping>>> sorted = commonMappings.entrySet().stream()
+					.sorted(Map.Entry.comparingByValue((charMap1, charMap2) -> {
+						if (!charMap1.isEmpty() && charMap2.isEmpty()) {
+							return -1;
+						} else if (charMap1.isEmpty() && !charMap2.isEmpty()) {
+							return 1;
+						} else if (charMap1.isEmpty()) {
+							return 0;
+						}
+						if (charMap1.get(0).priority > charMap2.get(0).priority) {
+							return -1;
+						} else if (charMap1.get(0).priority < charMap2.get(0).priority) {
+							return 1;
+						}
+						return 0;
+					}));
+
+			sorted.limit(1).forEach(mapTileListEntry -> {
+
+				log.debug(mapTileListEntry);
+
+				if (mapTileListEntry.getValue().isEmpty()) {
+
+					//TODO Match closer to characters present in terrain/furniture/extras instead of iterating all symbols
+					symbolLoop:
+					for (char symbol : SYMBOLS) {
+						for (CharacterMapping characterMapping : usedCharacters) {
+							if (characterMapping.character == symbol) {
+								continue symbolLoop;
+							}
+						}
+						mappings.put(mapTileListEntry.getKey(), symbol);
+						usedCharacters.add(new CharacterMapping(symbol, 0));
+						break;
+					}
+
+				} else {
+					mappings.put(mapTileListEntry.getKey(), mapTileListEntry.getValue().get(0).character);
+					usedCharacters.add(mapTileListEntry.getValue().get(0));
+				}
+
+				commonMappings.remove(mapTileListEntry.getKey());
+
+			});
 
 		}
 
