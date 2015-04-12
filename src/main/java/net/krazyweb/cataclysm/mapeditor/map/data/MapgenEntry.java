@@ -328,12 +328,18 @@ public class MapgenEntry implements Jsonable {
 		});
 
 		Map<MapTile, Character> mappings = new HashMap<>();
+		Map<MapTile, Integer> mapTileUsageCount = new HashMap<>();
 		Set<MapTile> uniqueTiles = new HashSet<>();
 
 		for (int x = 0; x < MapEditor.SIZE; x++) {
 			for (int y = 0; y < MapEditor.SIZE; y++) {
 				if (tiles[x][y] != null) {
 					uniqueTiles.add(tiles[x][y]);
+					if (!mapTileUsageCount.containsKey(tiles[x][y])) {
+						mapTileUsageCount.put(tiles[x][y], 1);
+					} else {
+						mapTileUsageCount.put(tiles[x][y], mapTileUsageCount.get(tiles[x][y]) + 1);
+					}
 				}
 			}
 		}
@@ -502,7 +508,11 @@ public class MapgenEntry implements Jsonable {
 			});
 
 			Stream<Map.Entry<MapTile, List<CharacterMapping>>> sorted = commonMappings.entrySet().stream()
-					.sorted(Map.Entry.comparingByValue((charMap1, charMap2) -> {
+					.sorted((entry1, entry2) -> {
+
+						List<CharacterMapping> charMap1 = entry1.getValue();
+						List<CharacterMapping> charMap2 = entry2.getValue();
+
 						if (!charMap1.isEmpty() && charMap2.isEmpty()) {
 							return -1;
 						} else if (charMap1.isEmpty() && !charMap2.isEmpty()) {
@@ -510,13 +520,22 @@ public class MapgenEntry implements Jsonable {
 						} else if (charMap1.isEmpty()) {
 							return 0;
 						}
+
 						if (charMap1.get(0).priority > charMap2.get(0).priority) {
 							return -1;
 						} else if (charMap1.get(0).priority < charMap2.get(0).priority) {
 							return 1;
 						}
+
+						if (mapTileUsageCount.get(entry1.getKey()) > mapTileUsageCount.get(entry2.getKey())) {
+							return -1;
+						} else if (mapTileUsageCount.get(entry1.getKey()) < mapTileUsageCount.get(entry2.getKey())) {
+							return 1;
+						}
+
 						return 0;
-					}));
+
+					});
 
 			sorted.limit(1).forEach(mapTileListEntry -> {
 
