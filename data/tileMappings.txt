@@ -1,0 +1,1067 @@
+f:f_pool_table
+	x 1
+t:t_carpet_red
+	r 2
+	R 1
+	  1
+	3 1
+t:t_sewage
+	3 3
+t:t_dirt
+f:f_crate_c
+	z 1
+t:t_linoleum_gray
+f:f_table
+	t 1
+t:t_machinery_electronic
+	_ 2
+t:t_linoleum_gray
+f:f_dryer
+	y 2
+t:t_linoleum_gray
+f:f_chair
+	c 3
+t:t_floor
+f:f_dresser
+	: 47
+	d 4
+t:t_floor
+f:f_arcade_machine
+	F 3
+t:t_linoleum_gray
+f:f_fridge
+	F 3
+	& 1
+t:t_sewage_pipe
+	2 4
+t:t_ladder_down
+	F 2
+t:t_metal_floor
+f:f_bathtub
+	B 2
+t:t_linoleum_gray
+f:f_sink
+	S 4
+	a 2
+	s 2
+t:t_linoleum_gray
+f:f_rack
+	r 3
+	{ 2
+t:t_linoleum_gray
+f:f_oven
+	r 1
+	G 1
+t:t_linoleum_gray
+f:f_desk
+	E 3
+t:t_potential_trans
+	8 2
+t:t_sidewalk
+f:f_table
+	z 1
+	# 1
+t:t_sidewalk
+f:f_chair
+	/ 1
+	Z 1
+t:t_floor
+f:f_bed
+	@ 50
+t:t_dirt
+f:f_large_canvas_wall
+	W 1
+t:t_floor
+f:f_armchair
+	H 23
+t:t_sidewalk
+f:f_vending_c
+	l 1
+t:t_floor
+s:toilet
+	; 32
+	T 6
+	t 2
+	4 1
+t:t_floor
+f:f_pinball_machine
+	x 2
+t:t_linoleum_gray
+f:f_trashcan
+	t 2
+	& 1
+t:t_door_c
+	+ 58
+	D 5
+	' 2
+	t 1
+	w 1
+	= 1
+t:t_door_b
+	3 1
+t:t_floor
+f:f_canvas_floor
+	5 1
+t:t_column
+	I 6
+	1 4
+	o 2
+	0 1
+t:t_ladder_up
+	# 3
+	K 2
+t:t_bridge
+	x 3
+t:t_window_open
+	o 1
+t:t_floor
+f:f_treadmill
+	@ 1
+	a 1
+t:t_dirt
+f:f_bench
+	b 3
+t:t_fence_rope
+	$ 1
+t:t_linoleum_gray
+f:f_indoor_plant
+	^ 3
+t:t_gas_pump
+	& 2
+	5 1
+t:t_thconc_floor
+	` 1
+	@ 1
+t:t_pavement
+f:f_aut_gas_console
+	9 1
+t:t_underbrush
+	^ 2
+	s 1
+t:t_door_metal_locked
+f:f_counter
+	& 4
+t:t_little_column
+	s 1
+t:t_floor
+f:f_fireplace
+	= 27
+t:t_floor
+f:f_wreckage
+	) 3
+t:t_pavement_y
+	, 27
+	y 2
+	' 1
+	_ 1
+t:t_linoleum_gray
+f:f_bathtub
+	8 2
+t:t_pavement
+f:f_dumpster
+	d 7
+	X 1
+	{ 1
+t:t_carpet_red
+f:f_dresser
+	: 1
+t:t_dirt
+f:f_trashcan
+	D 4
+t:t_window_stained_green
+	i 1
+t:t_console_broken
+	x 15
+	6 6
+	@ 3
+	C 2
+	% 1
+	H 1
+	# 1
+t:t_switchgear_s
+	s 2
+t:t_switchgear_l
+	S 2
+t:t_wall_metal
+	| 4
+	- 4
+	g 2
+	G 2
+	m 1
+	M 1
+t:t_wall_glass
+	V 6
+	5 6
+	H 5
+	8 4
+	v 4
+	g 4
+	h 3
+	1 2
+	2 2
+	% 2
+	G 2
+	= 1
+t:t_rock_floor
+f:f_bed
+	B 2
+t:t_floor
+f:f_crate_o
+	Z 2
+t:t_floor
+f:f_crate_c
+	z 4
+	x 1
+	1 1
+	X 1
+	C 1
+t:t_linoleum_white
+s:toilet
+	P 4
+	T 2
+	; 1
+t:t_grass
+f:f_counter
+	9 1
+t:t_floor
+f:f_counter
+	> 35
+	# 12
+	c 10
+	5 1
+t:t_dirtfloor
+f:f_wood_keg
+	K 1
+t:t_grass
+f:f_washer
+	w 1
+t:t_window_boarded
+	2 5
+	y 1
+	1 1
+t:t_rock_floor
+s:toilet
+	t 2
+t:t_floor
+f:f_washer
+	W 3
+	3 3
+	j 1
+	w 1
+	r 1
+t:t_floor
+f:f_exercise
+	E 1
+	V 1
+t:t_carpet_red
+f:f_bed
+	$ 1
+t:t_floor
+f:f_bookcase
+	7 35
+	o 5
+	l 1
+	B 1
+	Z 1
+	{ 1
+	8 1
+t:t_floor
+f:f_toilet
+	t 4
+	T 3
+	; 2
+t:t_metal_floor
+	; 3
+	  2
+	, 1
+t:t_floor
+f:f_tatami
+	# 1
+t:t_floor
+f:f_statue
+	? 1
+t:t_shrub_blueberry
+	s 1
+	I 1
+t:t_floor
+f:f_shower
+	S 3
+	~ 2
+	* 1
+	8 1
+	X 1
+t:t_floor
+f:f_safe_l
+	T 2
+	X 1
+t:t_floor
+f:f_rubble
+	{ 3
+t:t_water_pump
+	4 4
+t:t_water_pool
+	w 1
+t:t_floor
+f:f_ergometer
+	! 1
+t:t_floor
+f:f_locker
+	L 8
+	l 4
+	: 1
+	O 1
+	T 1
+t:t_sandbox
+	N 1
+t:t_sai_box
+	# 1
+t:t_lgtn_arrest
+	} 2
+t:t_grass
+f:f_dryer
+	x 1
+t:t_floor
+f:f_table
+	6 37
+	t 11
+	n 6
+	T 1
+	# 1
+t:t_door_metal_c
+	+ 5
+	3 2
+	M 1
+t:t_floor
+f:f_dryer
+	4 5
+	Y 2
+	K 1
+	W 1
+t:t_floor
+f:f_chair
+	B 35
+	c 11
+	h 6
+	C 3
+	6 1
+t:t_floor
+f:f_bench
+	b 3
+	B 2
+	c 1
+t:t_floor
+f:f_anvil
+	M 3
+t:t_current_trans
+	{ 2
+t:t_palisade_gate
+	p 1
+t:t_door_locked_peep
+	n 1
+t:t_floor
+f:f_fridge
+	F 43
+	f 5
+	e 1
+t:t_floor
+f:f_vending_c
+	l 10
+	$ 1
+	V 1
+t:t_tree_pine
+	4 1
+	^ 1
+t:t_carpet_red
+f:f_fireplace
+	= 1
+t:t_grass
+f:f_dahlia
+	* 2
+	X 1
+t:t_support_l
+	T 2
+t:t_grass
+f:f_sign
+	P 1
+t:t_rock_floor
+f:f_crate_c
+	X 2
+t:t_linoleum_white
+f:f_counter
+	# 4
+	c 2
+t:t_floor
+f:f_sofa
+	? 42
+	C 1
+	9 1
+	H 1
+t:t_floor
+f:f_sink
+	A 37
+	S 10
+	2 1
+	s 1
+t:t_floor
+f:f_rack
+	9 29
+	r 18
+	X 2
+	] 1
+t:t_floor
+f:f_oven
+	G 38
+	O 5
+t:t_floor
+f:f_lane
+	G 1
+t:t_floor
+f:f_desk
+	C 31
+	G 8
+	k 5
+	D 2
+	d 1
+	E 1
+	7 1
+t:t_chainfence_v
+	8 7
+	| 4
+	] 2
+	w 1
+	[ 1
+	~ 1
+t:t_chainfence_h
+	7 4
+	- 4
+	5 3
+	= 2
+	W 1
+	~ 1
+t:t_rock_floor
+f:f_counter
+	c 2
+t:t_fencegate_c
+	x 2
+	f 2
+	W 1
+t:t_door_metal_pickable
+	L 2
+	+ 2
+t:t_linoleum_white
+f:f_bookcase
+	7 1
+t:t_pavement
+f:f_trashcan
+	f 3
+t:t_reinforced_glass
+	v 2
+	u 2
+	V 1
+	H 1
+t:t_monkey_bars
+	J 1
+t:t_rock_floor
+f:f_bookcase
+	} 2
+t:t_gates_mech_control
+	w 10
+	X 6
+	e 5
+	7 1
+t:t_floor
+f:f_trashcan
+	D 36
+	@ 1
+	& 1
+	f 1
+t:t_carpet_red
+f:f_counter
+	> 1
+t:t_elevator_control
+	U 1
+t:t_door_locked_alarm
+	L 8
+t:t_rock_floor
+f:f_rubble
+	^ 2
+t:t_linoleum_gray
+f:f_displaycase
+	C 3
+t:t_carpet_red
+f:f_bookcase
+	7 1
+t:t_linoleum_white
+f:f_locker
+	l 2
+	L 1
+t:t_vat
+	i 2
+t:t_atm
+	A 1
+	& 1
+f:f_ash
+	] 2
+t:t_pavement
+	_ 29
+	- 2
+	Q 1
+	, 1
+	. 1
+	  1
+t:t_pavement
+s:vendingmachine
+	1 1
+t:t_pavement
+s:vendingmachine
+	2 1
+t:t_pavement
+s:sign
+	P 1
+t:t_floor
+f:f_indoor_plant
+	^ 14
+	P 5
+	4 2
+	I 1
+	S 7
+	w 3
+	  2
+	. 1
+	x 1
+	W 1
+	_ 1
+t:t_dirtmound
+	m 3
+	R 1
+	# 1
+t:t_linoleum_white
+f:f_table
+	T 1
+	t 1
+t:t_linoleum_white
+f:f_fridge
+	e 2
+	F 2
+	f 1
+t:t_floor
+f:f_glass_fridge
+	f 7
+	F 1
+t:t_rock_floor
+f:f_table
+	T 2
+t:t_dirtfloor
+f:f_dresser
+	d 1
+t:t_rock_floor
+f:f_chair
+	C 2
+t:t_chaingate_l
+	9 4
+	^ 3
+	+ 1
+t:t_chaingate_c
+	+ 3
+	* 2
+t:t_metal_floor
+f:f_dresser
+	d 2
+t:t_tree_young
+	T 1
+	^ 1
+t:t_grass
+f:f_mutpoppy
+	C 1
+t:t_tree_peach
+	P 1
+t:t_linoleum_white
+f:f_sofa
+	H 1
+t:t_linoleum_white
+f:f_sink
+	S 5
+	U 1
+	A 1
+t:t_linoleum_white
+f:f_rack
+	r 2
+	{ 2
+t:t_linoleum_white
+f:f_oven
+	O 3
+t:t_floor
+f:f_bathtub
+	8 33
+	B 3
+t:t_palisade
+	B 7
+	P 1
+t:t_rock_floor
+f:f_sink
+	K 2
+t:t_rock_floor
+f:f_rack
+	{ 2
+t:t_rock_floor
+f:f_desk
+	D 2
+t:t_railing_v
+	a 5
+	R 2
+t:t_railing_h
+	A 5
+	r 2
+t:t_carpet_red
+f:f_table
+	6 1
+	9 1
+t:t_carpet_red
+f:f_chair
+	B 2
+t:t_door_glass_o
+	] 1
+t:t_door_glass_c
+	{ 22
+	+ 10
+	[ 5
+	M 1
+	G 1
+	= 1
+t:t_carpet_red
+f:f_fridge
+	F 1
+t:t_door_locked
+	3 31
+	* 8
+	L 6
+	; 4
+	& 3
+	D 3
+	d 2
+	: 2
+	c 1
+t:t_dirtfloor
+f:f_bed
+	@ 1
+t:t_machinery_old
+	( 2
+t:t_door_boarded
+	5 1
+t:t_metal_floor
+f:f_bed
+	@ 2
+t:t_linoleum_white
+f:f_trashcan
+	% 1
+	& 1
+t:t_machinery_light
+	$ 2
+t:t_machinery_heavy
+	% 2
+t:t_floor
+f:f_toilet
+s:toilet
+	; 1
+t:t_carpet_red
+f:f_sofa
+	? 1
+t:t_carpet_red
+f:f_rack
+	9 1
+t:t_carpet_red
+f:f_oven
+	G 1
+t:t_carpet_red
+f:f_desk
+	C 1
+t:t_gates_control_metal
+	5 2
+t:t_floor
+f:f_pool_table
+	X 1
+	p 1
+t:t_floor
+f:f_cupboard
+	E 36
+t:t_linoleum_white
+f:f_indoor_plant
+	^ 1
+t:t_metal_floor
+f:f_treadmill
+	C 2
+t:t_carpet_red
+f:f_trashcan
+	D 1
+f:f_dumpster
+	d 1
+t:t_manhole_cover
+	} 5
+t:t_floor_waxed
+	S 1
+t:t_curtains
+	W 4
+	0 3
+	C 3
+	H 1
+f:f_counter
+	& 1
+t:t_floor
+f:f_gunsafe_ml
+	5 1
+t:t_linoleum_white
+f:f_glass_fridge
+	f 1
+t:t_water_sh
+	~ 4
+	5 1
+	w 1
+t:t_water_dp
+	W 2
+t:t_linoleum_white
+f:f_woodstove
+	R 2
+	O 2
+t:t_station_disc
+	h 2
+t:t_rock_floor
+f:f_woodstove
+	= 4
+	S 2
+f:f_statue
+	U 2
+	A 1
+t:t_linoleum_white
+f:f_bathtub
+	8 1
+t:t_wall
+	| 64
+	- 64
+	x 2
+	w 2
+	v 2
+	q 2
+t:t_tree
+	^ 26
+	T 4
+t:t_rock
+	# 5
+	. 3
+t:t_hole
+	R 4
+t:t_dirt
+	M 5
+	, 1
+t:t_dirt
+s:gaspump
+	O 1
+t:t_dirt
+	  1
+	/ 1
+t:t_bars
+	! 4
+t:t_wall_log
+	# 5
+t:t_dirt
+f:f_center_groundsheet
+	C 1
+t:t_metal_floor
+f:f_crate_o
+	Z 2
+t:t_metal_floor
+f:f_crate_c
+	z 2
+t:t_sidewalk
+	S 33
+	s 22
+	F 4
+	, 2
+	  1
+	= 1
+t:t_door_locked_interior
+	I 4
+	: 2
+	# 1
+	3 1
+	0 1
+t:t_dirtfloor
+f:f_counter
+	c 1
+t:t_generator_broken
+	1 3
+t:t_metal_floor
+f:f_counter
+	c 2
+t:t_linoleum_white
+	w 4
+	= 1
+	  1
+	c 1
+	! 1
+	l 1
+	L 1
+	1 1
+t:t_rock_floor
+	_ 3
+	. 3
+	/ 2
+	  1
+t:t_linoleum_gray
+s:toilet
+	T 4
+	; 2
+	t 2
+t:t_metal_floor
+f:f_exercise
+	j 2
+t:t_dirt
+f:f_large_groundsheet
+	w 1
+f:f_table
+	T 4
+	t 1
+	# 1
+f:f_chair
+	H 3
+	C 1
+	U 1
+f:f_bench
+	B 4
+t:t_dirtfloor
+f:f_bookcase
+	o 1
+t:t_dirtfloor
+f:f_toilet
+	T 1
+t:t_metal_floor
+f:f_bookcase
+	o 2
+t:t_metal_floor
+f:f_toilet
+	t 2
+t:t_door_bar_locked
+	* 4
+t:t_metal_floor
+f:f_statue
+	U 2
+t:t_metal_floor
+f:f_shower
+	~ 1
+t:t_elevator
+	E 6
+	e 1
+t:t_utility_light
+	G 2
+	b 1
+	2 1
+t:t_floor
+f:f_indoor_plant_y
+	y 1
+t:t_floor
+f:f_displaycase
+	D 1
+	T 1
+t:t_metal_floor
+f:f_ergometer
+	J 2
+t:t_palisade_pulley
+	x 1
+t:t_carpet_red
+f:f_cupboard
+	E 1
+t:t_dirtfloor
+f:f_locker
+	L 1
+t:t_window_empty
+	0 1
+t:t_metal_floor
+f:f_locker
+	L 2
+t:t_linoleum_gray
+	l 7
+	. 3
+	2 1
+	t 1
+	w 1
+	b 1
+	g 1
+	F 1
+	y 1
+	= 1
+t:t_shrub_strawberry
+	S 2
+	J 1
+	z 1
+t:t_sidewalk
+f:f_dive_block
+	0 1
+f:f_trashcan
+	T 1
+	& 1
+	g 1
+	C 1
+t:t_grass
+f:f_bluebell
+	x 2
+	f 1
+	8 1
+t:t_dirt
+f:f_ash
+	] 1
+t:t_concrete
+f:f_chair
+	a 1
+t:t_concrete
+f:f_bench
+	4 1
+t:t_dirtfloor
+f:f_table
+	n 1
+t:t_dirtfloor
+f:f_chair
+	h 1
+t:t_dirtfloor
+f:f_bench
+	b 1
+t:t_metal_floor
+f:f_table
+	n 2
+t:t_stairs_down
+	> 5
+	< 1
+t:t_metal_floor
+f:f_chair
+	h 2
+t:t_metal_floor
+f:f_fridge
+	f 2
+t:t_metal_floor
+f:f_vending_c
+	l 2
+t:t_slide
+	5 1
+t:t_shrub
+	z 33
+	# 7
+	% 6
+	x 2
+	b 1
+t:t_grate
+	X 3
+t:t_grass
+	. 57
+	  1
+	, 1
+t:t_floor
+	  51
+	. 8
+	= 7
+	u 4
+	@ 3
+	* 3
+	C 2
+	f 2
+	B 1
+	& 1
+	G 1
+	H 1
+	p 1
+	t 1
+	U 1
+t:t_oil_circ_brkr_l
+	B 2
+t:t_window_bars_alarm
+	8 2
+	5 2
+	w 1
+	W 1
+t:t_dirtfloor
+f:f_sink
+	S 1
+t:t_dirtfloor
+f:f_rack
+	r 1
+t:t_metal_floor
+f:f_sofa
+	? 2
+t:t_metal_floor
+f:f_sink
+	S 2
+t:t_metal_floor
+f:f_rack
+	r 2
+t:t_metal_floor
+f:f_oven
+	O 2
+t:t_metal_floor
+f:f_desk
+	k 2
+f:f_indoor_plant
+	^ 3
+	P 1
+t:t_door_metal_locked
+	M 15
+	= 6
+	5 1
+t:t_linoleum_gray
+f:f_counter
+	# 4
+	c 1
+t:t_linoleum_gray
+f:f_washer
+	w 2
+t:t_conveyor
+	0 2
+t:t_concrete
+	C 3
+	  3
+	c 2
+	p 1
+t:t_chainfence_posts
+	x 3
+	? 1
+t:t_floor
+f:f_floor_canvas
+	0 1
+t:t_stairs_up
+	< 5
+t:t_window_reinforced
+	4 1
+t:t_floor
+f:f_ball_mach
+	= 1
+t:t_metal_floor
+f:f_trashcan
+	D 2
+t:t_window_domestic
+	2 29
+	v 3
+	p 1
+t:t_recycler
+	3 1
+t:t_window
+	O 12
+	W 5
+	w 3
+	2 2
+	H 2
+	' 2
+	g 1
+t:t_linoleum_gray
+f:f_locker
+	l 2
+t:t_metal_floor
+f:f_indoor_plant
+	P 2
+t:t_metal_floor
+f:f_robotic_arm
+	N 2
+t:t_carpet_green
+	. 1
+	4 1
+t:t_fence_v
+	[ 28
+	q 2
+t:t_fence_h
+	~ 26
+	Q 2
