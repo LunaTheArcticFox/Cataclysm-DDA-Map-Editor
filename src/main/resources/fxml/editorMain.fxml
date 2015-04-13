@@ -2,9 +2,13 @@
 
 
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
+<?import java.net.URL?>
 <BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<stylesheets>
+		<URL value="@style.css" />
+	</stylesheets>
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
 			<Menu text="_File">
@@ -66,10 +70,9 @@
 		</MenuBar>
 	</top>
 	<center>
-		<SplitPane dividerPositions="0.25" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.234" prefHeight="160.0" prefWidth="200.0" BorderPane.alignment="CENTER">
 			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="tilePickerPanel"/>
-			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="mapContainer">
-			</VBox>
+			<VBox prefHeight="200.0" prefWidth="100.0" fx:id="mapContainer"/>
 		</SplitPane>
 	</center>
 </BorderPane>

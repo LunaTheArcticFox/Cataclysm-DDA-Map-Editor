@@ -1,11 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TitledPane?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.control.ToolBar?>
+<?import javafx.scene.control.TextField?>
 <VBox fx:controller="net.krazyweb.cataclysm.mapeditor.TilePicker" VBox.vgrow="ALWAYS" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="30.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-	<ScrollPane focusTraversable="false" hbarPolicy="NEVER" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS" fx:id="tilePaneContainer">
-		<TilePane prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer">
-			<ToolBar/>
-		</TilePane>
+	<ToolBar>
+		<TextField promptText="Search Placeholder"/>
+	</ToolBar>
+	<ScrollPane style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" styleClass="edge-to-edge" focusTraversable="false" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS" fx:id="tilePaneContainer">
+		<VBox>
+			<TitledPane text="User-Defined Tiles" expanded="false">
+				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0"/>
+			</TitledPane>
+			<TitledPane text="Map Tiles" expanded="false">
+				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0"/>
+			</TitledPane>
+			<TitledPane text="Pre-Defined Tiles">
+				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0" fx:id="tileContainer"/>
+			</TitledPane>
+		</VBox>
 	</ScrollPane>
 </VBox>

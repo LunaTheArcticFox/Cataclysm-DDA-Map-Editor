@@ -1,0 +1,24 @@
+.split-pane {
+    -fx-padding: 0;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+}
+
+/* For some reason it seems -1 padding is necessary here. This is intentional. */
+.no-padding {
+    -fx-padding: -1;
+    -fx-border-insets: 0;
+    -fx-background-insets: 0;
+}
+
+.titled-pane > .title {
+    -fx-background-color: #cfcfcf;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+}
+
+.titled-pane > *.content {
+    -fx-border-color: transparent;
+    -fx-border-insets: 0;
+    -fx-background-color: transparent;
+}
