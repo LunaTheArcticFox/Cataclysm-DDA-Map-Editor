@@ -1,11 +1,14 @@
 package net.krazyweb.cataclysm.mapeditor.tools;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
+import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.TileSet;
+import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 
@@ -16,9 +19,16 @@ import java.util.Set;
 public abstract class Tool {
 
 	protected static EventBus eventBus;
+	protected static TileSet tileSet;
 
 	public static void setEventBus(final EventBus eventBus) {
 		Tool.eventBus = eventBus;
+		tileSet = ApplicationSettings.currentTileset;
+	}
+
+	@Subscribe
+	public void tileSetLoadedEventListener(final TilesetLoadedEvent event) {
+		tileSet = event.getTileSet();
 	}
 
 	public void click(final MouseEvent event, final MapTile tile, final Node rootNode, final MapEditor map) {}
@@ -37,12 +47,12 @@ public abstract class Tool {
 		if (tile != null) {
 			return tile.getTexture(0, 0); //TODO Bitwise map texture
 		} else {
-			return SwingFXUtils.toFXImage(new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
+			return SwingFXUtils.toFXImage(new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
 		}
 	}
 
 	protected int convertCoord(final double eventPosition) {
-		return (int) eventPosition / TileSet.tileSize;
+		return (int) eventPosition / tileSet.tileSize;
 	}
 
 }

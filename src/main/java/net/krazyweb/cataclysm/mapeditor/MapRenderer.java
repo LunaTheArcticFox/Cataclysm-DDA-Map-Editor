@@ -49,40 +49,43 @@ public class MapRenderer {
 	private EventBus eventBus;
 	private Tool tool = new PencilTool(); //TODO Set to last tool used on startup
 	private MapTile currentTile; //TODO Set to last tile used on startup, create default MapTile in init()
+	private TileSet tileSet;
 
 	//TODO Condense these handlers?
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
-		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
+		updateOverlays(tool.getHighlight((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize, currentTile, map));
+		updateStatus((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
 		tool.release(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
-		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
+		updateOverlays(tool.getHighlight((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize, currentTile, map));
+		updateStatus((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragEvent = event -> {
 		tool.drag(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
-		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
+		updateOverlays(tool.getHighlight((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize, currentTile, map));
+		updateStatus((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragStartEvent = event -> {
 		tool.dragStart(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
-		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
+		updateOverlays(tool.getHighlight((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize, currentTile, map));
+		updateStatus((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize);
 	};
 
 	private final EventHandler<MouseEvent> dragFinishEvent = event -> {
 		tool.dragEnd(event, currentTile, groups, map);
-		updateOverlays(tool.getHighlight((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize, currentTile, map));
-		updateStatus((int) event.getX() / TileSet.tileSize, (int) event.getY() / TileSet.tileSize);
+		updateOverlays(tool.getHighlight((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize, currentTile, map));
+		updateStatus((int) event.getX() / tileSet.tileSize, (int) event.getY() / tileSet.tileSize);
 	};
 
 	@FXML
 	private void initialize() {
+		tileSet = ApplicationSettings.currentTileset;
+		updateCanvasSize();
 		root.setEffect(new DropShadow(5, 0, 3, new Color(0, 0, 0, 0.2)));
 		grid.setManaged(false);
 		grid.setVisible(false);
@@ -98,6 +101,28 @@ public class MapRenderer {
 	@Subscribe
 	public void tilePickedEventListener(final TilePickedEvent event) {
 		currentTile = event.getTile();
+	}
+
+	@Subscribe
+	public void tileSetLoadedEventListener(final TilesetLoadedEvent event) {
+		tileSet = event.getTileSet();
+		updateCanvasSize();
+	}
+
+	private void updateCanvasSize() {
+
+		int size = tileSet.tileSize * 24;
+
+		terrain.setWidth(size);
+		overlays.setWidth(size);
+		grid.setWidth(size);
+		groups.setWidth(size);
+
+		terrain.setHeight(size);
+		overlays.setHeight(size);
+		grid.setHeight(size);
+		groups.setHeight(size);
+
 	}
 
 	public void redraw() {
@@ -198,24 +223,24 @@ public class MapRenderer {
 					if (point.x == point1.x - 1 && point.y == point1.y - 1) {
 						adjDiag = true;
 					} else if (point.x == point1.x - 1 && point.y == point1.y) {
-						patches.add(new Rectangle(point.x * TileSet.tileSize + TileSet.tileSize - 0.5, point.y * TileSet.tileSize + 0.5, 2, TileSet.tileSize - 1));
+						patches.add(new Rectangle(point.x * tileSet.tileSize + tileSet.tileSize - 0.5, point.y * tileSet.tileSize + 0.5, 2, tileSet.tileSize - 1));
 						adjRight = true;
 					} else if (point.x == point1.x && point.y == point1.y - 1) {
-						patches.add(new Rectangle(point.x * TileSet.tileSize + 0.5, point.y * TileSet.tileSize + TileSet.tileSize - 0.5, TileSet.tileSize - 1, 2));
+						patches.add(new Rectangle(point.x * tileSet.tileSize + 0.5, point.y * tileSet.tileSize + tileSet.tileSize - 0.5, tileSet.tileSize - 1, 2));
 						adjBelow = true;
 					}
 				}
 			}
 
 			Rectangle r = new Rectangle(
-					point.x * TileSet.tileSize + 0.5,
-					point.y * TileSet.tileSize + 0.5,
-					TileSet.tileSize + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
-					TileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0));
+					point.x * tileSet.tileSize + 0.5,
+					point.y * tileSet.tileSize + 0.5,
+					tileSet.tileSize + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
+					tileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0));
 			r.setFill(Color.WHITE);
 			path = Shape.union(path, r);
 
-			context.drawImage(tool.getHighlightTile(currentTile), point.x * TileSet.tileSize, point.y * TileSet.tileSize); //TODO Bitwise map tile previews
+			context.drawImage(tool.getHighlightTile(currentTile), point.x * tileSet.tileSize, point.y * tileSet.tileSize); //TODO Bitwise map tile previews
 
 		}
 		for (Rectangle r : patches) {
@@ -247,20 +272,20 @@ public class MapRenderer {
 		context.setLineWidth(1);
 
 		for (int i = 0; i < MapEditor.SIZE; i++) {
-			double loc = i * TileSet.tileSize + 0.5;
+			double loc = i * tileSet.tileSize + 0.5;
 			context.moveTo(loc, 0);
-			context.lineTo(loc, TileSet.tileSize * MapEditor.SIZE);
+			context.lineTo(loc, tileSet.tileSize * MapEditor.SIZE);
 			context.moveTo(0, loc);
-			context.lineTo(TileSet.tileSize * MapEditor.SIZE, loc);
+			context.lineTo(tileSet.tileSize * MapEditor.SIZE, loc);
 			context.stroke();
 		}
 
-		double loc = MapEditor.SIZE * TileSet.tileSize - 0.5;
+		double loc = MapEditor.SIZE * tileSet.tileSize - 0.5;
 
 		context.moveTo(loc, 0);
-		context.lineTo(loc, TileSet.tileSize * MapEditor.SIZE);
+		context.lineTo(loc, tileSet.tileSize * MapEditor.SIZE);
 		context.moveTo(0, loc);
-		context.lineTo(TileSet.tileSize * MapEditor.SIZE, loc);
+		context.lineTo(tileSet.tileSize * MapEditor.SIZE, loc);
 		context.stroke();
 
 	}
@@ -282,8 +307,8 @@ public class MapRenderer {
 		this.map = map;
 
 		overlays.setOnMouseMoved(mouseEvent -> {
-			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / TileSet.tileSize, (int) mouseEvent.getY() / TileSet.tileSize, currentTile, map));
-			updateStatus((int) mouseEvent.getX() / TileSet.tileSize, (int) mouseEvent.getY() / TileSet.tileSize);
+			updateOverlays(tool.getHighlight((int) mouseEvent.getX() / tileSet.tileSize, (int) mouseEvent.getY() / tileSet.tileSize, currentTile, map));
+			updateStatus((int) mouseEvent.getX() / tileSet.tileSize, (int) mouseEvent.getY() / tileSet.tileSize);
 		});
 
 		overlays.setOnMouseExited(mouseEvent -> clearOverlay());
@@ -319,21 +344,21 @@ public class MapRenderer {
 
 	private void drawPlaceGroups() {
 		GraphicsContext graphicsContext = groups.getGraphicsContext2D();
-		graphicsContext.clearRect(0, 0, TileSet.tileSize * MapEditor.SIZE, TileSet.tileSize * MapEditor.SIZE);
+		graphicsContext.clearRect(0, 0, tileSet.tileSize * MapEditor.SIZE, tileSet.tileSize * MapEditor.SIZE);
 		List<PlaceGroupZone> placeGroupZones = map.getPlaceGroupZones();
 		for (int i = placeGroupZones.size() - 1; i >= 0; i--) {
 			PlaceGroupZone placeGroupZone = placeGroupZones.get(i);
 			graphicsContext.setFill(placeGroupZone.fillColor);
 			graphicsContext.setStroke(placeGroupZone.strokeColor);
-			graphicsContext.fillRect(placeGroupZone.bounds.x1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * TileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * TileSet.tileSize - 1); //TODO Use tileset size
-			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * TileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * TileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * TileSet.tileSize - 1); //TODO Use tileset size
+			graphicsContext.fillRect(placeGroupZone.bounds.x1 * tileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * tileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * tileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * tileSet.tileSize - 1); //TODO Use tileset size
+			graphicsContext.strokeRect(placeGroupZone.bounds.x1 * tileSet.tileSize + 0.5, placeGroupZone.bounds.y1 * tileSet.tileSize + 0.5, placeGroupZone.bounds.getWidth() * tileSet.tileSize - 1, placeGroupZone.bounds.getHeight() * tileSet.tileSize - 1); //TODO Use tileset size
 		}
 	}
 
 	private void drawTile(final int x, final int y) {
 
 		terrain.getGraphicsContext2D().setFill(Color.BLACK);
-		terrain.getGraphicsContext2D().fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize);
+		terrain.getGraphicsContext2D().fillRect(x * tileSet.tileSize, y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
 
 		drawTile(x, y, terrain.getGraphicsContext2D());
 
@@ -349,31 +374,31 @@ public class MapRenderer {
 			int bitwiseMapping = map.getTerrainBitwiseMapping(x, y);
 			Image texture;
 			if (map.getFillTerrain() == null) { //TODO Properly handle missing fill terrain
-				texture = SwingFXUtils.toFXImage(new BufferedImage(TileSet.tileSize, TileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
+				texture = SwingFXUtils.toFXImage(new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
 			} else {
-				texture = SwingFXUtils.toFXImage(TileSet.textures.get(Tile.tiles.get(map.getFillTerrain().getTileID()).getTile(Tile.BITWISE_TYPES[bitwiseMapping]).getID()), null);
+				texture = SwingFXUtils.toFXImage(tileSet.textures.get(TileConfiguration.tiles.get(map.getFillTerrain().getTileID()).getTile(TileConfiguration.BITWISE_TYPES[bitwiseMapping]).getID()), null);
 			}
-			graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize);
+			graphicsContext.drawImage(texture, x * tileSet.tileSize, y * tileSet.tileSize);
 			return;
 		}
 
 		//TODO Use tileset fallback if configured
 		//Fallback for tiles not supported by tileset
-		if (Tile.tiles.get(map.getTileAt(x, y).getTileID()) == null) {
+		if (TileConfiguration.tiles.get(map.getTileAt(x, y).getTileID()) == null) {
 			graphicsContext.setFill(Color.FUCHSIA);
-			graphicsContext.fillRect(x * TileSet.tileSize, y * TileSet.tileSize, TileSet.tileSize, TileSet.tileSize);
+			graphicsContext.fillRect(x * tileSet.tileSize, y * tileSet.tileSize, tileSet.tileSize, tileSet.tileSize);
 			return;
 		}
 
 		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null && map.getFillTerrain() != null) { //TODO Properly handle missing fill terrain?
-			BufferedImage terrainImage = TileSet.textures.get(Tile.get(map.getFillTerrain().displayTerrain).getTile(Tile.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
-			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * TileSet.tileSize, y * TileSet.tileSize);
+			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(map.getFillTerrain().displayTerrain).getTile(TileConfiguration.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
+			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * tileSet.tileSize, y * tileSet.tileSize);
 		}
 
 		int terrainBitwiseMapping = map.getTerrainBitwiseMapping(x, y);
 		int furnitureBitwiseMapping = map.getFurnitureBitwiseMapping(x, y);
 		Image texture = map.getTileAt(x, y).getTexture(terrainBitwiseMapping, furnitureBitwiseMapping);
-		graphicsContext.drawImage(texture, x * TileSet.tileSize, y * TileSet.tileSize);
+		graphicsContext.drawImage(texture, x * tileSet.tileSize, y * tileSet.tileSize);
 
 	}
 

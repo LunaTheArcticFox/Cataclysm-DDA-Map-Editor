@@ -1,76 +1,82 @@
 package net.krazyweb.cataclysm.mapeditor;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tile {
 
-	public enum AdditionalTileType {
-		CENTER, CORNER, EDGE, END_PIECE, T_CONNECTION, UNCONNECTED, BROKEN, OPEN
-	}
+	private static final Logger log = LogManager.getLogger(Tile.class);
 
-	public static final Tile.AdditionalTileType[] BITWISE_TYPES = {
-			Tile.AdditionalTileType.UNCONNECTED,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.EDGE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.END_PIECE,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.EDGE,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.CORNER,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.T_CONNECTION,
-			Tile.AdditionalTileType.CENTER
-	};
+	private static List<Tile> tiles = new ArrayList<>();
 
-	public static final int[] BITWISE_ROTATIONS = {
-			0, 0, 270, 0, 180, 0, 270, 270, 90, 90, 90, 0, 180, 90, 180, 0
-	};
-
-	public static Map<String, Tile> tiles = new TreeMap<>();
-
-	private final String id;
+	public String id;
 	public boolean connectsToWalls = false;
-	public boolean rotates = false;
 
-	private Map<AdditionalTileType, Tile> additionalTiles = new HashMap<>();
-
-	public Tile(final String id) {
+	private Tile(final String id, final boolean connectsToWalls) {
 		this.id = id;
+		this.connectsToWalls = connectsToWalls;
 	}
 
 	public static Tile get(final String tileId) {
-		return tiles.get(tileId);
-	}
-
-	public String getID() {
-		return id;
-	}
-
-	public void addMultiTile(final Tile tile, final AdditionalTileType type) {
-		additionalTiles.put(type, tile);
-	}
-
-	public boolean isMultiTile() {
-		return !additionalTiles.isEmpty();
-	}
-
-	public Tile getTile() {
-		return this;
-	}
-
-	public Tile getTile(final AdditionalTileType type) {
-		if (additionalTiles.containsKey(type)) {
-			return additionalTiles.get(type);
-		} else {
-			return getTile();
+		for (Tile tile : tiles) {
+			if (tile.id.equals(tileId)) {
+				return tile;
+			}
 		}
+		return null;
+	}
+
+	public static void load() {
+
+		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
+
+		try {
+			load(gameFolder.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
+			load(gameFolder.resolve(Paths.get("data", "json", "terrain.json")));
+			load(gameFolder.resolve(Paths.get("data", "json", "furniture.json")));
+		} catch (IOException e) {
+			log.error("Error while loading terrain and furniture definitions:", e);
+		}
+
+	}
+
+	private static void load(final Path path) throws IOException {
+
+		log.info("Loading tiles from: '" + path + "'");
+
+		JsonNode root = new ObjectMapper().readTree(path.toFile());
+
+		root.forEach(node -> {
+
+			boolean connectsToWalls = false;
+
+			if (node.has("flags")) {
+				for (JsonNode flag : node.get("flags")) {
+
+					String parsedFlag = flag.asText().replaceAll("\"", "");
+
+					if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
+						log.trace("Connects to Walls: " + node.get("id").asText());
+						connectsToWalls = true;
+						break;
+					}
+
+				}
+			}
+
+			tiles.add(new Tile(node.get("id").asText(), connectsToWalls));
+			log.trace("Loaded tile: '" + node.get("id").asText() + "'");
+
+		});
+
 	}
 
 }

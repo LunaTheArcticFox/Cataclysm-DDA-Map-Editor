@@ -10,9 +10,11 @@ import org.apache.logging.log4j.Logger;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 //TODO Make this a service
@@ -20,25 +22,17 @@ public class TileSet {
 
 	private static Logger log = LogManager.getLogger(TileSet.class);
 
-	private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+	public Map<String, BufferedImage> textures = new TreeMap<>();
+	public int tileSize = 24;
 
-	public static Map<String, BufferedImage> textures = new TreeMap<>(); //TODO Un-static this
-
-	public static int tileSize = 24; //TODO Un-static, move current tileset to app settings
 	private BufferedImage texture = new BufferedImage(tileSize, tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 
 	private EventBus eventBus;
 
 	public TileSet(final Path path, final EventBus eventBus) {
 		this.eventBus = eventBus;
-		Path tilesPath = path.resolve("tiles.png").toAbsolutePath(); //TODO Read config for tileset path
 		try {
-			texture = ImageIO.read(tilesPath.toFile());
-		} catch (IOException e) {
-			log.error("Error while attempting to read tileset image '" + tilesPath.toString() + "':", e);
-		}
-		try {
-			load(path.resolve("tile_config.json"));
+			load(path);
 		} catch (IOException e) {
 			log.error("Error while attempting to read tileset definitions:", e);
 		}
@@ -46,11 +40,40 @@ public class TileSet {
 
 	private void load(final Path path) throws IOException {
 
-		JsonNode root = OBJECT_MAPPER.readTree(path.toFile());
+		JsonNode root = new ObjectMapper().readTree(path.resolve("tile_config.json").toFile());
 
-		root.get("tiles-new").get(0).get("tiles").forEach(tileDef -> {
+		log.debug("TileSet Size: " + root.get("tile_info").get(0));
+		tileSize = root.get("tile_info").get(0).get("width").asInt();
 
-			Tile tile = new Tile(tileDef.get("id").asText());
+		Path tileImagePath = null;
+		JsonNode tiles;
+		if (root.has("tiles-new")) {
+			tiles = root.get("tiles-new").get(0).get("tiles");
+			if (root.get("tiles-new").get(0).has("file")) {
+				tileImagePath = Paths.get(root.get("tiles-new").get(0).get("file").asText());
+			}
+		} else {
+			tiles = root.get("tiles");
+		}
+
+		if (tileImagePath == null) {
+			Optional<Path> potentialPath = Files.find(path, 1, (path1, basicFileAttributes) -> path1.getFileName().toString().endsWith(".png")).findFirst();
+			if (potentialPath.isPresent()) {
+				tileImagePath = potentialPath.get();
+			} else {
+				throw new IOException("Could not find tileset image for tileset '" + path + "'.");
+			}
+		}
+
+		try {
+			texture = ImageIO.read(tileImagePath.toFile());
+		} catch (IOException e) {
+			log.error("Error while attempting to read tileset image '" + tileImagePath.toString() + "':", e);
+		}
+
+		tiles.forEach(tileDef -> {
+
+			TileConfiguration tileConfiguration = new TileConfiguration(tileDef.get("id").asText());
 
 			int foreground = -1;
 			int background = -1;
@@ -64,15 +87,15 @@ public class TileSet {
 			}
 
 			if (tileDef.has("rotates")) {
-				tile.rotates = tileDef.get("rotates").asBoolean();
+				tileConfiguration.rotates = tileDef.get("rotates").asBoolean();
 			}
 
-			createTileImage(tile.getID(), foreground, background);
+			createTileImage(tileConfiguration.getID(), foreground, background);
 
 			if (tileDef.has("multitile") && tileDef.get("multitile").asBoolean()) {
 				tileDef.get("additional_tiles").forEach(additionalTileDef -> {
 
-					Tile additionalTile = new Tile(tile.getID() + ">>" + additionalTileDef.get("id").asText());
+					TileConfiguration additionalTileConfiguration = new TileConfiguration(tileConfiguration.getID() + ">>" + additionalTileDef.get("id").asText());
 
 					int foregroundID = -1;
 					int backgroundID = -1;
@@ -86,19 +109,19 @@ public class TileSet {
 					}
 
 					if (additionalTileDef.has("rotates")) {
-						additionalTile.rotates = additionalTileDef.get("rotates").asBoolean();
+						additionalTileConfiguration.rotates = additionalTileDef.get("rotates").asBoolean();
 					}
 
-					createTileImage(additionalTile.getID(), foregroundID, backgroundID);
+					createTileImage(additionalTileConfiguration.getID(), foregroundID, backgroundID);
 
-					tile.addMultiTile(additionalTile, Tile.AdditionalTileType.valueOf(additionalTileDef.get("id").asText().toUpperCase()));
+					tileConfiguration.addMultiTile(additionalTileConfiguration, TileConfiguration.AdditionalTileType.valueOf(additionalTileDef.get("id").asText().toUpperCase()));
 
 				});
 			}
-			Tile.tiles.put(tileDef.get("id").asText(), tile);
+			TileConfiguration.tiles.put(tileDef.get("id").asText(), tileConfiguration);
 		});
 
-		eventBus.post(new TilesetLoadedEvent(Paths.get("")));
+		eventBus.post(new TilesetLoadedEvent(this));
 
 	}
 
@@ -133,12 +156,5 @@ public class TileSet {
 		}
 
 	}
-
-	/*private void loadImageFromNumber(final int number) {
-		int x = number % 16;
-		int y = number / 16;
-		Image image = SwingFXUtils.toFXImage(texture.getSubimage(x * 32, y * 32, 32, 32), null);
-		textures.put(number, image);
-	}*/
 
 }

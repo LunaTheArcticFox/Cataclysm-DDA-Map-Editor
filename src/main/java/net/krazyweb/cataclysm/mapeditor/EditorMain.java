@@ -71,6 +71,8 @@ public class EditorMain {
 		showGridButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GRID));
 		showGroupsButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
 
+		new TileSet(appSettings.getPath(GAME_FOLDER).resolve(Paths.get("gfx", "ChestHoleTileset")), eventBus);
+
 		Tool.setEventBus(eventBus);
 
 		//-> Tile picker
@@ -83,8 +85,6 @@ public class EditorMain {
 		eventBus.register(tilePickerLoader.getController());
 		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
 		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
-
-		new TileSet(appSettings.getPath(GAME_FOLDER).resolve(Paths.get("gfx", "ChestHoleTileset")), eventBus);
 
 		eventBus.register(this);
 

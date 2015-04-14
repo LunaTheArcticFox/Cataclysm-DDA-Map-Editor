@@ -5,7 +5,6 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
 
@@ -38,7 +37,7 @@ public class EraserTool extends Tool {
 
 	@Override
 	public Image getHighlightTile(final MapTile tile) {
-		return SwingFXUtils.toFXImage(TileSet.textures.get("t_grass"), null);
+		return SwingFXUtils.toFXImage(tileSet.textures.get("t_grass"), null);
 	}
 
 }

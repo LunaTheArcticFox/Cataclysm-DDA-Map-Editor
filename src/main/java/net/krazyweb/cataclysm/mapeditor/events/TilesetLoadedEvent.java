@@ -1,16 +1,16 @@
 package net.krazyweb.cataclysm.mapeditor.events;
 
-import java.nio.file.Path;
+import net.krazyweb.cataclysm.mapeditor.TileSet;
 
 public class TilesetLoadedEvent {
 
-	private final Path tileset;
+	private final TileSet tileset;
 
-	public TilesetLoadedEvent(final Path tileset) {
+	public TilesetLoadedEvent(final TileSet tileset) {
 		this.tileset = tileset;
 	}
 
-	public Path getPath() {
+	public TileSet getTileSet() {
 		return tileset;
 	}
 

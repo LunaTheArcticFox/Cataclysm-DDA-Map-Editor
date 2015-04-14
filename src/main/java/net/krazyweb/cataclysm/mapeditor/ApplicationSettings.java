@@ -5,10 +5,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.eventbus.Subscribe;
-import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.ShowGridEvent;
-import net.krazyweb.cataclysm.mapeditor.events.ShowGroupsEvent;
+import net.krazyweb.cataclysm.mapeditor.events.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,6 +32,8 @@ public class ApplicationSettings {
 	public static final Path DEFAULT_NEW_FILE = Paths.get("data").resolve("default.json");
 
 	private static ApplicationSettings instance;
+
+	public static TileSet currentTileset;
 
 	public enum Preference {
 
@@ -181,6 +180,11 @@ public class ApplicationSettings {
 	@Subscribe
 	public void showGridEventListener(final ShowGridEvent event) {
 		preferences.put(Preference.SHOW_GRID, event.showGrid());
+	}
+
+	@Subscribe
+	public void tileSetLoadedEventListener(final TilesetLoadedEvent event) {
+		currentTileset = event.getTileSet();
 	}
 
 }
