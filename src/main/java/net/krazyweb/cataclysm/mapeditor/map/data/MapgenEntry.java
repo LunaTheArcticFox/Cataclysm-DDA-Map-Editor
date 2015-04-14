@@ -29,7 +29,8 @@ public class MapgenEntry implements Jsonable {
 	private static Logger log = LogManager.getLogger(MapgenEntry.class);
 
 	public MapTile[][] tiles = new MapTile[MapEditor.SIZE][MapEditor.SIZE];
-	public MapTile fillTerrain;
+	public String fillTerrain;
+	private MapTile fillTerrainPlaceholder = new MapTile(new TerrainMapping("t_CATACLYSM_MAP_EDITOR_PLACEHOLDER"));
 	public List<PlaceGroupZone> placeGroupZones = new ArrayList<>();
 	public MapSettings settings = new MapSettings();
 
@@ -93,7 +94,7 @@ public class MapgenEntry implements Jsonable {
 		lines.add(INDENT + "\"object\": {");
 
 		if (fillTerrain != null) {
-			lines.add(INDENT + INDENT + "\"fill_ter\": \"" + fillTerrain.displayTerrain + "\",");
+			lines.add(INDENT + INDENT + "\"fill_ter\": \"" + fillTerrain + "\",");
 		}
 
 		lines.addAll(getRows(mappings));
@@ -165,7 +166,7 @@ public class MapgenEntry implements Jsonable {
 			String row = "";
 			for (int x = 0; x < MapEditor.SIZE; x++) {
 				if (tiles[x][y] == null) {
-					row += mappings.get(fillTerrain);
+					row += mappings.get(fillTerrainPlaceholder);
 				} else {
 					row += mappings.get(tiles[x][y]);
 				}
@@ -189,7 +190,7 @@ public class MapgenEntry implements Jsonable {
 
 		mappings.entrySet().forEach(entry -> {
 
-			if (entry.getKey().equals(fillTerrain)) {
+			if (entry.getKey().equals(fillTerrainPlaceholder)) {
 				return;
 			}
 
@@ -350,7 +351,7 @@ public class MapgenEntry implements Jsonable {
 			//Fill Terrain should monopolize the " " mapping for ease of map reading.
 			List<CharacterMapping> fillTerrainMapping = new ArrayList<>();
 			fillTerrainMapping.add(new CharacterMapping(' ', Integer.MAX_VALUE));
-			commonMappings.put(fillTerrain, fillTerrainMapping);
+			commonMappings.put(fillTerrainPlaceholder, fillTerrainMapping);
 		}
 
 		for (MapTile mapTile : uniqueTiles) {

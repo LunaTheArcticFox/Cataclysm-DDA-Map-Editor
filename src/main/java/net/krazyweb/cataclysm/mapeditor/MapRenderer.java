@@ -29,6 +29,8 @@ import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.awt.image.BufferedImage;
 import java.util.HashSet;
@@ -36,6 +38,8 @@ import java.util.List;
 import java.util.Set;
 
 public class MapRenderer {
+
+	private static final Logger log = LogManager.getLogger(MapRenderer.class);
 
 	@FXML
 	private StackPane root;
@@ -376,7 +380,7 @@ public class MapRenderer {
 			if (map.getFillTerrain() == null) { //TODO Properly handle missing fill terrain
 				texture = SwingFXUtils.toFXImage(new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
 			} else {
-				texture = SwingFXUtils.toFXImage(tileSet.textures.get(TileConfiguration.tiles.get(map.getFillTerrain().getTileID()).getTile(TileConfiguration.BITWISE_TYPES[bitwiseMapping]).getID()), null);
+				texture = SwingFXUtils.toFXImage(tileSet.textures.get(TileConfiguration.tiles.get(map.getFillTerrain()).getTile(TileConfiguration.BITWISE_TYPES[bitwiseMapping]).getID()), null);
 			}
 			graphicsContext.drawImage(texture, x * tileSet.tileSize, y * tileSet.tileSize);
 			return;
@@ -391,7 +395,7 @@ public class MapRenderer {
 		}
 
 		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null && map.getFillTerrain() != null) { //TODO Properly handle missing fill terrain?
-			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(map.getFillTerrain().displayTerrain).getTile(TileConfiguration.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
+			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(map.getFillTerrain()).getTile(TileConfiguration.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
 			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * tileSet.tileSize, y * tileSet.tileSize);
 		}
 

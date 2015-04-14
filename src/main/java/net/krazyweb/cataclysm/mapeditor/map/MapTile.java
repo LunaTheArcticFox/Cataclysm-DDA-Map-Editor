@@ -15,6 +15,7 @@ import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TileMapping;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MapTile {
@@ -31,6 +32,10 @@ public class MapTile {
 		if (tileSet == null) {
 			tileSet = ApplicationSettings.currentTileset;
 		}
+	}
+
+	public MapTile(final TileMapping... tileMappings) {
+		Collections.addAll(this.tileMappings, tileMappings);
 	}
 
 	@Subscribe

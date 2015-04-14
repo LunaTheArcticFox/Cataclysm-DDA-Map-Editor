@@ -253,7 +253,7 @@ public class MapEditor {
 
 		VBox terrainBox = new VBox();
 		terrainBox.setSpacing(5);
-		terrainBox.getChildren().add(new Label("Terrain:"));
+		terrainBox.getChildren().add(new Label("Overmap Terrain:"));
 		terrainBox.getChildren().add(overmapTerrain);
 
 		grid.add(terrainBox, 1, 1);
@@ -265,6 +265,19 @@ public class MapEditor {
 		weightBox.getChildren().add(new Label("Weight:"));
 		weightBox.getChildren().add(weight);
 		grid.add(weightBox, 1, 2);
+
+		TextField fillTerrain = new TextField();
+
+		if (currentMap.fillTerrain != null) {
+			fillTerrain.setText(currentMap.fillTerrain);
+		}
+
+		VBox fillTerrainBox = new VBox();
+		weightBox.setSpacing(5);
+		weightBox.getChildren().add(new Label("Fill Terrain:"));
+		weightBox.getChildren().add(fillTerrain);
+		grid.add(fillTerrainBox, 1, 3);
+
 
 		settingsDialog.getDialogPane().setContent(grid);
 
@@ -283,12 +296,33 @@ public class MapEditor {
 		Optional<MapSettings> result = settingsDialog.showAndWait();
 
 		result.ifPresent(mapSettings -> {
-			if (!mapSettings.equals(currentMap.settings)) {
+			if (!mapSettings.equals(currentMap.settings)
+					|| (currentMap.fillTerrain == null && !fillTerrain.getText().isEmpty())
+					|| (currentMap.fillTerrain != null && !currentMap.fillTerrain.equals(fillTerrain.getText()))) {
 				startEdit();
 				setMapSettings(mapSettings);
+				String newFillTerrain = null;
+				if (!fillTerrain.getText().isEmpty()) {
+					newFillTerrain = fillTerrain.getText();
+				}
+				setFillTerrain(newFillTerrain);
 				finishEdit("Edit Map Settings");
 			}
 		});
+
+	}
+
+	public void setFillTerrain(final String fillTerrain) {
+
+		String old = currentMap.fillTerrain;
+
+		currentMap.fillTerrain = fillTerrain;
+
+		if (editing) {
+			undoEvent.addAction(new MapFillTerrainChangeAction(this, old, fillTerrain));
+		}
+
+		renderer.redraw();
 
 	}
 
@@ -304,7 +338,7 @@ public class MapEditor {
 
 	}
 
-	public MapTile getFillTerrain() {
+	public String getFillTerrain() {
 		return currentMap.fillTerrain;
 	}
 

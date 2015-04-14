@@ -93,9 +93,7 @@ public class DataFileReader extends Service<Boolean> {
 			switch (node.getKey()) {
 
 				case "fill_ter":
-					MapTile tile = new MapTile();
-					tile.add(new TerrainMapping(node.getValue().asText()));
-					map.fillTerrain = tile;
+					map.fillTerrain = node.getValue().asText();
 					break;
 
 				case "terrain":
