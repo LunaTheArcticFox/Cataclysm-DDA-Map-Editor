@@ -40,6 +40,7 @@ public class TileSet {
 
 	private void load(final Path path) throws IOException {
 
+		//TODO Load fallback textures if present
 		JsonNode root = new ObjectMapper().readTree(path.resolve("tile_config.json").toFile());
 
 		log.debug("TileSet Size: " + root.get("tile_info").get(0));

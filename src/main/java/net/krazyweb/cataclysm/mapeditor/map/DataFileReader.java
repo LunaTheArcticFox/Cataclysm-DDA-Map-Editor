@@ -368,7 +368,7 @@ public class DataFileReader extends Service<Boolean> {
 		entry.symbol = root.get("sym").asInt();
 		entry.symbolColor = root.get("color").asText();
 		entry.seeCost = root.get("see_cost").asInt();
-		entry.extras = root.get("extras").asText();
+		if (root.has("extras")) { entry.extras = root.get("extras").asText(); }
 		if (root.has("known_down")) { entry.knownDown = root.get("known_down").asBoolean(); }
 		if (root.has("known_up")) { entry.knownUp = root.get("known_up").asBoolean(); }
 		entry.monsterDensity = root.get("mondensity").asInt();

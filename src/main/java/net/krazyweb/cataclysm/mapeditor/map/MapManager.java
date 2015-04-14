@@ -148,7 +148,7 @@ public class MapManager implements UndoBufferListener {
 			mapEditor.getUndoBuffer().register(this);
 			root.getTabs().get(0).setContent(mapContainer);
 
-			eventBus.post(new FileLoadedEvent(path));
+			eventBus.post(new FileLoadedEvent(path, dataFileReader.getMaps()));
 
 		});
 
@@ -176,7 +176,7 @@ public class MapManager implements UndoBufferListener {
 
 		mapInsertionOrder.add(map);
 
-		Tab tab = new Tab(map.settings.overmapTerrain); //TODO Rename tab when changed
+		Tab tab = new Tab(map.settings.overmapTerrain);
 
 		maps.put(tab, map);
 		root.getTabs().add(tab);

@@ -11,14 +11,14 @@
 	</ToolBar>
 	<ScrollPane style="-fx-focus-color: transparent; -fx-faint-focus-color: transparent;" styleClass="edge-to-edge" focusTraversable="false" hbarPolicy="NEVER" vbarPolicy="ALWAYS" prefHeight="200.0" prefWidth="200.0" fitToWidth="true" VBox.vgrow="ALWAYS" fx:id="tilePaneContainer">
 		<VBox>
-			<TitledPane text="User-Defined Tiles" expanded="false">
-				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0" fx:id="userTileContainer"/>
+			<TitledPane fx:id="userTilePanel" text="User-Defined Tiles" expanded="false">
+				<TilePane styleClass="no-padding" prefHeight="50.0" prefWidth="145.0" fx:id="userTileContainer"/>
 			</TitledPane>
-			<TitledPane text="Map Tiles" expanded="false">
-				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0" fx:id="mapTileContainer"/>
+			<TitledPane fx:id="mapTilePanel" text="Map Tiles" expanded="false">
+				<TilePane styleClass="no-padding" prefHeight="50.0" prefWidth="145.0" fx:id="mapTileContainer"/>
 			</TitledPane>
-			<TitledPane text="Pre-Defined Tiles">
-				<TilePane styleClass="no-padding" prefHeight="200.0" prefWidth="145.0" fx:id="defaultTileContainer"/>
+			<TitledPane fx:id="defaultTilePanel" text="Pre-Defined Tiles">
+				<TilePane styleClass="no-padding" prefHeight="50.0" prefWidth="145.0" fx:id="defaultTileContainer"/>
 			</TitledPane>
 		</VBox>
 	</ScrollPane>

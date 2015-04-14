@@ -34,14 +34,18 @@ public class Tile {
 		return null;
 	}
 
-	public static void load() {
+	public static List<Tile> getAll() {
+		return tiles;
+	}
+
+	public static void loadTiles() {
 
 		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
 
 		try {
-			load(gameFolder.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
 			load(gameFolder.resolve(Paths.get("data", "json", "terrain.json")));
 			load(gameFolder.resolve(Paths.get("data", "json", "furniture.json")));
+			load(gameFolder.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
 		} catch (IOException e) {
 			log.error("Error while loading terrain and furniture definitions:", e);
 		}
