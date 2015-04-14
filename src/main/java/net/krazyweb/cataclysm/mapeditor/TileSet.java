@@ -50,7 +50,7 @@ public class TileSet {
 		if (root.has("tiles-new")) {
 			tiles = root.get("tiles-new").get(0).get("tiles");
 			if (root.get("tiles-new").get(0).has("file")) {
-				tileImagePath = Paths.get(root.get("tiles-new").get(0).get("file").asText());
+				tileImagePath = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER).resolve(Paths.get(root.get("tiles-new").get(0).get("file").asText()));
 			}
 		} else {
 			tiles = root.get("tiles");
