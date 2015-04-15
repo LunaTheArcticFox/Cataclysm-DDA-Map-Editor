@@ -9,7 +9,6 @@ import javafx.animation.Timeline;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Bounds;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.DropShadow;
@@ -17,11 +16,7 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.util.Duration;
-import jfxtras.labs.util.ShapeConverter;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
 import net.krazyweb.cataclysm.mapeditor.map.MapTile;
@@ -32,8 +27,11 @@ import net.krazyweb.cataclysm.mapeditor.tools.Tool;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.*;
+import java.awt.geom.Area;
+import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -47,7 +45,7 @@ public class MapRenderer {
 	@FXML
 	private Canvas terrain, overlays, grid, groups;
 
-	private Bounds bounds;
+	private Rectangle2D bounds;
 	private boolean dragging = false;
 	private MapEditor map;
 	private EventBus eventBus;
@@ -204,18 +202,17 @@ public class MapRenderer {
 		}
 	}
 
-	//TODO Attempt optimization!
 	private void updateOverlays(final Set<Point> highlight) {
 
 		clearOverlay();
 
-		Shape path = new Path();
+		BufferedImage bufferedImage = new BufferedImage(MapEditor.SIZE * tileSet.tileSize, MapEditor.SIZE * tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
+		Graphics2D graphics = bufferedImage.createGraphics();
 
 		GraphicsContext context = overlays.getGraphicsContext2D();
 
-		Set<Rectangle> patches = new HashSet<>();
+		Path2D area = new Path2D.Float();
 
-		context.setGlobalAlpha(0.75);
 		for (Point point : highlight) {
 
 			boolean adjBelow = false;
@@ -227,43 +224,44 @@ public class MapRenderer {
 					if (point.x == point1.x - 1 && point.y == point1.y - 1) {
 						adjDiag = true;
 					} else if (point.x == point1.x - 1 && point.y == point1.y) {
-						patches.add(new Rectangle(point.x * tileSet.tileSize + tileSet.tileSize - 0.5, point.y * tileSet.tileSize + 0.5, 2, tileSet.tileSize - 1));
+						area.append(new java.awt.Rectangle(point.x * tileSet.tileSize + tileSet.tileSize, point.y * tileSet.tileSize, 2, tileSet.tileSize - 1), false);
 						adjRight = true;
 					} else if (point.x == point1.x && point.y == point1.y - 1) {
-						patches.add(new Rectangle(point.x * tileSet.tileSize + 0.5, point.y * tileSet.tileSize + tileSet.tileSize - 0.5, tileSet.tileSize - 1, 2));
+						area.append(new java.awt.Rectangle(point.x * tileSet.tileSize, point.y * tileSet.tileSize + tileSet.tileSize, tileSet.tileSize - 1, 2), false);
 						adjBelow = true;
 					}
 				}
 			}
 
-			Rectangle r = new Rectangle(
-					point.x * tileSet.tileSize + 0.5,
-					point.y * tileSet.tileSize + 0.5,
+			if (!adjDiag && adjBelow && adjRight) {
+				area.append(new java.awt.Rectangle(point.x * tileSet.tileSize + tileSet.tileSize - 1, point.y * tileSet.tileSize, 2, tileSet.tileSize - 1), false);
+				area.append(new java.awt.Rectangle(point.x * tileSet.tileSize, point.y * tileSet.tileSize + tileSet.tileSize - 1, tileSet.tileSize - 1, 2), false);
+			}
+
+			java.awt.Rectangle r = new java.awt.Rectangle(
+					point.x * tileSet.tileSize,
+					point.y * tileSet.tileSize,
 					tileSet.tileSize + (adjRight ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0),
 					tileSet.tileSize + (adjBelow ? 0 : -1) + (!adjDiag && adjBelow && adjRight ? -1 : 0));
-			r.setFill(Color.WHITE);
-			path = Shape.union(path, r);
 
-			context.drawImage(tool.getHighlightTile(currentTile), point.x * tileSet.tileSize, point.y * tileSet.tileSize); //TODO Bitwise map tile previews
+			area.append(r, false);
+
+			//TODO Bitwise mapping of texture
+			graphics.drawImage(SwingFXUtils.fromFXImage(tool.getHighlightTile(currentTile), null), point.x * tileSet.tileSize, point.y * tileSet.tileSize, null);
 
 		}
-		for (Rectangle r : patches) {
-			r.setFill(Color.WHITE);
-			path = Shape.union(path, r);
-		}
-		context.setGlobalAlpha(1.0);
 
-		bounds = path.getBoundsInLocal();
+		Area finalArea = new Area(area);
 
-		context.setFill(new Color(1, 1, 1, 0.2));
-		context.setStroke(new Color(1, 1, 1, 0.75));
-		context.setLineWidth(1);
+		graphics.setPaint(new java.awt.Color(1.0f, 1.0f, 1.0f, 0.7f));
+		graphics.draw(finalArea);
+		graphics.setPaint(new java.awt.Color(1.0f, 1.0f, 1.0f, 0.2f));
+		graphics.fill(finalArea);
 
-		context.beginPath();
-		context.appendSVGPath(ShapeConverter.shapeToSvgString(path));
-		context.closePath();
-		context.stroke();
-		context.fill();
+		context.clearRect(0, 0, MapEditor.SIZE * tileSet.tileSize, MapEditor.SIZE * tileSet.tileSize);
+		context.drawImage(SwingFXUtils.toFXImage(bufferedImage, null), 0, 0);
+
+		bounds = area.getBounds2D();
 
 	}
 
