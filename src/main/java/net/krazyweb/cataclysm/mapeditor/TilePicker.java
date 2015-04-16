@@ -3,20 +3,24 @@ package net.krazyweb.cataclysm.mapeditor;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.TilePane;
-import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
+import net.krazyweb.cataclysm.mapeditor.map.MapTileEditor;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
+import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -96,7 +100,26 @@ public class TilePicker {
 		Tooltip tooltip = new Tooltip(mapTile.tileMappings.toString());
 		Tooltip.install(view, tooltip);
 
-		//TODO Click handlers for map/user tiles
+		view.setOnMouseClicked(event -> {
+			if (event.getButton() == MouseButton.SECONDARY) {
+
+				//TODO Context menu for right click, straight to this for middle click
+				FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
+
+				loader.<MapTileEditor>getController().setMapTile(mapTile);
+
+				Stage stage = new Stage();
+				stage.setScene(new Scene(loader.getRoot()));
+				stage.setTitle("MO'dal or NOdal?");
+				stage.initModality(Modality.APPLICATION_MODAL);
+				stage.showAndWait();
+
+				tooltip.setText(mapTile.tileMappings.toString());
+				view.setImage(mapTile.getTexture(0, 0));
+				eventBus.post(new TileMappingChangedEvent());
+
+			}
+		});
 
 		tilePane.getChildren().add(view);
 

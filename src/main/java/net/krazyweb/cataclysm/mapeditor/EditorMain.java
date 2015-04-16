@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapManager;
 import net.krazyweb.cataclysm.mapeditor.tools.Tool;
+import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.controlsfx.validation.Severity;
@@ -77,16 +78,11 @@ public class EditorMain {
 
 		Tool.setEventBus(eventBus);
 
-		//-> Tile picker
-		FXMLLoader tilePickerLoader = new FXMLLoader(getClass().getResource("/fxml/tilePicker.fxml"));
-		try {
-			tilePickerLoader.load();
-		} catch (IOException e) {
-			log.error("Error while attempting to load '/fxml/tilePicker.fxml':", e);
-		}
-		eventBus.register(tilePickerLoader.getController());
-		tilePickerLoader.<TilePicker>getController().setEventBus(eventBus);
-		tilePickerPanel.getChildren().add(tilePickerLoader.<VBox>getRoot());
+		FXMLHelper.loadFXML("/fxml/tilePicker.fxml").ifPresent(loader -> {
+			eventBus.register(loader.getController());
+			loader.<TilePicker>getController().setEventBus(eventBus);
+			tilePickerPanel.getChildren().add(loader.<VBox>getRoot());
+		});
 
 		eventBus.register(this);
 

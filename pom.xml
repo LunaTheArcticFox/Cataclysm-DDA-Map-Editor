@@ -8,6 +8,10 @@
 	<artifactId>cataclysm.mapgeneditor</artifactId>
 	<version>0.1-alpha-SNAPSHOT</version>
 
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>

@@ -140,7 +140,7 @@ public class MapRenderer {
 		drawTile(x,     y);
 		drawTile(x + 1, y);
 		drawTile(x - 1, y);
-		drawTile(x,     y + 1);
+		drawTile(x, y + 1);
 		drawTile(x, y - 1);
 	}
 
@@ -151,6 +151,11 @@ public class MapRenderer {
 	@Subscribe
 	public void toolSelectedEventListener(final ToolSelectedEvent event) {
 		tool = event.getTool();
+	}
+
+	@Subscribe
+	public void tileMappingChangedEventListener(final TileMappingChangedEvent event) {
+		redraw();
 	}
 
 	@Subscribe

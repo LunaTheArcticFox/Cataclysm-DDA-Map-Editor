@@ -43,6 +43,12 @@ public class MapTile {
 		tileSet = event.getTileSet();
 	}
 
+	public void clear() {
+		tileMappings.clear();
+		displayTerrain = null;
+		displayFurniture = null;
+	}
+
 	public void add(final TileMapping mapping) {
 		tileMappings.add(mapping);
 		//TODO Allow randomization of terrain/furniture
@@ -142,6 +148,15 @@ public class MapTile {
 		}
 
 		return SwingFXUtils.toFXImage(new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR), null);
+
+	}
+
+	public MapTile copy() {
+
+		MapTile tile = new MapTile();
+		tileMappings.forEach(tileMapping -> tile.add(tileMapping.copy()));
+
+		return tile;
 
 	}
 
