@@ -11,7 +11,7 @@ import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.ZoomChangeEvent;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

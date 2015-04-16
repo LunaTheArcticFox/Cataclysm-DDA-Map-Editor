@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor.map;
+package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import com.google.common.eventbus.Subscribe;
 import javafx.embed.swing.SwingFXUtils;
@@ -8,9 +8,9 @@ import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.TileConfiguration;
 import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.FurnitureMapping;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TileMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;

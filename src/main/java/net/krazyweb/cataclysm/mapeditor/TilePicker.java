@@ -14,9 +14,9 @@ import net.krazyweb.cataclysm.mapeditor.events.TileHoverEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilePickedEvent;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.FurnitureMapping;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.TerrainMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

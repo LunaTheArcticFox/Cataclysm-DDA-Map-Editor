@@ -2,10 +2,6 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import javafx.animation.Interpolator;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -16,10 +12,9 @@ import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.data.PlaceGroupZone;
 import net.krazyweb.cataclysm.mapeditor.tools.PencilTool;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
@@ -161,7 +156,7 @@ public class MapRenderer {
 	@Subscribe
 	public void zoomChangeEventListener(final ZoomChangeEvent event) {
 
-		zoom = event.getZoomLevel();
+		/*zoom = event.getZoomLevel();
 		int mapSize = getMapSize();
 
 		KeyValue scaleTerrainX = new KeyValue(terrain.widthProperty(), mapSize, Interpolator.EASE_BOTH);
@@ -201,7 +196,7 @@ public class MapRenderer {
 		//TODO Remove this and use a scaled BufferedImage, re-draw that to a scaled value each frame for a smooth zoom
 		scaleAnimation.setOnFinished(e -> drawMap());
 
-		scaleAnimation.play();
+		scaleAnimation.play();*/
 
 	}
 

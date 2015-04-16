@@ -2,8 +2,8 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 
 import java.io.FileWriter;
 import java.io.IOException;

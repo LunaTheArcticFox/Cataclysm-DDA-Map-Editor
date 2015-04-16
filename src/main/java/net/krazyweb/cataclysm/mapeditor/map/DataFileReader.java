@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Service;
 import javafx.concurrent.Task;
 import net.krazyweb.cataclysm.mapeditor.map.data.*;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

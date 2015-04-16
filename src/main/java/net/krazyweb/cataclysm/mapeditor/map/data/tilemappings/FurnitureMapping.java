@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor.map.tilemappings;
+package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
 public class FurnitureMapping extends TileMapping {
 

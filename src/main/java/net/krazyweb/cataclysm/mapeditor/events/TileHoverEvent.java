@@ -1,6 +1,6 @@
 package net.krazyweb.cataclysm.mapeditor.events;
 
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 
 public class TileHoverEvent {
 

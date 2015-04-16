@@ -1,17 +1,17 @@
-package net.krazyweb.cataclysm.mapeditor.map.tilemappings;
+package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GasPumpMapping extends TileMapping {
+public class ToiletMapping extends TileMapping {
 
 	public int minAmount, maxAmount;
 
-	public GasPumpMapping() {
+	public ToiletMapping() {
 
 	}
 
-	public GasPumpMapping(final int minAmount, final int maxAmount) {
+	public ToiletMapping(final int minAmount, final int maxAmount) {
 		this.minAmount = minAmount;
 		this.maxAmount = maxAmount;
 	}
@@ -29,7 +29,7 @@ public class GasPumpMapping extends TileMapping {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		GasPumpMapping that = (GasPumpMapping) o;
+		ToiletMapping that = (ToiletMapping) o;
 
 		if (minAmount != that.minAmount) return false;
 		return maxAmount == that.maxAmount;
@@ -44,8 +44,8 @@ public class GasPumpMapping extends TileMapping {
 	}
 
 	@Override
-	public GasPumpMapping copy() {
-		return new GasPumpMapping(minAmount, maxAmount);
+	public ToiletMapping copy() {
+		return new ToiletMapping(minAmount, maxAmount);
 	}
 
 }

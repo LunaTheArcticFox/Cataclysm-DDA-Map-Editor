@@ -1,7 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map.undo;
 
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
+import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import net.krazyweb.cataclysm.mapeditor.tools.Point;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;

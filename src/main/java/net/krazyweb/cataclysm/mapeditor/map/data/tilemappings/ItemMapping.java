@@ -1,14 +1,14 @@
-package net.krazyweb.cataclysm.mapeditor.map.tilemappings;
+package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemsMapping extends TileMapping {
+public class ItemMapping extends TileMapping {
 
 	public String item;
 	public int chance;
 
-	public ItemsMapping(final String item, final int chance) {
+	public ItemMapping(final String item, final int chance) {
 		this.item = item;
 		this.chance = chance;
 	}
@@ -26,7 +26,7 @@ public class ItemsMapping extends TileMapping {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		ItemsMapping that = (ItemsMapping) o;
+		ItemMapping that = (ItemMapping) o;
 
 		if (chance != that.chance) return false;
 		return item.equals(that.item);
@@ -41,8 +41,8 @@ public class ItemsMapping extends TileMapping {
 	}
 
 	@Override
-	public ItemsMapping copy() {
-		return new ItemsMapping(item, chance);
+	public ItemMapping copy() {
+		return new ItemMapping(item, chance);
 	}
 
 }

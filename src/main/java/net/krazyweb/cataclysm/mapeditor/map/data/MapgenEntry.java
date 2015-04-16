@@ -1,8 +1,7 @@
 package net.krazyweb.cataclysm.mapeditor.map.data;
 
 import net.krazyweb.cataclysm.mapeditor.map.MapEditor;
-import net.krazyweb.cataclysm.mapeditor.map.MapTile;
-import net.krazyweb.cataclysm.mapeditor.map.tilemappings.*;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 import net.krazyweb.util.StringUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
