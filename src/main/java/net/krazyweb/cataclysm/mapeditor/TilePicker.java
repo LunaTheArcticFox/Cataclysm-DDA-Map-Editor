@@ -101,7 +101,7 @@ public class TilePicker {
 		Tooltip.install(view, tooltip);
 
 		view.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.SECONDARY) {
+			if (event.getButton() == MouseButton.SECONDARY && tilePane != defaultTileContainer) {
 
 				//TODO Context menu for right click, straight to this for middle click
 				FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
@@ -110,7 +110,7 @@ public class TilePicker {
 
 				Stage stage = new Stage();
 				stage.setScene(new Scene(loader.getRoot()));
-				stage.setTitle("MO'dal or NOdal?");
+				stage.setTitle("Tile Editor");
 				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.showAndWait();
 

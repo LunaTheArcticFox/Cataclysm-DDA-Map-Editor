@@ -384,6 +384,24 @@ public class MapgenEntry implements Jsonable {
 
 			List<String> closestMatch = new ArrayList<>();
 
+			Map<String, Integer> terrainCounts = new HashMap<>();
+			for (String terrain : tileTerrain) {
+				if (terrainCounts.containsKey(terrain)) {
+					terrainCounts.put(terrain, terrainCounts.get(terrain) + 1);
+				} else {
+					terrainCounts.put(terrain, 1);
+				}
+			}
+
+			Map<String, Integer> furnitureCounts = new HashMap<>();
+			for (String furniture : tileFurniture) {
+				if (furnitureCounts.containsKey(furniture)) {
+					furnitureCounts.put(furniture, furnitureCounts.get(furniture) + 1);
+				} else {
+					furnitureCounts.put(furniture, 1);
+				}
+			}
+
 			try {
 
 				BufferedReader reader = new BufferedReader(new FileReader(Paths.get("data/tileMappings.txt").toFile()));
@@ -422,6 +440,8 @@ public class MapgenEntry implements Jsonable {
 						Character character = line.charAt(1);
 						int rank = Integer.parseInt(line.substring(3));
 
+						int scale = 0;
+
 						if (inDefinition) {
 
 							inDefinition = false;
@@ -431,6 +451,20 @@ public class MapgenEntry implements Jsonable {
 							Collection<String> furnitureDisjunction = CollectionUtils.disjunction(tileFurniture, mappingFurniture);
 							score = terrainDisjunction.size() + furnitureDisjunction.size();
 
+							for (String terrain : new HashSet<>(mappingTerrain)) {
+								if (terrainCounts.containsKey(terrain)) {
+									scale -= 1;
+									scale += terrainCounts.get(terrain);
+								}
+							}
+
+							for (String furniture : new HashSet<>(mappingFurniture)) {
+								if (furnitureCounts.containsKey(furniture)) {
+									scale -= 1;
+									scale += furnitureCounts.get(furniture);
+								}
+							}
+
 							Set<String> mTerrain = new HashSet<>(mappingTerrain);
 							Set<String> tTerrain = new HashSet<>(tileTerrain);
 							mTerrain.removeAll(tTerrain);
@@ -439,14 +473,14 @@ public class MapgenEntry implements Jsonable {
 							Set<String> tFurniture = new HashSet<>(tileFurniture);
 							mFurniture.removeAll(tFurniture);
 
+							if (mTerrain.size() == mappingTerrain.size() && mFurniture.size() == mappingFurniture.size() && !(!mappingExtra.isEmpty() && mappingExtra.equals(tileExtra))) {
+								reject = true;
+							}
+
 							score += mTerrain.size() + mFurniture.size();
 
 							if (!(mappingExtra.isEmpty() && tileExtra.isEmpty()) && !mappingExtra.equals(tileExtra)) {
 								score += 10;
-							}
-
-							if (mTerrain.size() == mappingTerrain.size() && mFurniture.size() == mappingFurniture.size() && !(!mappingExtra.isEmpty() && mappingExtra.equals(tileExtra))) {
-								reject = true;
 							}
 
 							log.trace(mTerrain + ", " + mFurniture);
@@ -468,7 +502,8 @@ public class MapgenEntry implements Jsonable {
 							//Subtract score here so that the closest matched tiles win
 							//(ex: [t_grass] vs. [t_grass, t_grass, t_dirt])
 							//[t_grass] should win since it's the most specific
-							commonMappings.get(mapTile).add(new CharacterMapping(character, rank - score));
+							scale = Math.max(scale, 1);
+							commonMappings.get(mapTile).add(new CharacterMapping(character, rank * scale - score));
 						}
 
 						mappingTerrain = new ArrayList<>();
