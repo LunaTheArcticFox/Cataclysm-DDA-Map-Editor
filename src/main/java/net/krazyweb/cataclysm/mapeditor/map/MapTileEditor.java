@@ -2,8 +2,8 @@ package net.krazyweb.cataclysm.mapeditor.map;
 
 import javafx.fxml.FXML;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.Separator;
+import javafx.geometry.Side;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,13 +23,22 @@ public class MapTileEditor {
 
 	private static final Logger log = LogManager.getLogger(MapTileEditor.class);
 
+	public enum CloseAction {
+		SAVE, WITHOUT_SAVE
+	}
+
 	@FXML
 	private VBox boxes;
+
+	@FXML
+	private Button addMappingButton;
 
 	private Map<String, HBox> headers = new HashMap<>();
 
 	private MapTile originalMapTile;
 	private MapTile mapTile;
+
+	private CloseAction closeAction = CloseAction.WITHOUT_SAVE;
 
 	public void setMapTile(final MapTile mapTile) {
 
@@ -72,14 +81,34 @@ public class MapTileEditor {
 		boxes.getChildren().add(hBox);
 	}
 
+	public CloseAction getCloseAction() {
+		return closeAction;
+	}
+
+	@FXML
+	private void showAddMappingMenu() {
+
+		ContextMenu contextMenu = new ContextMenu();
+		contextMenu.getItems().add(new MenuItem("Hello!"));
+		contextMenu.show(addMappingButton, Side.BOTTOM, 0, 0);
+
+	}
+
 	@FXML
 	private void saveAndClose() {
+
+		closeAction = CloseAction.SAVE;
 
 		originalMapTile.clear();
 		mapTile.tileMappings.forEach(originalMapTile::add);
 
-		((Stage) boxes.getScene().getWindow()).close();
+		close();
 
+	}
+
+	@FXML
+	private void close() {
+		((Stage) boxes.getScene().getWindow()).close();
 	}
 
 }

@@ -114,9 +114,11 @@ public class TilePicker {
 				stage.initModality(Modality.APPLICATION_MODAL);
 				stage.showAndWait();
 
-				tooltip.setText(mapTile.tileMappings.toString());
-				view.setImage(mapTile.getTexture(0, 0));
-				eventBus.post(new TileMappingChangedEvent());
+				if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
+					tooltip.setText(mapTile.tileMappings.toString());
+					view.setImage(mapTile.getTexture(0, 0));
+					eventBus.post(new TileMappingChangedEvent());
+				}
 
 			}
 		});
