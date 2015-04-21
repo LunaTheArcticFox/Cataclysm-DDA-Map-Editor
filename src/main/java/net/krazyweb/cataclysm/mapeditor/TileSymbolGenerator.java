@@ -139,7 +139,7 @@ public class TileSymbolGenerator {
 								break;
 
 							case "items":
-								mapTiles(tiles, node.getValue(), this::parseItems);
+								mapTiles(tiles, node.getValue(), this::parseItemGroups);
 								break;
 
 							case "vehicles":
@@ -403,7 +403,7 @@ public class TileSymbolGenerator {
 	}
 
 	private TileMapping parseMonsters(final JsonNode node) {
-		return new MonstersMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
+		return new MonsterGroupMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
 	}
 
 	private TileMapping parseToilets(final JsonNode node) {
@@ -419,8 +419,8 @@ public class TileSymbolGenerator {
 		return new NPCMapping(node.get("class").asText());
 	}
 
-	private TileMapping parseItems(final JsonNode node) {
-		return new ItemsMapping(node.get("item").asText(), node.get("chance").asInt());
+	private TileMapping parseItemGroups(final JsonNode node) {
+		return new ItemGroupMapping(node.get("item").asText(), node.get("chance").asInt());
 	}
 
 	private TileMapping parseVehicles(final JsonNode node) {

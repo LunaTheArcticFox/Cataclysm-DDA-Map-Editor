@@ -133,7 +133,7 @@ public class DataFileReader extends Service<Boolean> {
 					break;
 
 				case "items":
-					mapTiles(tiles, node.getValue(), this::parseItems);
+					mapTiles(tiles, node.getValue(), this::parseItemGroups);
 					break;
 
 				case "vehicles":
@@ -253,7 +253,7 @@ public class DataFileReader extends Service<Boolean> {
 	}
 
 	private TileMapping parseMonsters(final JsonNode node) {
-		return new MonstersMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
+		return new MonsterGroupMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
 	}
 
 	private TileMapping parseToilets(final JsonNode node) {
@@ -269,8 +269,8 @@ public class DataFileReader extends Service<Boolean> {
 		return new NPCMapping(node.get("class").asText());
 	}
 
-	private TileMapping parseItems(final JsonNode node) {
-		return new ItemsMapping(node.get("item").asText(), node.get("chance").asInt());
+	private TileMapping parseItemGroups(final JsonNode node) {
+		return new ItemGroupMapping(node.get("item").asText(), node.get("chance").asInt());
 	}
 
 	private TileMapping parseVehicles(final JsonNode node) {

@@ -5,7 +5,7 @@ import net.krazyweb.cataclysm.mapeditor.map.data.Jsonable;
 public abstract class TileMapping implements Jsonable {
 
 	public enum Type {
-		FIELD, FURNITURE, GAS_PUMP, ITEM, ITEMS, MONSTER, MONSTERS,
+		FIELD, FURNITURE, GAS_PUMP, ITEM, ITEM_GROUPS, MONSTER, MONSTERS,
 		NPC, SIGN, TERRAIN, TOILET, TRAP, VEHICLE, VENDING_MACHINE
 	}
 

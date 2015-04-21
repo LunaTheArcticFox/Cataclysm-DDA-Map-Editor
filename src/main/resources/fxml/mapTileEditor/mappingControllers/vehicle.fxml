@@ -5,9 +5,15 @@
 <?import javafx.scene.layout.*?>
 
 <HBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers.TerrainMappingController"
+      fx:controller="net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers.VehicleMappingController"
       alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="598.0" spacing="15.0">
     <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
     <Label>ID:</Label>
-    <TextField fx:id="terrainType"/>
+    <TextField fx:id="vehicle" prefWidth="150"/>
+    <Label>Chance:</Label>
+    <TextField fx:id="chance" prefWidth="75"/>
+    <Label>Fuel:</Label>
+    <TextField fx:id="fuel" prefWidth="75"/>
+    <Label>Status:</Label>
+    <TextField fx:id="status" prefWidth="75"/>
 </HBox>

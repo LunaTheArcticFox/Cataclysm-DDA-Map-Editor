@@ -8,6 +8,8 @@
       fx:controller="net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers.GasPumpMappingController"
       alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="598.0" spacing="15.0">
     <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
-    <TextField fx:id="minAmount"/>
-    <TextField fx:id="maxAmount"/>
+    <Label>Min Amount:</Label>
+    <TextField fx:id="minAmount" prefWidth="100"/>
+    <Label>Max Amount:</Label>
+    <TextField fx:id="maxAmount" prefWidth="100"/>
 </HBox>

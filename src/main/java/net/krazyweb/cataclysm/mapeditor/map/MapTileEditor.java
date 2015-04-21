@@ -100,6 +100,24 @@ public class MapTileEditor {
 			return "Toilet";
 		} else if (tileMapping instanceof GasPumpMapping) {
 			return "GasPump";
+		} else if (tileMapping instanceof FieldMapping) {
+			return "Field";
+		} else if (tileMapping instanceof ItemMapping) {
+			return "Item";
+		} else if (tileMapping instanceof ItemGroupMapping) {
+			return "ItemGroup";
+		} else if (tileMapping instanceof MonsterMapping) {
+			return "Monster";
+		} else if (tileMapping instanceof MonsterGroupMapping) {
+			return "MonsterGroup";
+		} else if (tileMapping instanceof NPCMapping) {
+			return "NPC";
+		} else if (tileMapping instanceof SignMapping) {
+			return "Sign";
+		} else if (tileMapping instanceof VendingMachineMapping) {
+			return "VendingMachine";
+		} else if (tileMapping instanceof VehicleMapping) {
+			return "Vehicle";
 		}
 		return "";
 	}
@@ -124,6 +142,15 @@ public class MapTileEditor {
 		MenuItem addFurnitureMenuItem = new MenuItem("Furniture");
 		MenuItem addToiletMenuItem = new MenuItem("Toilet");
 		MenuItem addGasPumpMenuItem = new MenuItem("Gas Pump");
+		MenuItem addFieldMenuItem = new MenuItem("Field");
+		MenuItem addItemMenuItem = new MenuItem("Item");
+		MenuItem addItemGroupMenuItem = new MenuItem("Item Group");
+		MenuItem addMonsterMenuItem = new MenuItem("Monster");
+		MenuItem addMonsterGroupMenuItem = new MenuItem("Monster Group");
+		MenuItem addNPCMenuItem = new MenuItem("NPC");
+		MenuItem addSignMenuItem = new MenuItem("Sign");
+		MenuItem addVendingMachineMenuItem = new MenuItem("Vending Machine");
+		MenuItem addVehicleMenuItem = new MenuItem("Vehicle");
 
 		addTerrainMenuItem.setOnAction(event -> {
 			TerrainMapping mapping = new TerrainMapping("");
@@ -149,11 +176,74 @@ public class MapTileEditor {
 			addEntry("GasPump", mapping);
 		});
 
+		addFieldMenuItem.setOnAction(event -> {
+			FieldMapping mapping = new FieldMapping("", 0, 0);
+			mapTile.add(mapping);
+			addEntry("Field", mapping);
+		});
+
+		addItemMenuItem.setOnAction(event -> {
+			ItemMapping mapping = new ItemMapping("", 0);
+			mapTile.add(mapping);
+			addEntry("Item", mapping);
+		});
+
+		addItemGroupMenuItem.setOnAction(event -> {
+			ItemGroupMapping mapping = new ItemGroupMapping("", 0);
+			mapTile.add(mapping);
+			addEntry("ItemGroup", mapping);
+		});
+
+		addMonsterMenuItem.setOnAction(event -> {
+			MonsterMapping mapping = new MonsterMapping("", false, "");
+			mapTile.add(mapping);
+			addEntry("Monster", mapping);
+		});
+
+		addMonsterGroupMenuItem.setOnAction(event -> {
+			MonsterGroupMapping mapping = new MonsterGroupMapping("", 0, 0);
+			mapTile.add(mapping);
+			addEntry("MonsterGroup", mapping);
+		});
+
+		addNPCMenuItem.setOnAction(event -> {
+			NPCMapping mapping = new NPCMapping("");
+			mapTile.add(mapping);
+			addEntry("NPC", mapping);
+		});
+
+		addSignMenuItem.setOnAction(event -> {
+			SignMapping mapping = new SignMapping("");
+			mapTile.add(mapping);
+			addEntry("Sign", mapping);
+		});
+
+		addVendingMachineMenuItem.setOnAction(event -> {
+			VendingMachineMapping mapping = new VendingMachineMapping("");
+			mapTile.add(mapping);
+			addEntry("VendingMachine", mapping);
+		});
+
+		addVehicleMenuItem.setOnAction(event -> {
+			VehicleMapping mapping = new VehicleMapping("", 0, 0, 0);
+			mapTile.add(mapping);
+			addEntry("Vehicle", mapping);
+		});
+
 		contextMenu.getItems().addAll(
 				addTerrainMenuItem,
 				addFurnitureMenuItem,
 				addToiletMenuItem,
-				addGasPumpMenuItem
+				addGasPumpMenuItem,
+				addFieldMenuItem,
+				addItemMenuItem,
+				addItemGroupMenuItem,
+				addMonsterMenuItem,
+				addMonsterGroupMenuItem,
+				addNPCMenuItem,
+				addSignMenuItem,
+				addVendingMachineMenuItem,
+				addVehicleMenuItem
 		);
 
 		contextMenu.show(addMappingButton, Side.BOTTOM, 0, 0);

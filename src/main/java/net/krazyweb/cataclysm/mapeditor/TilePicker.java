@@ -5,9 +5,7 @@ import com.google.common.eventbus.Subscribe;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.Tooltip;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.ScrollEvent;
@@ -101,23 +99,41 @@ public class TilePicker {
 		Tooltip.install(view, tooltip);
 
 		view.setOnMouseClicked(event -> {
-			if (event.getButton() == MouseButton.SECONDARY && tilePane != defaultTileContainer) {
+			if (event.getButton() == MouseButton.SECONDARY) {
 
-				//TODO Context menu for right click, straight to this for middle click
-				FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
+				if (tilePane == defaultTileContainer) {
 
-				loader.<MapTileEditor>getController().setMapTile(mapTile);
+					MenuItem cloneItem = new MenuItem("Clone to Map Tile");
+					cloneItem.setOnAction(event1 -> load(mapTile.copy(), mapTileContainer));
 
-				Stage stage = new Stage();
-				stage.setScene(new Scene(loader.getRoot()));
-				stage.setTitle("Tile Editor");
-				stage.initModality(Modality.APPLICATION_MODAL);
-				stage.showAndWait();
+					MenuItem cancelItem = new MenuItem("Cancel");
 
-				if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
-					tooltip.setText(mapTile.tileMappings.toString());
-					view.setImage(mapTile.getTexture(0, 0));
-					eventBus.post(new TileMappingChangedEvent());
+					ContextMenu menu = new ContextMenu(cloneItem, new SeparatorMenuItem(), cancelItem);
+					menu.setAutoHide(true);
+					menu.setHideOnEscape(true);
+					menu.show(view, event.getScreenX(), event.getScreenY());
+
+					cancelItem.setOnAction(event1 -> menu.hide());
+
+				} else {
+
+					//TODO Context menu for right click, straight to this for middle click
+					FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
+
+					loader.<MapTileEditor>getController().setMapTile(mapTile);
+
+					Stage stage = new Stage();
+					stage.setScene(new Scene(loader.getRoot()));
+					stage.setTitle("Tile Editor");
+					stage.initModality(Modality.APPLICATION_MODAL);
+					stage.showAndWait();
+
+					if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
+						tooltip.setText(mapTile.tileMappings.toString());
+						view.setImage(mapTile.getTexture(0, 0));
+						eventBus.post(new TileMappingChangedEvent());
+					}
+
 				}
 
 			}

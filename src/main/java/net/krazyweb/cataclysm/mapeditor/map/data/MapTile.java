@@ -11,6 +11,7 @@ import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.ToiletMapping;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -57,6 +58,9 @@ public class MapTile {
 		}
 		if (mapping instanceof FurnitureMapping && displayFurniture == null) {
 			displayFurniture = ((FurnitureMapping) mapping).furniture;
+		}
+		if (mapping instanceof ToiletMapping) {
+			displayFurniture = "f_toilet";
 		}
 	}
 

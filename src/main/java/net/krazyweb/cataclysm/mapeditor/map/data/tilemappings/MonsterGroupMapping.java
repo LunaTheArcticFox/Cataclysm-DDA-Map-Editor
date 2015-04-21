@@ -3,13 +3,13 @@ package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MonstersMapping extends TileMapping {
+public class MonsterGroupMapping extends TileMapping {
 
 	public String monster;
 	public double density;
 	public int chance;
 
-	public MonstersMapping(final String monster, final double density, final int chance) {
+	public MonsterGroupMapping(final String monster, final double density, final int chance) {
 		this.monster = monster;
 		this.density = density;
 		this.chance = chance;
@@ -28,7 +28,7 @@ public class MonstersMapping extends TileMapping {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		MonstersMapping that = (MonstersMapping) o;
+		MonsterGroupMapping that = (MonsterGroupMapping) o;
 
 		if (chance != that.chance) return false;
 		if (density != that.density) return false;
@@ -48,8 +48,8 @@ public class MonstersMapping extends TileMapping {
 	}
 
 	@Override
-	public MonstersMapping copy() {
-		return new MonstersMapping(monster, density, chance);
+	public MonsterGroupMapping copy() {
+		return new MonsterGroupMapping(monster, density, chance);
 	}
 
 }
