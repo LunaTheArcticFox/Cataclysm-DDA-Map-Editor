@@ -35,4 +35,9 @@ public class VendingMachineMapping extends TileMapping {
 		return new VendingMachineMapping(itemGroup);
 	}
 
+	@Override
+	public String toString() {
+		return "[Vending Machine: " + itemGroup + "]";
+	}
+
 }

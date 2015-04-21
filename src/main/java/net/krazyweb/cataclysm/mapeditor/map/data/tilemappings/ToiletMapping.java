@@ -47,4 +47,9 @@ public class ToiletMapping extends TileMapping {
 		return new ToiletMapping(minAmount, maxAmount);
 	}
 
+	@Override
+	public String toString() {
+		return "[Toilet, Min Amount: " + minAmount + ", Max Amount:" + maxAmount + "]";
+	}
+
 }

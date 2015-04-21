@@ -43,4 +43,9 @@ public class GasPumpMapping extends TileMapping {
 		return new GasPumpMapping(minAmount, maxAmount);
 	}
 
+	@Override
+	public String toString() {
+		return "[Gas Pump, Min Amount: " + minAmount + ", Max Amount:" + maxAmount + "]";
+	}
+
 }

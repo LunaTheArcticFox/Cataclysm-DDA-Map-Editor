@@ -35,4 +35,9 @@ public class NPCMapping extends TileMapping {
 		return new NPCMapping(npcClass);
 	}
 
+	@Override
+	public String toString() {
+		return "[NPC: " + npcClass + "]";
+	}
+
 }

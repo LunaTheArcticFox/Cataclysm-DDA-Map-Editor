@@ -37,7 +37,7 @@ public class TerrainMapping extends TileMapping {
 
 	@Override
 	public String toString() {
-		return terrain;
+		return "[Terrain: " + terrain + "]";
 	}
 
 }

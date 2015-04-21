@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class FieldMapping extends TileMapping {
 
 	public String field;
@@ -15,10 +12,8 @@ public class FieldMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"field\": \"" + field + "\", \"age\": " + age + ", \"density\": " + density + " }");
-		return lines;
+	public String getJson() {
+		return "{ \"field\": \"" + field + "\", \"age\": " + age + ", \"density\": " + density + " }";
 	}
 
 	@Override
@@ -46,6 +41,11 @@ public class FieldMapping extends TileMapping {
 	@Override
 	public FieldMapping copy() {
 		return new FieldMapping(field, age, density);
+	}
+
+	@Override
+	public String toString() {
+		return "[Field: " + field + ", Age: " + age + ", Density: " + density + "]";
 	}
 
 }

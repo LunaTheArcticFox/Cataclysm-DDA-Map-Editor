@@ -40,4 +40,9 @@ public class ItemMapping extends TileMapping {
 		return new ItemMapping(item, chance);
 	}
 
+	@Override
+	public String toString() {
+		return "[Item: " + item + ", Chance: " + chance + "]";
+	}
+
 }

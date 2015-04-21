@@ -35,4 +35,9 @@ public class TrapMapping extends TileMapping {
 		return new TrapMapping(trap);
 	}
 
+	@Override
+	public String toString() {
+		return "[Trap: " + trap + "]";
+	}
+
 }

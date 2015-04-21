@@ -35,4 +35,9 @@ public class SignMapping extends TileMapping {
 		return new SignMapping(signage);
 	}
 
+	@Override
+	public String toString() {
+		return "[Sign: " + signage + "]";
+	}
+
 }

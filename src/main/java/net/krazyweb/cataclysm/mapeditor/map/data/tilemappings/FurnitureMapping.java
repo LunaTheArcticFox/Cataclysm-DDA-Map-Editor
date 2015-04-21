@@ -37,7 +37,7 @@ public class FurnitureMapping extends TileMapping {
 
 	@Override
 	public String toString() {
-		return furniture;
+		return "[Furniture: " + furniture + "]";
 	}
 
 }

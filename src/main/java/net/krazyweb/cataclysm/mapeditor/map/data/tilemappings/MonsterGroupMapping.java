@@ -47,4 +47,9 @@ public class MonsterGroupMapping extends TileMapping {
 		return new MonsterGroupMapping(monster, density, chance);
 	}
 
+	@Override
+	public String toString() {
+		return "[Monster Group: " + monster + ", Density: " + density + ", Chance: " + chance + "]";
+	}
+
 }

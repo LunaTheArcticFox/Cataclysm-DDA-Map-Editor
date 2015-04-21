@@ -40,4 +40,9 @@ public class ItemGroupMapping extends TileMapping {
 		return new ItemGroupMapping(item, chance);
 	}
 
+	@Override
+	public String toString() {
+		return "[Item Group: " + item + ", Chance: " + chance + "]";
+	}
+
 }

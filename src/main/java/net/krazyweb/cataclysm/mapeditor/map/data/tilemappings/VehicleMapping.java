@@ -46,4 +46,9 @@ public class VehicleMapping extends TileMapping {
 		return new VehicleMapping(vehicle, chance, fuel, status);
 	}
 
+	@Override
+	public String toString() {
+		return "[Vehicle: " + vehicle + ", Chance: " + chance + ", Fuel: " + fuel + ", Status: " + status + "]";
+	}
+
 }

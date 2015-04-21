@@ -43,4 +43,9 @@ public class MonsterMapping extends TileMapping {
 		return new MonsterMapping(monster, friendly, name);
 	}
 
+	@Override
+	public String toString() {
+		return "[Monster: " + monster + ", Friendly: " + friendly + ", Name: " + name + "]";
+	}
+
 }
