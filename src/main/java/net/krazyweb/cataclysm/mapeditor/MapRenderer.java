@@ -413,7 +413,7 @@ public class MapRenderer {
 			return;
 		}
 
-		if (map.getTileAt(x, y).displayTerrain == null && map.getTileAt(x, y).displayFurniture != null && map.getFillTerrain() != null) { //TODO Properly handle missing fill terrain?
+		if (map.getTileAt(x, y).getDisplayTerrain() == null && map.getTileAt(x, y).getDisplayFurniture() != null && map.getFillTerrain() != null) { //TODO Properly handle missing fill terrain?
 			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(map.getFillTerrain()).getTile(TileConfiguration.BITWISE_TYPES[0]).getID()); //TODO Rotate and bitwise map fillTerrain
 			graphicsContext.drawImage(SwingFXUtils.toFXImage(terrainImage, null), x * getTileSize(), y * getTileSize(), getTileSize(), getTileSize());
 		}

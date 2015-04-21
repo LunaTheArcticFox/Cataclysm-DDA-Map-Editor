@@ -8,10 +8,7 @@ import net.krazyweb.cataclysm.mapeditor.Tile;
 import net.krazyweb.cataclysm.mapeditor.TileConfiguration;
 import net.krazyweb.cataclysm.mapeditor.TileSet;
 import net.krazyweb.cataclysm.mapeditor.events.TilesetLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.ToiletMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
@@ -24,10 +21,6 @@ public class MapTile {
 	private static TileSet tileSet;
 
 	public List<TileMapping> tileMappings = new ArrayList<>();
-
-	public String displayTerrain;
-	public String displayFurniture;
-
 
 	public MapTile() {
 		if (tileSet == null) {
@@ -46,22 +39,58 @@ public class MapTile {
 
 	public void clear() {
 		tileMappings.clear();
-		displayTerrain = null;
-		displayFurniture = null;
 	}
 
 	public void add(final TileMapping mapping) {
 		tileMappings.add(mapping);
 		//TODO Allow randomization of terrain/furniture
-		if (mapping instanceof TerrainMapping && displayTerrain == null) {
-			displayTerrain = ((TerrainMapping) mapping).terrain;
+	}
+
+	public String getDisplayTerrain() {
+
+		boolean isTerrain = true;
+		String terrain = null;
+
+		for (TileMapping mapping : tileMappings) {
+			if (mapping instanceof TerrainMapping) {
+				if (isTerrain && terrain == null) {
+					terrain = ((TerrainMapping) mapping).terrain;
+				}
+			}
+			if (mapping instanceof GasPumpMapping) {
+				isTerrain = false;
+				terrain = "t_gas_pump";
+			}
 		}
-		if (mapping instanceof FurnitureMapping && displayFurniture == null) {
-			displayFurniture = ((FurnitureMapping) mapping).furniture;
+
+		return terrain;
+
+	}
+
+	public String getDisplayFurniture() {
+
+		boolean isFurniture = true;
+		String furniture = null;
+
+		for (TileMapping mapping : tileMappings) {
+			if (mapping instanceof FurnitureMapping) {
+				if (isFurniture && furniture == null) {
+					furniture = ((FurnitureMapping) mapping).furniture;
+				}
+			} else if (mapping instanceof ToiletMapping) {
+				isFurniture = false;
+				furniture = "f_toilet";
+			} else if (mapping instanceof SignMapping) {
+				isFurniture = false;
+				furniture = "f_sign";
+			} else if (mapping instanceof VendingMachineMapping) {
+				isFurniture = false;
+				furniture = "f_vending_c";
+			}
 		}
-		if (mapping instanceof ToiletMapping) {
-			displayFurniture = "f_toilet";
-		}
+
+		return furniture;
+
 	}
 
 	public String getTileID() {
@@ -74,16 +103,16 @@ public class MapTile {
 	}
 
 	public boolean terrainConnectsTo(final MapTile tile) {
-		if (displayTerrain == null || tile == null || tile.displayTerrain == null) {
+		if (getDisplayTerrain() == null || tile == null || tile.getDisplayTerrain() == null) {
 			return false;
 		}
-		Tile tile1 = Tile.get(displayTerrain);
-		Tile tile2 = Tile.get(tile.displayTerrain);
-		return !(tile1 == null || tile2 == null) && (tile1.connectsToWalls && tile2.connectsToWalls || displayTerrain.equals(tile.displayTerrain));
+		Tile tile1 = Tile.get(getDisplayTerrain());
+		Tile tile2 = Tile.get(tile.getDisplayTerrain());
+		return !(tile1 == null || tile2 == null) && (tile1.connectsToWalls && tile2.connectsToWalls || getDisplayTerrain().equals(tile.getDisplayTerrain()));
 	}
 
 	public boolean furnitureConnectsTo(final MapTile tile) {
-		return !(displayFurniture == null || tile == null || tile.displayFurniture == null) && displayFurniture.equals(tile.displayFurniture);
+		return !(getDisplayFurniture() == null || tile == null || tile.getDisplayFurniture() == null) && getDisplayFurniture().equals(tile.getDisplayFurniture());
 	}
 
 	public Image getTexture(final int terrainBitwise, final int furnitureBitwise) {
@@ -99,18 +128,18 @@ public class MapTile {
 
 		//TODO Cache generated images instead of making new ones each call
 
-		if (displayTerrain != null && displayFurniture != null) {
+		if (getDisplayTerrain() != null && getDisplayFurniture() != null) {
 
-			if (!(TileConfiguration.get(displayTerrain).isMultiTile() || TileConfiguration.get(displayTerrain).rotates)) {
+			if (!(TileConfiguration.get(getDisplayTerrain()).isMultiTile() || TileConfiguration.get(getDisplayTerrain()).rotates)) {
 				terrainTransform = new AffineTransform();
 			}
 
-			if (!(TileConfiguration.get(displayFurniture).isMultiTile() || TileConfiguration.get(displayFurniture).rotates)) {
+			if (!(TileConfiguration.get(getDisplayFurniture()).isMultiTile() || TileConfiguration.get(getDisplayFurniture()).rotates)) {
 				furnitureTransform = new AffineTransform();
 			}
 
-			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.tiles.get(displayTerrain).getTile(TileConfiguration.BITWISE_TYPES[terrainBitwise]).getID());
-			BufferedImage furnitureImage = tileSet.textures.get(TileConfiguration.tiles.get(displayFurniture).getTile(TileConfiguration.BITWISE_TYPES[furnitureBitwise]).getID());
+			BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.tiles.get(getDisplayTerrain()).getTile(TileConfiguration.BITWISE_TYPES[terrainBitwise]).getID());
+			BufferedImage furnitureImage = tileSet.textures.get(TileConfiguration.tiles.get(getDisplayFurniture()).getTile(TileConfiguration.BITWISE_TYPES[furnitureBitwise]).getID());
 
 			BufferedImage tempImage = new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 			tempImage.createGraphics().drawImage(terrainImage, terrainTransform, null);
@@ -118,15 +147,15 @@ public class MapTile {
 
 			return SwingFXUtils.toFXImage(tempImage, null);
 
-		} else if (displayTerrain != null) {
+		} else if (getDisplayTerrain() != null) {
 
-			if (TileConfiguration.tiles.containsKey(displayTerrain)) {
+			if (TileConfiguration.tiles.containsKey(getDisplayTerrain())) {
 
-				if (!(TileConfiguration.get(displayTerrain).isMultiTile() || TileConfiguration.get(displayTerrain).rotates)) {
+				if (!(TileConfiguration.get(getDisplayTerrain()).isMultiTile() || TileConfiguration.get(getDisplayTerrain()).rotates)) {
 					terrainTransform = new AffineTransform();
 				}
 
-				BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(displayTerrain).getTile(TileConfiguration.BITWISE_TYPES[terrainBitwise]).getID());
+				BufferedImage terrainImage = tileSet.textures.get(TileConfiguration.get(getDisplayTerrain()).getTile(TileConfiguration.BITWISE_TYPES[terrainBitwise]).getID());
 				BufferedImage tempImage = new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				tempImage.createGraphics().drawImage(terrainImage, terrainTransform, null);
 
@@ -134,15 +163,15 @@ public class MapTile {
 
 			}
 
-		} else if (displayFurniture != null) {
+		} else if (getDisplayFurniture() != null) {
 
-			if (TileConfiguration.tiles.containsKey(displayFurniture)) {
+			if (TileConfiguration.tiles.containsKey(getDisplayFurniture())) {
 
-				if (!(TileConfiguration.get(displayFurniture).isMultiTile() || TileConfiguration.get(displayFurniture).rotates)) {
+				if (!(TileConfiguration.get(getDisplayFurniture()).isMultiTile() || TileConfiguration.get(getDisplayFurniture()).rotates)) {
 					furnitureTransform = new AffineTransform();
 				}
 
-				BufferedImage furnitureImage = tileSet.textures.get(TileConfiguration.get(displayFurniture).getTile(TileConfiguration.BITWISE_TYPES[furnitureBitwise]).getID());
+				BufferedImage furnitureImage = tileSet.textures.get(TileConfiguration.get(getDisplayFurniture()).getTile(TileConfiguration.BITWISE_TYPES[furnitureBitwise]).getID());
 				BufferedImage tempImage = new BufferedImage(tileSet.tileSize, tileSet.tileSize, BufferedImage.TYPE_4BYTE_ABGR);
 				tempImage.createGraphics().drawImage(furnitureImage, furnitureTransform, null);
 				return SwingFXUtils.toFXImage(tempImage, null);
