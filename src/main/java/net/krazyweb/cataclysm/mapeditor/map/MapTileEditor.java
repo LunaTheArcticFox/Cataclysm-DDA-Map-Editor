@@ -8,16 +8,16 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
-import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
+import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers.MappingController;
 import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 public class MapTileEditor {
 
@@ -45,19 +45,7 @@ public class MapTileEditor {
 		originalMapTile = mapTile;
 		this.mapTile = mapTile.copy();
 
-		this.mapTile.tileMappings.forEach(tileMapping -> {
-
-			String type = "";
-
-			if (tileMapping instanceof TerrainMapping) {
-				type = "Terrain";
-			} else if (tileMapping instanceof FurnitureMapping) {
-				type = "Furniture";
-			}
-
-			addEntry(type, tileMapping);
-
-		});
+		this.mapTile.tileMappings.forEach(tileMapping -> addEntry(getType(tileMapping), tileMapping));
 
 	}
 
@@ -68,10 +56,52 @@ public class MapTileEditor {
 		}
 
 		FXMLHelper.loadFXML("/fxml/mapTileEditor/mappingControllers/" + type.toLowerCase() + ".fxml").ifPresent(loader -> {
+
 			loader.<MappingController>getController().setMapping(mapping);
-			boxes.getChildren().addAll(loader.getRoot(), new Separator());
+
+			Separator separator = new Separator();
+
+			Button deleteButton = new Button("X");
+			deleteButton.setOnAction(event -> {
+				mapTile.tileMappings.remove(mapping);
+				boxes.getChildren().removeAll(loader.<HBox>getRoot(), separator);
+				removeUnusedHeaders();
+			});
+
+			loader.<HBox>getRoot().getChildren().add(deleteButton);
+
+			int insertIndex = boxes.getChildren().indexOf(headers.get(type)) + 1;
+
+			boxes.getChildren().add(insertIndex, loader.getRoot());
+			boxes.getChildren().add(insertIndex + 1, separator);
+
 		});
 
+	}
+
+	private void removeUnusedHeaders() {
+
+		Set<String> toRemove = new HashSet<>(headers.keySet());
+
+		mapTile.tileMappings.stream()
+				.filter(tileMapping -> toRemove.contains(getType(tileMapping)))
+				.forEach(tileMapping -> toRemove.remove(getType(tileMapping)));
+
+		toRemove.forEach(header -> boxes.getChildren().remove(headers.remove(header)));
+
+	}
+
+	private String getType(final TileMapping tileMapping) {
+		if (tileMapping instanceof TerrainMapping) {
+			return "Terrain";
+		} else if (tileMapping instanceof FurnitureMapping) {
+			return "Furniture";
+		} else if (tileMapping instanceof ToiletMapping) {
+			return "Toilet";
+		} else if (tileMapping instanceof GasPumpMapping) {
+			return "GasPump";
+		}
+		return "";
 	}
 
 	private void addHeader(final String title) {
@@ -89,7 +119,43 @@ public class MapTileEditor {
 	private void showAddMappingMenu() {
 
 		ContextMenu contextMenu = new ContextMenu();
-		contextMenu.getItems().add(new MenuItem("Hello!"));
+
+		MenuItem addTerrainMenuItem = new MenuItem("Terrain");
+		MenuItem addFurnitureMenuItem = new MenuItem("Furniture");
+		MenuItem addToiletMenuItem = new MenuItem("Toilet");
+		MenuItem addGasPumpMenuItem = new MenuItem("Gas Pump");
+
+		addTerrainMenuItem.setOnAction(event -> {
+			TerrainMapping mapping = new TerrainMapping("");
+			mapTile.add(mapping);
+			addEntry("Terrain", mapping);
+		});
+
+		addFurnitureMenuItem.setOnAction(event -> {
+			FurnitureMapping mapping = new FurnitureMapping("");
+			mapTile.add(mapping);
+			addEntry("Furniture", mapping);
+		});
+
+		addToiletMenuItem.setOnAction(event -> {
+			ToiletMapping mapping = new ToiletMapping();
+			mapTile.add(mapping);
+			addEntry("Toilet", mapping);
+		});
+
+		addGasPumpMenuItem.setOnAction(event -> {
+			GasPumpMapping mapping = new GasPumpMapping();
+			mapTile.add(mapping);
+			addEntry("GasPump", mapping);
+		});
+
+		contextMenu.getItems().addAll(
+				addTerrainMenuItem,
+				addFurnitureMenuItem,
+				addToiletMenuItem,
+				addGasPumpMenuItem
+		);
+
 		contextMenu.show(addMappingButton, Side.BOTTOM, 0, 0);
 
 	}
