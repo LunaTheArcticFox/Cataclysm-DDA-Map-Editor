@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VehicleMapping extends TileMapping {
 
 	public String vehicle;
@@ -16,10 +13,8 @@ public class VehicleMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"vehicle\": \"" + vehicle + "\", \"chance\": " + chance + ", \"fuel\": " + fuel + ", \"status\": " + status + " }");
-		return lines;
+	public String getJson() {
+		return "{ \"vehicle\": \"" + vehicle + "\", \"chance\": " + chance + ", \"fuel\": " + fuel + ", \"status\": " + status + " }";
 	}
 
 	@Override

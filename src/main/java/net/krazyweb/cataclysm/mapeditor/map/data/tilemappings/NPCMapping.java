@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class NPCMapping extends TileMapping {
 
 	public String npcClass;
@@ -12,10 +9,8 @@ public class NPCMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"class\": \"" + npcClass + "\" }");
-		return lines;
+	public String getJson() {
+		return "{ \"class\": \"" + npcClass + "\" }";
 	}
 
 	@Override

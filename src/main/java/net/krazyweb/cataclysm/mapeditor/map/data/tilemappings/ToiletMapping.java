@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ToiletMapping extends TileMapping {
 
 	public int minAmount, maxAmount;
@@ -17,10 +14,12 @@ public class ToiletMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"amount\": [ " + minAmount + ", " + maxAmount + " ] }");
-		return lines;
+	public String getJson() {
+		if (minAmount == 0 && maxAmount == 0) {
+			return "{ }";
+		} else {
+			return "{ \"amount\": [ " + minAmount + ", " + maxAmount + " ] }";
+		}
 	}
 
 	@Override

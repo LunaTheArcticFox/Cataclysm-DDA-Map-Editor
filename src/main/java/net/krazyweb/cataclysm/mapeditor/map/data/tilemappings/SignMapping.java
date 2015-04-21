@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class SignMapping extends TileMapping {
 
 	public String signage;
@@ -12,10 +9,8 @@ public class SignMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"signage\": \"" + signage + "\" }");
-		return lines;
+	public String getJson() {
+		return "{ \"signage\": \"" + signage + "\" }";
 	}
 
 	@Override

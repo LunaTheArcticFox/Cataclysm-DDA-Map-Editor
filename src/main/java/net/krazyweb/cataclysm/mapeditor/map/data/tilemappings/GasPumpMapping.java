@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class GasPumpMapping extends TileMapping {
 
 	public int minAmount, maxAmount;
@@ -17,10 +14,8 @@ public class GasPumpMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"amount\": [ " + minAmount + ", " + maxAmount + " ] }");
-		return lines;
+	public String getJson() {
+		return "{ \"amount\": [ " + minAmount + ", " + maxAmount + " ] }";
 	}
 
 	@Override

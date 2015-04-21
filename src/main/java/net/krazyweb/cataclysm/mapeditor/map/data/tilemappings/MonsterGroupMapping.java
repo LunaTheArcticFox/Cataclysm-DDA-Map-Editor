@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class MonsterGroupMapping extends TileMapping {
 
 	public String monster;
@@ -16,10 +13,8 @@ public class MonsterGroupMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"monster\": \"" + monster + "\", \"density\": " + density + ", \"chance\": " + chance + " }");
-		return lines;
+	public String getJson() {
+		return "{ \"monster\": \"" + monster + "\", \"density\": " + density + ", \"chance\": " + chance + " }";
 	}
 
 	@Override

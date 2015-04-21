@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class VendingMachineMapping extends TileMapping {
 
 	public String itemGroup;
@@ -12,10 +9,8 @@ public class VendingMachineMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add("{ \"item_group\": \"" + itemGroup + "\" }");
-		return lines;
+	public String getJson() {
+		return "{ \"item_group\": \"" + itemGroup + "\" }";
 	}
 
 	@Override

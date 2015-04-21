@@ -12,6 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -97,62 +98,35 @@ public class MapgenEntry implements Jsonable {
 		}
 
 		lines.addAll(getRows(mappings));
-		lines.addAll(getTerrainLines(mappings));
-		lines.addAll(getFurnitureLines(mappings));
 
-		/*lines.add(INDENT + INDENT + "\"place_specials\": [");
+		addMappingSection(lines, mappings, this::getTerrainLines);
+		addMappingSection(lines, mappings, this::getFurnitureLines);
+		addMappingSection(lines, mappings, this::getGasPumpLines);
+		addMappingSection(lines, mappings, this::getVendingMachineLines);
+		addMappingSection(lines, mappings, this::getFieldLines);
+		addMappingSection(lines, mappings, this::getSignLines);
+		addMappingSection(lines, mappings, this::getMonsterGroupLines);
+		addMappingSection(lines, mappings, this::getToiletLines);
+		addMappingSection(lines, mappings, this::getNPCLines);
+		addMappingSection(lines, mappings, this::getItemGroupLines);
+		addMappingSection(lines, mappings, this::getVehicleLines);
+		addMappingSection(lines, mappings, this::getItemLines);
+		addMappingSection(lines, mappings, this::getTrapLines);
+		addMappingSection(lines, mappings, this::getMonsterLines);
 
-		tempLines.clear();
-
-		for (int x = 0; x < MapEditor.SIZE; x++) {
-			for (int y = 0; y < MapEditor.SIZE; y++) {
-				if (furniture[x][y].equals("f_toilet")) {
-					tempLines.add(INDENT + INDENT + INDENT + "{ \"type\": \"toilet\", \"x\": " + x + ", \"y\": " + y + " },");
-				}
-			}
-		}
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "],");
-		lines.add(INDENT + INDENT + "\"set\": [");
-
-		tempLines.clear();
-
-		createRandomGrass().forEach(line -> tempLines.add(INDENT + INDENT + INDENT + line));
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "],");
-		lines.add(INDENT + INDENT + "\"place_groups\": [");
-
-		tempLines.clear();
-
-		placeGroupZones.forEach(zone -> tempLines.add(INDENT + INDENT + INDENT + zone.getJsonLines().get(0) + ","));
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "]");*/
 		lines.add(INDENT + "}");
 		lines.add("}");
 
 		return lines;
 
+	}
+
+	private void addMappingSection(final List<String> lines, Map<MapTile, Character> mappings, final MappingLines mappingLines) {
+		List<String> tempLines = mappingLines.getLines(mappings);
+		if (!tempLines.isEmpty()) {
+			lines.set(lines.size() - 1, lines.get(lines.size() - 1) + ",");
+			lines.addAll(tempLines);
+		}
 	}
 
 	private List<String> getRows(final Map<MapTile, Character> mappings) {
@@ -173,92 +147,97 @@ public class MapgenEntry implements Jsonable {
 			lines.add(INDENT + INDENT + INDENT + "\"" + row + "\"" + ((y == MapEditor.SIZE - 1) ? "" : ","));
 		}
 
-		lines.add(INDENT + INDENT + "],");
+		lines.add(INDENT + INDENT + "]");
 
 		return lines;
 
+	}
+
+	@FunctionalInterface
+	private interface MappingLines {
+		List<String> getLines(final Map<MapTile, Character> mappings);
 	}
 
 	private List<String> getTerrainLines(final Map<MapTile, Character> mappings) {
-
-		List<String> lines = new ArrayList<>();
-
-		lines.add(INDENT + INDENT + "\"terrain\": {");
-
-		List<String> tempLines = new ArrayList<>();
-
-		mappings.entrySet().forEach(entry -> {
-
-			if (entry.getKey().equals(fillTerrainPlaceholder)) {
-				return;
-			}
-
-			List<String> terrain = entry.getKey().tileMappings
-					.stream()
-					.filter(tileMapping -> tileMapping instanceof TerrainMapping)
-					.map(TileMapping::getJson)
-					.collect(Collectors.toList());
-
-			if (terrain.size() > 0) {
-
-				String line = INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": ";
-
-				if (terrain.size() > 1) {
-					line += "[ ";
-				}
-
-				line += StringUtils.join(", ", terrain);
-
-				if (terrain.size() > 1) {
-					line += " ]";
-				}
-
-				tempLines.add(line + ",");
-
-			}
-
-		});
-
-		if (tempLines.size() > 0) {
-			String line = tempLines.remove(tempLines.size() - 1);
-			tempLines.add(line.substring(0, line.length() - 1));
-		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "},");
-
-		return lines;
-
+		return getMappingLines(mappings, "terrain", mapping -> mapping instanceof TerrainMapping);
 	}
 
 	private List<String> getFurnitureLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "furniture", mapping -> mapping instanceof FurnitureMapping);
+	}
+
+	private List<String> getGasPumpLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "gaspumps", mapping -> mapping instanceof GasPumpMapping);
+	}
+
+	private List<String> getVendingMachineLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "vendingmachines", mapping -> mapping instanceof VendingMachineMapping);
+	}
+
+	private List<String> getFieldLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "fields", mapping -> mapping instanceof FieldMapping);
+	}
+
+	private List<String> getSignLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "signs", mapping -> mapping instanceof SignMapping);
+	}
+
+	private List<String> getMonsterGroupLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "monsters", mapping -> mapping instanceof MonsterGroupMapping);
+	}
+
+	private List<String> getToiletLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "toilets", mapping -> mapping instanceof ToiletMapping);
+	}
+
+	private List<String> getNPCLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "npcs", mapping -> mapping instanceof NPCMapping);
+	}
+
+	private List<String> getItemGroupLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "items", mapping -> mapping instanceof ItemGroupMapping);
+	}
+
+	private List<String> getVehicleLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "vehicles", mapping -> mapping instanceof VehicleMapping);
+	}
+
+	private List<String> getItemLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "item", mapping -> mapping instanceof ItemMapping);
+	}
+
+	private List<String> getTrapLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "traps", mapping -> mapping instanceof TrapMapping);
+	}
+
+	private List<String> getMonsterLines(final Map<MapTile, Character> mappings) {
+		return getMappingLines(mappings, "monster", mapping -> mapping instanceof MonsterMapping);
+	}
+
+	private List<String> getMappingLines(final Map<MapTile, Character> mappings, final String tagName, final Predicate<? super TileMapping> filter) {
 
 		List<String> lines = new ArrayList<>();
-
-		lines.add(INDENT + INDENT + "\"furniture\": {");
-
 		List<String> tempLines = new ArrayList<>();
 
 		mappings.entrySet().forEach(entry -> {
 
-			List<String> furniture = entry.getKey().tileMappings
+			List<String> tileMappings = entry.getKey().tileMappings
 					.stream()
-					.filter(tileMapping -> tileMapping instanceof FurnitureMapping)
+					.filter(filter)
 					.map(TileMapping::getJson)
 					.collect(Collectors.toList());
 
-			if (furniture.size() > 0) {
+			if (!tileMappings.isEmpty()) {
 
 				String line = INDENT + INDENT + INDENT + "\"" + entry.getValue() + "\": ";
 
-				if (furniture.size() > 1) {
+				if (tileMappings.size() > 1) {
 					line += "[ ";
 				}
 
-				line += StringUtils.join(", ", furniture);
+				line += StringUtils.join(", ", tileMappings);
 
-				if (furniture.size() > 1) {
+				if (tileMappings.size() > 1) {
 					line += " ]";
 				}
 
@@ -269,13 +248,15 @@ public class MapgenEntry implements Jsonable {
 		});
 
 		if (tempLines.size() > 0) {
+
 			String line = tempLines.remove(tempLines.size() - 1);
 			tempLines.add(line.substring(0, line.length() - 1));
+
+			lines.add(INDENT + INDENT + "\"" + tagName + "\": {");
+			lines.addAll(tempLines);
+			lines.add(INDENT + INDENT + "}");
+
 		}
-
-		lines.addAll(tempLines);
-
-		lines.add(INDENT + INDENT + "}");
 
 		return lines;
 

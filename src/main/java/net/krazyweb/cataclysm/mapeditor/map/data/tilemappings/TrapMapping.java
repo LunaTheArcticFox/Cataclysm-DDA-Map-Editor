@@ -1,8 +1,5 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class TrapMapping extends TileMapping {
 
 	public String trap;
@@ -12,10 +9,8 @@ public class TrapMapping extends TileMapping {
 	}
 
 	@Override
-	public List<String> getJsonLines() {
-		List<String> lines = new ArrayList<>();
-		lines.add(trap);
-		return lines;
+	public String getJson() {
+		return "\"" + trap + "\"";
 	}
 
 	@Override
