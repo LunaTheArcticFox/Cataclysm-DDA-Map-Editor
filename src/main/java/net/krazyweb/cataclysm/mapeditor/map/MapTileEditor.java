@@ -34,6 +34,7 @@ public class MapTileEditor {
 	private Button addMappingButton;
 
 	private Map<String, HBox> headers = new HashMap<>();
+	private Map<String, Integer> typeCounts = new HashMap<>();
 
 	private MapTile originalMapTile;
 	private MapTile mapTile;
@@ -55,6 +56,12 @@ public class MapTileEditor {
 			addHeader(type);
 		}
 
+		if (!typeCounts.containsKey(type)) {
+			typeCounts.put(type, 1);
+		} else {
+			typeCounts.put(type, typeCounts.get(type) + 1);
+		}
+
 		FXMLHelper.loadFXML("/fxml/mapTileEditor/mappingControllers/" + type.toLowerCase() + ".fxml").ifPresent(loader -> {
 
 			loader.<MappingController>getController().setMapping(mapping);
@@ -66,11 +73,17 @@ public class MapTileEditor {
 				mapTile.tileMappings.remove(mapping);
 				boxes.getChildren().removeAll(loader.<HBox>getRoot(), separator);
 				removeUnusedHeaders();
+
+				typeCounts.put(type, typeCounts.get(type) - 1);
+				if (typeCounts.get(type) == 0) {
+					typeCounts.remove(type);
+				}
+
 			});
 
 			loader.<HBox>getRoot().getChildren().add(deleteButton);
 
-			int insertIndex = boxes.getChildren().indexOf(headers.get(type)) + 1;
+			int insertIndex = boxes.getChildren().indexOf(headers.get(type)) + typeCounts.get(type) * 2 - 1;
 
 			boxes.getChildren().add(insertIndex, loader.getRoot());
 			boxes.getChildren().add(insertIndex + 1, separator);

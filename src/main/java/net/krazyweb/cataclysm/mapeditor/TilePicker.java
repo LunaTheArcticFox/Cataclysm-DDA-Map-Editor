@@ -103,36 +103,55 @@ public class TilePicker {
 
 				if (tilePane == defaultTileContainer) {
 
-					MenuItem cloneItem = new MenuItem("Clone to Map Tile");
-					cloneItem.setOnAction(event1 -> load(mapTile.copy(), mapTileContainer));
+					MenuItem cloneMenuItem = new MenuItem("Clone to Map Tile");
+					cloneMenuItem.setOnAction(event1 -> load(mapTile.copy(), mapTileContainer));
 
-					MenuItem cancelItem = new MenuItem("Cancel");
+					MenuItem cancelMenuItem = new MenuItem("Cancel");
 
-					ContextMenu menu = new ContextMenu(cloneItem, new SeparatorMenuItem(), cancelItem);
+					ContextMenu menu = new ContextMenu(cloneMenuItem, new SeparatorMenuItem(), cancelMenuItem);
 					menu.setAutoHide(true);
 					menu.setHideOnEscape(true);
 					menu.show(view, event.getScreenX(), event.getScreenY());
 
-					cancelItem.setOnAction(event1 -> menu.hide());
+					cancelMenuItem.setOnAction(event1 -> menu.hide());
 
 				} else {
 
-					//TODO Context menu for right click, straight to this for middle click
-					FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
+					//TODO Delete option, removes all tiles on map as well
 
-					loader.<MapTileEditor>getController().setMapTile(mapTile);
+					MenuItem editMenuItem = new MenuItem("Edit");
+					editMenuItem.setOnAction(event1 -> load(mapTile.copy(), mapTileContainer));
 
-					Stage stage = new Stage();
-					stage.setScene(new Scene(loader.getRoot()));
-					stage.setTitle("Tile Editor");
-					stage.initModality(Modality.APPLICATION_MODAL);
-					stage.showAndWait();
+					MenuItem cloneMenuItem = new MenuItem("Clone");
+					cloneMenuItem.setOnAction(event1 -> load(mapTile.copy(), mapTileContainer));
 
-					if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
-						tooltip.setText(mapTile.tileMappings.toString());
-						view.setImage(mapTile.getTexture(0, 0));
-						eventBus.post(new TileMappingChangedEvent());
-					}
+					MenuItem cancelMenuItem = new MenuItem("Cancel");
+
+					ContextMenu menu = new ContextMenu(editMenuItem, cloneMenuItem, new SeparatorMenuItem(), cancelMenuItem);
+					menu.setAutoHide(true);
+					menu.setHideOnEscape(true);
+					menu.show(view, event.getScreenX(), event.getScreenY());
+
+					cancelMenuItem.setOnAction(event1 -> menu.hide());
+
+					editMenuItem.setOnAction(event1 -> {
+						//TODO straight to this for middle click
+						FXMLLoader loader = FXMLHelper.loadFXML("/fxml/mapTileEditor/editorDialog.fxml").orElseThrow(RuntimeException::new);
+
+						loader.<MapTileEditor>getController().setMapTile(mapTile);
+
+						Stage stage = new Stage();
+						stage.setScene(new Scene(loader.getRoot()));
+						stage.setTitle("Tile Editor");
+						stage.initModality(Modality.APPLICATION_MODAL);
+						stage.showAndWait();
+
+						if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
+							tooltip.setText(mapTile.tileMappings.toString());
+							view.setImage(mapTile.getTexture(0, 0));
+							eventBus.post(new TileMappingChangedEvent());
+						}
+					});
 
 				}
 

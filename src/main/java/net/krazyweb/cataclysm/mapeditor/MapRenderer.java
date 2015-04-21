@@ -50,12 +50,11 @@ public class MapRenderer {
 	private TileSet tileSet;
 	private double zoom = 1.0;
 
-	//TODO Condense these handlers?
+	//TODO Condense these handlers
 	private final EventHandler<MouseEvent> clickEvent = event -> {
 		tool.click(event, currentTile, groups, map);
 		updateOverlays(tool.getHighlight((int) event.getX() / getTileSize(), (int) event.getY() / getTileSize(), currentTile, map));
 		updateStatus((int) event.getX() / getTileSize(), (int) event.getY() / getTileSize());
-		log.info(getTileSize());
 	};
 
 	private final EventHandler<MouseEvent> releaseEvent = event -> {
