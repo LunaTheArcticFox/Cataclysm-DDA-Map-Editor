@@ -1,16 +1,25 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
+import java.util.Optional;
+
 public class VendingMachineMapping extends TileMapping {
 
-	public String itemGroup;
+	public Optional<String> itemGroup = Optional.empty();
+
+	public VendingMachineMapping() {
+
+	}
 
 	public VendingMachineMapping(final String itemGroup) {
-		this.itemGroup = itemGroup;
+		this.itemGroup = Optional.ofNullable(itemGroup);
 	}
 
 	@Override
 	public String getJson() {
-		return "{ \"item_group\": \"" + itemGroup + "\" }";
+		if (itemGroup.isPresent()) {
+			return "{ \"item_group\": \"" + itemGroup + "\" }";
+		}
+		return "{ }";
 	}
 
 	@Override
@@ -32,12 +41,12 @@ public class VendingMachineMapping extends TileMapping {
 
 	@Override
 	public VendingMachineMapping copy() {
-		return new VendingMachineMapping(itemGroup);
+		return new VendingMachineMapping(itemGroup.orElse(null));
 	}
 
 	@Override
 	public String toString() {
-		return "[Vending Machine: " + itemGroup + "]";
+		return "[Vending Machine: " + itemGroup.orElse(null) + "]";
 	}
 
 }

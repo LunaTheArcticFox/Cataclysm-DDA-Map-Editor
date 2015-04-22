@@ -121,7 +121,7 @@ public class DataFileReader extends Service<Boolean> {
 					break;
 
 				case "monsters":
-					mapTiles(tiles, node.getValue(), this::parseMonsters);
+					mapTiles(tiles, node.getValue(), this::parseMonsterGroups);
 					break;
 
 				case "toilets":
@@ -236,24 +236,44 @@ public class DataFileReader extends Service<Boolean> {
 	}
 
 	private TileMapping parseGasPumps(final JsonNode node) {
-		JsonNode amount = node.get("amount");
-		return new GasPumpMapping(amount.get(0).asInt(), amount.get(1).asInt());
+		if (node.has("amount")) {
+			JsonNode amount = node.get("amount");
+			return new GasPumpMapping(amount.get(0).asInt(), amount.get(1).asInt());
+		}
+		return new GasPumpMapping();
 	}
 
 	private TileMapping parseVendingMachines(final JsonNode node) {
-		return new VendingMachineMapping(node.get("item_group").asText());
+		if (node.has("item_group")) {
+			return new VendingMachineMapping(node.get("item_group").asText());
+		}
+		return new VendingMachineMapping();
 	}
 
 	private TileMapping parseFields(final JsonNode node) {
-		return new FieldMapping(node.get("field").asText(), node.get("age").asInt(), node.get("density").asInt());
+		FieldMapping mapping = new FieldMapping(node.get("field").asText());
+		if (node.has("age")) {
+			mapping.age = Optional.of(node.get("age").asInt());
+		}
+		if (node.has("density")) {
+			mapping.density = Optional.of(node.get("density").asInt());
+		}
+		return mapping;
 	}
 
 	private TileMapping parseSigns(final JsonNode node) {
 		return new SignMapping(node.get("signage").asText());
 	}
 
-	private TileMapping parseMonsters(final JsonNode node) {
-		return new MonsterGroupMapping(node.get("monster").asText(), node.get("density").asDouble(), node.get("chance").asInt());
+	private TileMapping parseMonsterGroups(final JsonNode node) {
+		MonsterGroupMapping mapping = new MonsterGroupMapping(node.get("monster").asText());
+		if (node.has("density")) {
+			mapping.density = Optional.of(node.get("density").asDouble());
+		}
+		if (node.has("chance")) {
+			mapping.chance = Optional.of(node.get("chance").asInt());
+		}
+		return mapping;
 	}
 
 	private TileMapping parseToilets(final JsonNode node) {
@@ -270,16 +290,33 @@ public class DataFileReader extends Service<Boolean> {
 	}
 
 	private TileMapping parseItemGroups(final JsonNode node) {
-		return new ItemGroupMapping(node.get("item").asText(), node.get("chance").asInt());
+		ItemGroupMapping mapping = new ItemGroupMapping(node.get("item").asText());
+		if (node.has("chance")) {
+			mapping.chance = Optional.of(node.get("chance").asInt());
+		}
+		return mapping;
 	}
 
 	private TileMapping parseVehicles(final JsonNode node) {
-		int fuel = node.has("fuel") ? node.get("fuel").asInt() : 0;
-		return new VehicleMapping(node.get("vehicle").asText(), node.get("chance").asInt(), node.get("status").asInt(), fuel);
+		VehicleMapping mapping = new VehicleMapping(node.get("vehicle").asText());
+		if (node.has("chance")) {
+			mapping.chance = Optional.of(node.get("chance").asInt());
+		}
+		if (node.has("status")) {
+			mapping.status = Optional.of(node.get("status").asInt());
+		}
+		if (node.has("fuel")) {
+			mapping.fuel = Optional.of(node.get("fuel").asInt());
+		}
+		return mapping;
 	}
 
 	private TileMapping parseItem(final JsonNode node) {
-		return new ItemMapping(node.get("item").asText(), node.get("chance").asInt());
+		ItemMapping mapping = new ItemMapping(node.get("item").asText());
+		if (node.has("chance")) {
+			mapping.chance = Optional.of(node.get("chance").asInt());
+		}
+		return mapping;
 	}
 
 	private TileMapping parseTraps(final JsonNode node) {
@@ -291,7 +328,14 @@ public class DataFileReader extends Service<Boolean> {
 	}
 
 	private TileMapping parseMonster(final JsonNode node) {
-		return new MonsterMapping(node.get("monster").asText(), node.get("friendly").asBoolean(), node.get("name").asText());
+		MonsterMapping mapping = new MonsterMapping(node.get("monster").asText());
+		if (node.has("friendly")) {
+			mapping.friendly = Optional.of(node.get("friendly").asBoolean());
+		}
+		if (node.has("name")) {
+			mapping.name = Optional.of(node.get("name").asText());
+		}
+		return mapping;
 	}
 
 	private MapTile getTileForCharacter(final Map<Character, MapTile> tiles, final Character character) {

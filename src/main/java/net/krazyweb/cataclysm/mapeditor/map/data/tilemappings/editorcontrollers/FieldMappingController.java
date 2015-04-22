@@ -7,6 +7,8 @@ import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 
 public class FieldMappingController extends MappingController {
 
@@ -23,27 +25,36 @@ public class FieldMappingController extends MappingController {
 
 			this.mapping = (FieldMapping) mapping;
 
-			field.setText(this.mapping.field + "");
-			age.setText(this.mapping.age + "");
-			density.setText(this.mapping.density + "");
+			field.setText(this.mapping.field);
+
+			this.mapping.age.ifPresent(value -> age.setText(value.toString()));
+			this.mapping.density.ifPresent(value -> density.setText(value.toString()));
 
 			field.textProperty().addListener((observable, oldValue, newValue) -> {
 				this.mapping.field = newValue;
 			});
 
 			age.textProperty().addListener((observable, oldValue, newValue) -> {
-				try {
-					this.mapping.age = Integer.parseInt(newValue);
-				} catch (NumberFormatException e) {
-					log.error("Invalid number for age: " + newValue, e);
+				if (newValue.isEmpty()) {
+					this.mapping.age = Optional.empty();
+				} else {
+					try {
+						this.mapping.age = Optional.of(Integer.parseInt(newValue));
+					} catch (NumberFormatException e) {
+						log.error("Invalid number for age: " + newValue, e);
+					}
 				}
 			});
 
 			density.textProperty().addListener((observable, oldValue, newValue) -> {
-				try {
-					this.mapping.density = Integer.parseInt(newValue);
-				} catch (NumberFormatException e) {
-					log.error("Invalid number for density: " + newValue, e);
+				if (newValue.isEmpty()) {
+					this.mapping.density = Optional.empty();
+				} else {
+					try {
+						this.mapping.density = Optional.of(Integer.parseInt(newValue));
+					} catch (NumberFormatException e) {
+						log.error("Invalid number for density: " + newValue, e);
+					}
 				}
 			});
 

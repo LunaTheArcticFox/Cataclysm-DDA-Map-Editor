@@ -190,31 +190,31 @@ public class MapTileEditor {
 		});
 
 		addFieldMenuItem.setOnAction(event -> {
-			FieldMapping mapping = new FieldMapping("", 0, 0);
+			FieldMapping mapping = new FieldMapping("", null, null);
 			mapTile.add(mapping);
 			addEntry("Field", mapping);
 		});
 
 		addItemMenuItem.setOnAction(event -> {
-			ItemMapping mapping = new ItemMapping("", 0);
+			ItemMapping mapping = new ItemMapping("", null);
 			mapTile.add(mapping);
 			addEntry("Item", mapping);
 		});
 
 		addItemGroupMenuItem.setOnAction(event -> {
-			ItemGroupMapping mapping = new ItemGroupMapping("", 0);
+			ItemGroupMapping mapping = new ItemGroupMapping("", null);
 			mapTile.add(mapping);
 			addEntry("ItemGroup", mapping);
 		});
 
 		addMonsterMenuItem.setOnAction(event -> {
-			MonsterMapping mapping = new MonsterMapping("", false, "");
+			MonsterMapping mapping = new MonsterMapping("", null, null);
 			mapTile.add(mapping);
 			addEntry("Monster", mapping);
 		});
 
 		addMonsterGroupMenuItem.setOnAction(event -> {
-			MonsterGroupMapping mapping = new MonsterGroupMapping("", 0, 0);
+			MonsterGroupMapping mapping = new MonsterGroupMapping("", null, null);
 			mapTile.add(mapping);
 			addEntry("MonsterGroup", mapping);
 		});
@@ -232,13 +232,13 @@ public class MapTileEditor {
 		});
 
 		addVendingMachineMenuItem.setOnAction(event -> {
-			VendingMachineMapping mapping = new VendingMachineMapping("");
+			VendingMachineMapping mapping = new VendingMachineMapping(null);
 			mapTile.add(mapping);
 			addEntry("VendingMachine", mapping);
 		});
 
 		addVehicleMenuItem.setOnAction(event -> {
-			VehicleMapping mapping = new VehicleMapping("", 0, 0, 0);
+			VehicleMapping mapping = new VehicleMapping("", null, null, null);
 			mapTile.add(mapping);
 			addEntry("Vehicle", mapping);
 		});

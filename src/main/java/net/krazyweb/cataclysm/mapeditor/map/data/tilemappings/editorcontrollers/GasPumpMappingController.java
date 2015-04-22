@@ -7,6 +7,8 @@ import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 
 public class GasPumpMappingController extends MappingController {
 
@@ -23,22 +25,30 @@ public class GasPumpMappingController extends MappingController {
 
 			this.mapping = (GasPumpMapping) mapping;
 
-			minAmount.setText(this.mapping.minAmount + "");
-			maxAmount.setText(this.mapping.maxAmount + "");
+			this.mapping.minAmount.ifPresent(value -> minAmount.setText(value.toString()));
+			this.mapping.maxAmount.ifPresent(value -> maxAmount.setText(value.toString()));
 
 			minAmount.textProperty().addListener((observable, oldValue, newValue) -> {
-				try {
-					this.mapping.minAmount = Integer.parseInt(newValue);
-				} catch (NumberFormatException e) {
-					log.error("Invalid number for minAmount: " + newValue, e);
+				if (newValue.isEmpty()) {
+					this.mapping.minAmount = Optional.empty();
+				} else {
+					try {
+						this.mapping.minAmount = Optional.of(Integer.parseInt(newValue));
+					} catch (NumberFormatException e) {
+						log.error("Invalid number for minAmount: " + newValue, e);
+					}
 				}
 			});
 
 			maxAmount.textProperty().addListener((observable, oldValue, newValue) -> {
-				try {
-					this.mapping.maxAmount = Integer.parseInt(newValue);
-				} catch (NumberFormatException e) {
-					log.error("Invalid number for maxAmount: " + newValue, e);
+				if (newValue.isEmpty()) {
+					this.mapping.maxAmount = Optional.empty();
+				} else {
+					try {
+						this.mapping.maxAmount = Optional.of(Integer.parseInt(newValue));
+					} catch (NumberFormatException e) {
+						log.error("Invalid number for maxAmount: " + newValue, e);
+					}
 				}
 			});
 

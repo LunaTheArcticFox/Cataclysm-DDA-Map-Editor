@@ -5,6 +5,8 @@ import javafx.scene.control.TextField;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.VendingMachineMapping;
 
+import java.util.Optional;
+
 
 public class VendingMachineMappingController extends MappingController {
 
@@ -18,10 +20,10 @@ public class VendingMachineMappingController extends MappingController {
 		if (mapping instanceof VendingMachineMapping) {
 
 			this.mapping = (VendingMachineMapping) mapping;
-			itemGroup.setText(this.mapping.itemGroup);
+			this.mapping.itemGroup.ifPresent(itemGroup::setText);
 
 			itemGroup.textProperty().addListener((observable, oldValue, newValue) -> {
-				this.mapping.itemGroup = newValue;
+				this.mapping.itemGroup = Optional.of(newValue);
 			});
 
 		} else {

@@ -7,6 +7,8 @@ import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Optional;
+
 
 public class ItemGroupMappingController extends MappingController {
 
@@ -24,17 +26,21 @@ public class ItemGroupMappingController extends MappingController {
 			this.mapping = (ItemGroupMapping) mapping;
 
 			item.setText(this.mapping.item + "");
-			chance.setText(this.mapping.chance + "");
+			this.mapping.chance.ifPresent(value -> chance.setText(value.toString()));
 
 			item.textProperty().addListener((observable, oldValue, newValue) -> {
 				this.mapping.item = newValue;
 			});
 
 			chance.textProperty().addListener((observable, oldValue, newValue) -> {
-				try {
-					this.mapping.chance = Integer.parseInt(newValue);
-				} catch (NumberFormatException e) {
-					log.error("Invalid number for chance: " + newValue, e);
+				if (newValue.isEmpty()) {
+					this.mapping.chance = Optional.empty();
+				} else {
+					try {
+						this.mapping.chance = Optional.of(Integer.parseInt(newValue));
+					} catch (NumberFormatException e) {
+						log.error("Invalid number for chance: " + newValue, e);
+					}
 				}
 			});
 

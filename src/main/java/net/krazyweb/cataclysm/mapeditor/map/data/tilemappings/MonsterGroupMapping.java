@@ -1,55 +1,64 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings;
 
+import java.util.Optional;
+
 public class MonsterGroupMapping extends TileMapping {
 
 	public String monster;
-	public double density;
-	public int chance;
+	public Optional<Double> density = Optional.empty();
+	public Optional<Integer> chance = Optional.empty();
 
-	public MonsterGroupMapping(final String monster, final double density, final int chance) {
+	public MonsterGroupMapping(final String monster) {
 		this.monster = monster;
-		this.density = density;
-		this.chance = chance;
+	}
+
+	public MonsterGroupMapping(final String monster, final Double density, final Integer chance) {
+		this.monster = monster;
+		this.density = Optional.ofNullable(density);
+		this.chance = Optional.ofNullable(chance);
 	}
 
 	@Override
 	public String getJson() {
-		return "{ \"monster\": \"" + monster + "\", \"density\": " + density + ", \"chance\": " + chance + " }";
+		String output = "{ \"monster\": \"" + monster + "\"";
+		if (density.isPresent()) {
+			output += ", \"density\": " + density.get();
+		}
+		if (chance.isPresent()) {
+			output += ", \"chance\": " + chance.get();
+		}
+		return output + " }";
 	}
 
 	@Override
 	public boolean equals(final Object o) {
-
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		MonsterGroupMapping that = (MonsterGroupMapping) o;
 
-		if (chance != that.chance) return false;
-		if (density != that.density) return false;
-		return monster.equals(that.monster);
+		if (!monster.equals(that.monster)) return false;
+		if (!density.equals(that.density)) return false;
+		return chance.equals(that.chance);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result;
-		long temp;
-		result = monster.hashCode();
-		temp = Double.doubleToLongBits(density);
-		result = 31 * result + (int) (temp ^ (temp >>> 32));
-		result = 31 * result + chance;
+		int result = monster.hashCode();
+		result = 31 * result + density.hashCode();
+		result = 31 * result + chance.hashCode();
 		return result;
 	}
 
 	@Override
 	public MonsterGroupMapping copy() {
-		return new MonsterGroupMapping(monster, density, chance);
+		return new MonsterGroupMapping(monster, density.orElse(null), chance.orElse(null));
 	}
 
 	@Override
 	public String toString() {
-		return "[Monster Group: " + monster + ", Density: " + density + ", Chance: " + chance + "]";
+		return "[Monster Group: " + monster + ", Density: " + density.orElse(null) + ", Chance: " + chance.orElse(null) + "]";
 	}
 
 }
