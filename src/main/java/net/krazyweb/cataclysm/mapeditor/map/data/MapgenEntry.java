@@ -159,7 +159,7 @@ public class MapgenEntry implements Jsonable {
 	}
 
 	private List<String> getTerrainLines(final Map<MapTile, Character> mappings) {
-		return getMappingLines(mappings, "terrain", mapping -> mapping instanceof TerrainMapping);
+		return getMappingLines(mappings, "terrain", mapping -> mapping instanceof TerrainMapping && !((TerrainMapping) mapping).terrain.equals(fillTerrainPlaceholder.getDisplayTerrain()));
 	}
 
 	private List<String> getFurnitureLines(final Map<MapTile, Character> mappings) {
