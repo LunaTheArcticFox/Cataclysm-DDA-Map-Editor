@@ -12,7 +12,7 @@
     <TextField fx:id="vehicle" prefWidth="150"/>
     <Label>Chance:</Label>
     <TextField fx:id="chance" prefWidth="75"/>
-    <Label>Fuel:</Label>
+    <Label>Fuel %:</Label>
     <TextField fx:id="fuel" prefWidth="75"/>
     <Label>Status:</Label>
     <TextField fx:id="status" prefWidth="75"/>
