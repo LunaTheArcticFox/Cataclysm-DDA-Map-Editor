@@ -174,6 +174,7 @@ public class DataFileReader extends Service<Boolean> {
 			y.value++;
 		});
 
+		map.markSaved();
 		maps.add(map);
 
 		log.info("Loaded mapgen section in " + FORMATTER.format((System.nanoTime() - startTime) / 1000000.0) + " milliseconds.");
