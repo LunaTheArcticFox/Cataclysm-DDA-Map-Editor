@@ -70,12 +70,19 @@ public class DefinitionsEditor {
 				super.updateItem(itemGroupEntry, empty);
 				if (itemGroupEntry != null) {
 					setText(itemGroupEntry.id);
+				} else {
+					setText(null);
+					setGraphic(null);
 				}
 			}
 		});
 		itemGroupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			itemGroupController.setItemGroup(newValue);
-			entryEditorPane.setContent(itemGroupControllerLoader.getRoot());
+			if (newValue != null) {
+				itemGroupController.setItemGroup(newValue);
+				entryEditorPane.setContent(itemGroupControllerLoader.getRoot());
+				monsterGroupListView.getSelectionModel().clearSelection();
+				overmapListView.getSelectionModel().clearSelection();
+			}
 		});
 
 		monsterGroupListView.setItems(monsterGroupEntries);
@@ -86,12 +93,19 @@ public class DefinitionsEditor {
 				super.updateItem(monsterGroupEntry, empty);
 				if (monsterGroupEntry != null) {
 					setText(monsterGroupEntry.name);
+				} else {
+					setText(null);
+					setGraphic(null);
 				}
 			}
 		});
 		monsterGroupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			monsterGroupController.setMonsterGroup(newValue);
-			entryEditorPane.setContent(monsterGroupControllerLoader.getRoot());
+			if (newValue != null) {
+				monsterGroupController.setMonsterGroup(newValue);
+				entryEditorPane.setContent(monsterGroupControllerLoader.getRoot());
+				itemGroupListView.getSelectionModel().clearSelection();
+				overmapListView.getSelectionModel().clearSelection();
+			}
 		});
 
 		overmapListView.setItems(overmapEntries);
@@ -102,12 +116,19 @@ public class DefinitionsEditor {
 				super.updateItem(overmapEntry, empty);
 				if (overmapEntry != null) {
 					setText(overmapEntry.name);
+				} else {
+					setText(null);
+					setGraphic(null);
 				}
 			}
 		});
 		overmapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			overmapController.setOvermap(newValue);
-			entryEditorPane.setContent(overmapControllerLoader.getRoot());
+			if (newValue != null) {
+				overmapController.setOvermap(newValue);
+				entryEditorPane.setContent(overmapControllerLoader.getRoot());
+				itemGroupListView.getSelectionModel().clearSelection();
+				monsterGroupListView.getSelectionModel().clearSelection();
+			}
 		});
 
 	}
