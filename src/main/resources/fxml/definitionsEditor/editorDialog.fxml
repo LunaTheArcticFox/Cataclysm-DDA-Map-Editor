@@ -22,7 +22,7 @@
 					<ListView fx:id="overmapListView" styleClass="no-padding"/>
 				</TitledPane>
 			</VBox>
-		<ScrollPane prefHeight="200.0" prefWidth="200.0"/>
+		<ScrollPane fx:id="entryEditorPane" prefHeight="200.0" prefWidth="200.0"/>
 	</SplitPane>
 	<AnchorPane prefHeight="50.0" prefWidth="200.0"/>
 	<!-- This VBox is here to allow context menus to attach to it. This prevents being able to click on the contents

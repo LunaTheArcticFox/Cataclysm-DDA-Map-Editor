@@ -3,6 +3,7 @@ package net.krazyweb.cataclysm.mapeditor.map;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
@@ -10,6 +11,10 @@ import javafx.scene.layout.VBox;
 import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.MonsterGroupEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.OvermapEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.ItemGroupController;
+import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.MonsterGroupController;
+import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.OvermapController;
+import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -35,12 +40,27 @@ public class DefinitionsEditor {
 	@FXML
 	private ListView<OvermapEntry> overmapListView;
 
+	@FXML
+	private ScrollPane entryEditorPane;
+
 	private ObservableList<ItemGroupEntry> itemGroupEntries = FXCollections.observableArrayList();
 	private ObservableList<MonsterGroupEntry> monsterGroupEntries = FXCollections.observableArrayList();
 	private ObservableList<OvermapEntry> overmapEntries = FXCollections.observableArrayList();
 
 	@FXML
 	private void initialize() {
+
+		FXMLLoader itemGroupControllerLoader = FXMLHelper.loadFXML("/fxml/definitionsEditor/entries/itemGroup.fxml")
+				.orElseThrow(IllegalStateException::new);
+		ItemGroupController itemGroupController = itemGroupControllerLoader.<ItemGroupController>getController();
+
+		FXMLLoader monsterGroupControllerLoader = FXMLHelper.loadFXML("/fxml/definitionsEditor/entries/monsterGroup.fxml")
+				.orElseThrow(IllegalStateException::new);
+		MonsterGroupController monsterGroupController = monsterGroupControllerLoader.<MonsterGroupController>getController();
+
+		FXMLLoader overmapControllerLoader = FXMLHelper.loadFXML("/fxml/definitionsEditor/entries/overmap.fxml")
+				.orElseThrow(IllegalStateException::new);
+		OvermapController overmapController = overmapControllerLoader.<OvermapController>getController();
 
 		itemGroupListView.setItems(itemGroupEntries);
 		itemGroupListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -52,6 +72,10 @@ public class DefinitionsEditor {
 					setText(itemGroupEntry.id);
 				}
 			}
+		});
+		itemGroupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			itemGroupController.setItemGroup(newValue);
+			entryEditorPane.setContent(itemGroupControllerLoader.getRoot());
 		});
 
 		monsterGroupListView.setItems(monsterGroupEntries);
@@ -65,6 +89,10 @@ public class DefinitionsEditor {
 				}
 			}
 		});
+		monsterGroupListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			monsterGroupController.setMonsterGroup(newValue);
+			entryEditorPane.setContent(monsterGroupControllerLoader.getRoot());
+		});
 
 		overmapListView.setItems(overmapEntries);
 		overmapListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -76,6 +104,10 @@ public class DefinitionsEditor {
 					setText(overmapEntry.name);
 				}
 			}
+		});
+		overmapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+			overmapController.setOvermap(newValue);
+			entryEditorPane.setContent(overmapControllerLoader.getRoot());
 		});
 
 	}

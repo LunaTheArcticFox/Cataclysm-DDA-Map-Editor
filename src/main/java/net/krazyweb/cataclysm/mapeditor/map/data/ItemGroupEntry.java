@@ -38,14 +38,15 @@ public class ItemGroupEntry implements Jsonable {
 
 		ItemGroupEntry that = (ItemGroupEntry) o;
 
-		return id.equals(that.id) && items.equals(that.items);
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		return !(items != null ? !items.equals(that.items) : that.items != null);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id.hashCode();
-		result = 31 * result + items.hashCode();
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (items != null ? items.hashCode() : 0);
 		return result;
 	}
 

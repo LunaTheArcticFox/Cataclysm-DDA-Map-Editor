@@ -35,21 +35,22 @@ public class MonsterGroupEntry implements Jsonable {
 
 	@Override
 	public boolean equals(Object o) {
-
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
 		MonsterGroupEntry that = (MonsterGroupEntry) o;
 
-		return defaultGroup.equals(that.defaultGroup) && monsters.equals(that.monsters) && name.equals(that.name);
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (defaultGroup != null ? !defaultGroup.equals(that.defaultGroup) : that.defaultGroup != null) return false;
+		return !(monsters != null ? !monsters.equals(that.monsters) : that.monsters != null);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = name.hashCode();
-		result = 31 * result + defaultGroup.hashCode();
-		result = 31 * result + monsters.hashCode();
+		int result = name != null ? name.hashCode() : 0;
+		result = 31 * result + (defaultGroup != null ? defaultGroup.hashCode() : 0);
+		result = 31 * result + (monsters != null ? monsters.hashCode() : 0);
 		return result;
 	}
 
