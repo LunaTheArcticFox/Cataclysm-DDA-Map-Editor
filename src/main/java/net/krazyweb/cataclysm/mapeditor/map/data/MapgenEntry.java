@@ -42,7 +42,9 @@ public class MapgenEntry implements Jsonable {
 
 	public MapgenEntry(final MapgenEntry mapgenEntry) {
 		for (int x = 0; x < MapEditor.SIZE; x++) {
-			System.arraycopy(mapgenEntry.tiles[x], 0, tiles[x], 0, MapEditor.SIZE);
+			for (int y = 0; y < MapEditor.SIZE; y++) {
+				tiles[x][y] = new MapTile(mapgenEntry.tiles[x][y]);
+			}
 		}
 		mapgenEntry.placeGroupZones.forEach(zone -> placeGroupZones.add(new PlaceGroupZone(zone)));
 		settings = new MapSettings(mapgenEntry.settings);

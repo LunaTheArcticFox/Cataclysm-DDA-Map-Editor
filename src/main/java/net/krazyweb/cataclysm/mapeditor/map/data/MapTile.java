@@ -32,6 +32,10 @@ public class MapTile {
 		Collections.addAll(this.tileMappings, tileMappings);
 	}
 
+	public MapTile(final MapTile mapTile) {
+		mapTile.tileMappings.forEach(tileMapping -> tileMappings.add(tileMapping.copy()));
+	}
+
 	@Subscribe
 	public static void tileSetLoadedEventListener(final TilesetLoadedEvent event) {
 		tileSet = event.getTileSet();
