@@ -1,136 +1,155 @@
 package net.krazyweb.cataclysm.mapeditor.map;
 
-import javafx.geometry.Insets;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldTreeCell;
-import javafx.stage.Modality;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
+import net.krazyweb.cataclysm.mapeditor.map.data.MonsterGroupEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.OvermapEntry;
-import net.krazyweb.cataclysm.mapeditor.map.data.utils.PropertySheetItemCreator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.controlsfx.control.PropertySheet;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class DefinitionsEditor {
 
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(DefinitionsEditor.class);
 
-	private List<OvermapEntry> overmapEntries;
+	@FXML
+	private VBox contextHelper;
 
-	private Dialog<List<OvermapEntry>> definitionsDialog;
+	@FXML
+	private TitledPane itemGroupPane, monsterGroupPane, overmapPane;
 
-	private TreeItem<String> itemGroups = new TreeItem<>("Item Groups");
-	TreeItem<String> monsterGroups = new TreeItem<>("Monster Groups");
-	TreeItem<String> overmaps = new TreeItem<>("Overmaps");
+	@FXML
+	private ListView<ItemGroupEntry> itemGroupListView;
 
-	public DefinitionsEditor(final List<OvermapEntry> overmapEntryList) {
+	@FXML
+	private ListView<MonsterGroupEntry> monsterGroupListView;
 
-		overmapEntries = new ArrayList<>();
-		overmapEntryList.forEach(entry -> overmapEntries.add(new OvermapEntry(entry)));
+	@FXML
+	private ListView<OvermapEntry> overmapListView;
 
-		definitionsDialog = new Dialog<>();
-		definitionsDialog.setTitle("Edit Definitions");
-		definitionsDialog.initModality(Modality.APPLICATION_MODAL);
-		definitionsDialog.setResizable(true);
+	private ObservableList<ItemGroupEntry> itemGroupEntries = FXCollections.observableArrayList();
+	private ObservableList<MonsterGroupEntry> monsterGroupEntries = FXCollections.observableArrayList();
+	private ObservableList<OvermapEntry> overmapEntries = FXCollections.observableArrayList();
 
-		SplitPane parent = new SplitPane();
-		parent.setDividerPosition(0, 0.3);
-		parent.setPadding(new Insets(0));
+	@FXML
+	private void initialize() {
 
-		TreeItem<String> treeRoot = new TreeItem<>("");
-
-		itemGroups.setExpanded(true);
-		treeRoot.getChildren().add(itemGroups);
-
-		monsterGroups.setExpanded(true);
-		treeRoot.getChildren().add(monsterGroups);
-
-		overmaps.setExpanded(true);
-		treeRoot.getChildren().add(overmaps);
-
-		overmapEntries.forEach(overmapEntry -> {
-			TreeItem<String> overmap = new TreeItem<>(overmapEntry.name);
-			overmaps.getChildren().add(overmap);
-		});
-
-		TreeView<String> treeView = new TreeView<>(treeRoot);
-		treeView.setShowRoot(false);
-		treeView.setEditable(true);
-		treeView.setCellFactory(factory -> new TreeCell());
-		treeView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-			if (newValue.getParent() == overmaps) {
-				PropertySheet propertySheet = new PropertySheet(PropertySheetItemCreator.getPropertySheetItems(overmapEntries.get(newValue.getParent().getChildren().indexOf(newValue))));
-				propertySheet.setModeSwitcherVisible(false);
-				propertySheet.setSearchBoxVisible(false);
-				parent.getItems().remove(1);
-				parent.getItems().add(propertySheet);
-			}
-		});
-
-		parent.getItems().add(treeView);
-
-		PropertySheet propertySheet = new PropertySheet();
-		propertySheet.setModeSwitcherVisible(false);
-		propertySheet.setSearchBoxVisible(false);
-		parent.getItems().add(propertySheet);
-
-		ButtonType saveButton = new ButtonType("Save Changes", ButtonBar.ButtonData.OK_DONE);
-		ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-		definitionsDialog.getDialogPane().getButtonTypes().setAll(saveButton, cancelButton);
-
-		definitionsDialog.setOnCloseRequest(event -> definitionsDialog.close());
-
-		definitionsDialog.setResultConverter(dialogButton -> {
-			if (dialogButton == saveButton) {
-				return overmapEntries;
-			}
-			return null;
-		});
-
-		definitionsDialog.getDialogPane().setContent(parent);
-
-	}
-
-	private class TreeCell extends TextFieldTreeCell {
-
-		private ContextMenu contextMenu;
-		private MenuItem testItem = new MenuItem("Add...");
-
-		public TreeCell() {
-			super();
-			contextMenu = new ContextMenu();
-			contextMenu.getItems().add(testItem);
-		}
-
-		@Override
-		@SuppressWarnings("unchecked")
-		public void updateItem(Object item, boolean empty) {
-			super.updateItem(item, empty);
-			setEditable(false);
-			TreeItem<String> treeItem = getTreeItem();
-			if (treeItem != null) {
-				if (treeItem.equals(itemGroups)) {
-					setContextMenu(contextMenu);
-					testItem.setOnAction(event -> log.debug("Item Groups Add Clicked"));
-				} else if (treeItem.equals(monsterGroups)) {
-					setContextMenu(contextMenu);
-					testItem.setOnAction(event -> log.debug("Monster Groups Add Clicked"));
-				} else if (treeItem.equals(overmaps)) {
-					setContextMenu(contextMenu);
-					testItem.setOnAction(event -> log.debug("Overmaps Add Clicked"));
-				} else {
-					setEditable(true);
+		itemGroupListView.setItems(itemGroupEntries);
+		itemGroupListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		itemGroupListView.setCellFactory(callback -> new ListCell<ItemGroupEntry>() {
+			@Override
+			protected void updateItem(final ItemGroupEntry itemGroupEntry, final boolean empty) {
+				super.updateItem(itemGroupEntry, empty);
+				if (itemGroupEntry != null) {
+					setText(itemGroupEntry.id);
 				}
 			}
-		}
+		});
+
+		monsterGroupListView.setItems(monsterGroupEntries);
+		monsterGroupListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		monsterGroupListView.setCellFactory(callback -> new ListCell<MonsterGroupEntry>() {
+			@Override
+			protected void updateItem(final MonsterGroupEntry monsterGroupEntry, final boolean empty) {
+				super.updateItem(monsterGroupEntry, empty);
+				if (monsterGroupEntry != null) {
+					setText(monsterGroupEntry.name);
+				}
+			}
+		});
+
+		overmapListView.setItems(overmapEntries);
+		overmapListView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		overmapListView.setCellFactory(callback -> new ListCell<OvermapEntry>() {
+			@Override
+			protected void updateItem(final OvermapEntry overmapEntry, final boolean empty) {
+				super.updateItem(overmapEntry, empty);
+				if (overmapEntry != null) {
+					setText(overmapEntry.name);
+				}
+			}
+		});
 
 	}
 
-	public Optional<List<OvermapEntry>> showAndWait() {
-		return definitionsDialog.showAndWait();
+	public void setItemGroupEntries(final List<ItemGroupEntry> entries) {
+		entries.forEach(entry -> itemGroupEntries.add(new ItemGroupEntry(entry)));
+	}
+
+	public void setMonsterGroupEntries(final List<MonsterGroupEntry> entries) {
+		entries.forEach(entry -> monsterGroupEntries.add(new MonsterGroupEntry(entry)));
+	}
+
+	public void setOvermapEntries(final List<OvermapEntry> entries) {
+		entries.forEach(entry -> overmapEntries.add(new OvermapEntry(entry)));
+	}
+
+	@FXML
+	public void showItemGroupContextMenu(final MouseEvent event) {
+		if (event.getButton() == MouseButton.SECONDARY) {
+
+			MenuItem addMenuItem = new MenuItem("Add New Item Group");
+			addMenuItem.setOnAction(event1 -> itemGroupEntries.add(new ItemGroupEntry())); //TODO Ask for name, check if exists
+
+			MenuItem cancelMenuItem = new MenuItem("Cancel");
+
+			ContextMenu menu = new ContextMenu(addMenuItem, new SeparatorMenuItem(), cancelMenuItem);
+			menu.setAutoHide(true);
+			menu.setHideOnEscape(true);
+
+			cancelMenuItem.setOnAction(event1 -> menu.hide());
+
+			menu.show(contextHelper, event.getScreenX(), event.getScreenY());
+
+		}
+	}
+
+	@FXML
+	public void showMonsterGroupContextMenu(final MouseEvent event) {
+		if (event.getButton() == MouseButton.SECONDARY) {
+
+			MenuItem addMenuItem = new MenuItem("Add New Monster Group");
+			addMenuItem.setOnAction(event1 -> monsterGroupEntries.add(new MonsterGroupEntry())); //TODO Ask for name, check if exists
+
+			MenuItem cancelMenuItem = new MenuItem("Cancel");
+
+			ContextMenu menu = new ContextMenu(addMenuItem, new SeparatorMenuItem(), cancelMenuItem);
+			menu.setAutoHide(true);
+			menu.setHideOnEscape(true);
+
+			cancelMenuItem.setOnAction(event1 -> menu.hide());
+
+			menu.show(contextHelper, event.getScreenX(), event.getScreenY());
+
+		}
+	}
+
+	@FXML
+	public void showOvermapContextMenu(final MouseEvent event) {
+		if (event.getButton() == MouseButton.SECONDARY) {
+
+			MenuItem addMenuItem = new MenuItem("Add New Overmap");
+			addMenuItem.setOnAction(event1 -> overmapEntries.add(new OvermapEntry())); //TODO Ask for name, check if exists
+
+			MenuItem cancelMenuItem = new MenuItem("Cancel");
+
+			ContextMenu menu = new ContextMenu(addMenuItem, new SeparatorMenuItem(), cancelMenuItem);
+			menu.setAutoHide(true);
+			menu.setHideOnEscape(true);
+
+			cancelMenuItem.setOnAction(event1 -> menu.hide());
+
+			menu.show(contextHelper, event.getScreenX(), event.getScreenY());
+
+		}
 	}
 
 }

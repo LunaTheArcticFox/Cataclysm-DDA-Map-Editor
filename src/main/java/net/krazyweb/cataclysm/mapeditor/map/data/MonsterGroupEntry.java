@@ -5,14 +5,6 @@ import java.util.List;
 
 public class MonsterGroupEntry implements Jsonable {
 
-	/*
-
-        "type":"monstergroup",
-        "name" : "GROUP_PLAIN",
-        "default" : "mon_zombie",
-        "monsters" : [{ "monster" : "mon_zombie", "freq" : 40, "cost_multiplier" : 1 }]
-	 */
-
 	public String name;
 	public String defaultGroup;
 	public List<MonsterGroupMonster> monsters = new ArrayList<>();
@@ -20,7 +12,7 @@ public class MonsterGroupEntry implements Jsonable {
 	private MonsterGroupEntry lastSavedState;
 
 	public MonsterGroupEntry() {
-
+		name = "Monster Group";
 	}
 
 	public MonsterGroupEntry(final String name, final String defaultGroup, final List<MonsterGroupMonster> monsters) {

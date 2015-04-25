@@ -62,7 +62,7 @@ public class MapTileEditor {
 			typeCounts.put(type, typeCounts.get(type) + 1);
 		}
 
-		FXMLHelper.loadFXML("/fxml/mapTileEditor/mappingControllers/" + type.toLowerCase() + ".fxml").ifPresent(loader -> {
+		FXMLHelper.loadFXML("/fxml/mapTileEditor/mappings/" + type.toLowerCase() + ".fxml").ifPresent(loader -> {
 
 			loader.<MappingController>getController().setMapping(mapping);
 

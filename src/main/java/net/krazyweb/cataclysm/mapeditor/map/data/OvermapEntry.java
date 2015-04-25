@@ -22,7 +22,7 @@ public class OvermapEntry implements Jsonable {
 	private OvermapEntry lastSavedState;
 
 	public OvermapEntry() {
-
+		name = "Overmap";
 	}
 
 	public OvermapEntry(final OvermapEntry entry) {
@@ -49,6 +49,7 @@ public class OvermapEntry implements Jsonable {
 		lastSavedState = new OvermapEntry(this);
 	}
 
+	@SuppressWarnings("RedundantIfStatement")
 	@Override
 	public boolean equals(Object o) {
 

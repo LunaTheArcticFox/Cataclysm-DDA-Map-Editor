@@ -5,18 +5,19 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.HPos;
 import javafx.geometry.VPos;
+import javafx.scene.Scene;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.ApplicationSettings;
 import net.krazyweb.cataclysm.mapeditor.MapRenderer;
-import net.krazyweb.cataclysm.mapeditor.events.FileLoadedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.FileSavedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.MapChangedEvent;
-import net.krazyweb.cataclysm.mapeditor.events.UndoBufferChangedEvent;
+import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.data.*;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
+import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -360,10 +361,27 @@ public class MapManager implements UndoBufferListener {
 
 	public void editDefinitions() {
 
-		DefinitionsEditor definitionsEditor = new DefinitionsEditor(overmapEntries);
+		FXMLLoader loader = FXMLHelper.loadFXML("/fxml/definitionsEditor/editorDialog.fxml").orElseThrow(IllegalStateException::new);
+		//DefinitionsEditor definitionsEditor = new DefinitionsEditor(overmapEntries);
 
-		Optional<List<OvermapEntry>> result = definitionsEditor.showAndWait();
-		result.ifPresent(overmapEntryList -> overmapEntries = overmapEntryList);
+		loader.<DefinitionsEditor>getController().setItemGroupEntries(itemGroupEntries);
+		loader.<DefinitionsEditor>getController().setMonsterGroupEntries(monsterGroupEntries);
+		loader.<DefinitionsEditor>getController().setOvermapEntries(overmapEntries);
+
+		Stage stage = new Stage();
+		stage.setScene(new Scene(loader.getRoot()));
+		stage.setTitle("Definitions Editor");
+		stage.initModality(Modality.APPLICATION_MODAL);
+		stage.showAndWait();
+
+		/*if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
+			tooltip.setText(mapTile.tileMappings.toString());
+			view.setImage(mapTile.getTexture(0, 0));
+			eventBus.post(new TileMappingChangedEvent());
+		}*/
+
+		//Optional<List<OvermapEntry>> result = definitionsEditor.showAndWait();
+		//result.ifPresent(overmapEntryList -> overmapEntries = overmapEntryList);
 		//TODO Check if changed, add rest of entries
 
 		updateUndoRedoText();

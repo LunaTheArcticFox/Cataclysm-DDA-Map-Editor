@@ -10,7 +10,7 @@ public class ItemGroupEntry implements Jsonable {
 	private ItemGroupEntry lastSavedState;
 
 	public ItemGroupEntry() {
-
+		id = "Item Group";
 	}
 
 	public ItemGroupEntry(Map<String, Integer> items, String id) {

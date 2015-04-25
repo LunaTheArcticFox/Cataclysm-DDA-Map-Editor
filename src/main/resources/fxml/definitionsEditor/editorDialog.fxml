@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import java.net.URL?>
+<VBox fx:controller="net.krazyweb.cataclysm.mapeditor.map.DefinitionsEditor"
+	  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<stylesheets>
+		<URL value="@../style.css" />
+	</stylesheets>
+	<SplitPane dividerPositions="0.3" prefHeight="600.0" prefWidth="800.0">
+			<VBox>
+				<TitledPane fx:id="itemGroupPane" collapsible="true" expanded="true" text="Item" onMouseClicked="#showItemGroupContextMenu">
+					<ListView fx:id="itemGroupListView" styleClass="no-padding"/>
+				</TitledPane>
+				<TitledPane fx:id="monsterGroupPane" collapsible="true" expanded="true" text="Monster" onMouseClicked="#showMonsterGroupContextMenu">
+					<ListView fx:id="monsterGroupListView" styleClass="no-padding"/>
+				</TitledPane>
+				<TitledPane fx:id="overmapPane" collapsible="true" expanded="true" text="Overmap" onMouseClicked="#showOvermapContextMenu">
+					<ListView fx:id="overmapListView" styleClass="no-padding"/>
+				</TitledPane>
+			</VBox>
+		<ScrollPane prefHeight="200.0" prefWidth="200.0"/>
+	</SplitPane>
+	<AnchorPane prefHeight="50.0" prefWidth="200.0"/>
+	<!-- This VBox is here to allow context menus to attach to it. This prevents being able to click on the contents
+	 of titlePanes to bring up a context menu. -->
+	<VBox fx:id="contextHelper" prefHeight="0" prefWidth="0"/>
+</VBox>
