@@ -18,6 +18,7 @@ import net.krazyweb.cataclysm.mapeditor.map.MapTileEditor;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.FurnitureMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TerrainMapping;
+import net.krazyweb.util.CloseAction;
 import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -146,7 +147,7 @@ public class TilePicker {
 						stage.initModality(Modality.APPLICATION_MODAL);
 						stage.showAndWait();
 
-						if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
+						if (loader.<MapTileEditor>getController().getCloseAction() == CloseAction.SAVE) {
 							tooltip.setText(mapTile.tileMappings.toString());
 							view.setImage(mapTile.getTexture(0, 0));
 							eventBus.post(new TileMappingChangedEvent());

@@ -17,6 +17,7 @@ import net.krazyweb.cataclysm.mapeditor.MapRenderer;
 import net.krazyweb.cataclysm.mapeditor.events.*;
 import net.krazyweb.cataclysm.mapeditor.map.data.*;
 import net.krazyweb.cataclysm.mapeditor.map.undo.UndoBufferListener;
+import net.krazyweb.util.CloseAction;
 import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -362,11 +363,11 @@ public class MapManager implements UndoBufferListener {
 	public void editDefinitions() {
 
 		FXMLLoader loader = FXMLHelper.loadFXML("/fxml/definitionsEditor/editorDialog.fxml").orElseThrow(IllegalStateException::new);
-		//DefinitionsEditor definitionsEditor = new DefinitionsEditor(overmapEntries);
+		DefinitionsEditor editor = loader.<DefinitionsEditor>getController();
 
-		loader.<DefinitionsEditor>getController().setItemGroupEntries(itemGroupEntries);
-		loader.<DefinitionsEditor>getController().setMonsterGroupEntries(monsterGroupEntries);
-		loader.<DefinitionsEditor>getController().setOvermapEntries(overmapEntries);
+		editor.setItemGroupEntries(itemGroupEntries);
+		editor.setMonsterGroupEntries(monsterGroupEntries);
+		editor.setOvermapEntries(overmapEntries);
 
 		Stage stage = new Stage();
 		stage.setScene(new Scene(loader.getRoot()));
@@ -374,17 +375,12 @@ public class MapManager implements UndoBufferListener {
 		stage.initModality(Modality.APPLICATION_MODAL);
 		stage.showAndWait();
 
-		/*if (loader.<MapTileEditor>getController().getCloseAction() == MapTileEditor.CloseAction.SAVE) {
-			tooltip.setText(mapTile.tileMappings.toString());
-			view.setImage(mapTile.getTexture(0, 0));
-			eventBus.post(new TileMappingChangedEvent());
-		}*/
-
-		//Optional<List<OvermapEntry>> result = definitionsEditor.showAndWait();
-		//result.ifPresent(overmapEntryList -> overmapEntries = overmapEntryList);
-		//TODO Check if changed, add rest of entries
-
-		updateUndoRedoText();
+		if (editor.getCloseAction() == CloseAction.SAVE) {
+			itemGroupEntries = new ArrayList<>(editor.getItemGroupEntries());
+			monsterGroupEntries = new ArrayList<>(editor.getMonsterGroupEntries());
+			overmapEntries = new ArrayList<>(editor.getOvermapEntries());
+			eventBus.post(new DefinitionsChangedEvent());
+		}
 
 	}
 

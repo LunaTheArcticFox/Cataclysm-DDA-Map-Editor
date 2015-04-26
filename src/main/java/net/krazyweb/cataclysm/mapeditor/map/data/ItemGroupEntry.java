@@ -4,23 +4,68 @@ import java.util.*;
 
 public class ItemGroupEntry implements Jsonable {
 
+	public static class ItemSpawn {
+
+		public String name;
+		public int chance;
+
+		public ItemSpawn() {
+		}
+
+		public ItemSpawn(final String name, final int chance) {
+			this.name = name;
+			this.chance = chance;
+		}
+
+		public ItemSpawn(final ItemSpawn itemSpawn) {
+			name = itemSpawn.name;
+			chance = itemSpawn.chance;
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			ItemSpawn itemSpawn = (ItemSpawn) o;
+
+			if (chance != itemSpawn.chance) return false;
+			return name.equals(itemSpawn.name);
+
+		}
+
+		@Override
+		public int hashCode() {
+			int result = name.hashCode();
+			result = 31 * result + chance;
+			return result;
+		}
+
+		public ItemSpawn copy() {
+			return new ItemSpawn(this);
+		}
+
+	}
+
 	public String id;
-	public Map<String, Integer> items = new TreeMap<>();
+	public List<ItemSpawn> itemSpawns = new ArrayList<>();
 
 	private ItemGroupEntry lastSavedState;
 
 	public ItemGroupEntry() {
-		id = "Item Group";
+		id = "item_group";
 	}
 
-	public ItemGroupEntry(Map<String, Integer> items, String id) {
+	public ItemGroupEntry(List<ItemSpawn> itemSpawns, String id) {
 		this.id = id;
-		this.items = new TreeMap<>(items);
+		this.itemSpawns = new ArrayList<>();
+		itemSpawns.forEach(itemGroup -> this.itemSpawns.add(itemGroup.copy()));
 	}
 
 	public ItemGroupEntry(final ItemGroupEntry entry) {
 		this.id = entry.id;
-		this.items = new TreeMap<>(entry.items);
+		this.itemSpawns = new ArrayList<>();
+		entry.itemSpawns.forEach(itemGroup -> this.itemSpawns.add(itemGroup.copy()));
 	}
 
 	public boolean isSaved() {
@@ -36,17 +81,17 @@ public class ItemGroupEntry implements Jsonable {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 
-		ItemGroupEntry that = (ItemGroupEntry) o;
+		ItemGroupEntry entry = (ItemGroupEntry) o;
 
-		if (id != null ? !id.equals(that.id) : that.id != null) return false;
-		return !(items != null ? !items.equals(that.items) : that.items != null);
+		if (!id.equals(entry.id)) return false;
+		return itemSpawns.equals(entry.itemSpawns);
 
 	}
 
 	@Override
 	public int hashCode() {
-		int result = id != null ? id.hashCode() : 0;
-		result = 31 * result + (items != null ? items.hashCode() : 0);
+		int result = id.hashCode();
+		result = 31 * result + itemSpawns.hashCode();
 		return result;
 	}
 
@@ -61,7 +106,7 @@ public class ItemGroupEntry implements Jsonable {
 		lines.add(INDENT + "\"items\": [");
 
 		List<String> tempLines = new ArrayList<>();
-		items.entrySet().forEach(entry -> tempLines.add(INDENT + "[ \"" + entry.getKey() + "\", " + entry.getValue() + " ]"));
+		itemSpawns.forEach(itemGroup -> tempLines.add(INDENT + "[ \"" + itemGroup.name + "\", " + itemGroup.chance + " ]"));
 
 		for (int i = 0; i < tempLines.size(); i++) {
 			lines.add(INDENT + tempLines.get(i) + ((i < tempLines.size() - 1) ? "," : ""));

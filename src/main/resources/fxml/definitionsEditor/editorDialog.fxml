@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.*?>
 <?import java.net.URL?>
 <VBox fx:controller="net.krazyweb.cataclysm.mapeditor.map.DefinitionsEditor"
 	  xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
@@ -22,9 +22,15 @@
 					<ListView fx:id="overmapListView" styleClass="no-padding"/>
 				</TitledPane>
 			</VBox>
-		<ScrollPane fx:id="entryEditorPane" prefHeight="200.0" prefWidth="200.0"/>
+		<ScrollPane fx:id="entryEditorPane" prefHeight="200.0" prefWidth="100.0" fitToWidth="true"/>
 	</SplitPane>
-	<AnchorPane prefHeight="50.0" prefWidth="200.0"/>
+	<GridPane prefHeight="50.0" prefWidth="100.0" alignment="CENTER_RIGHT" hgap="15">
+		<Button text="Save and Close" onAction="#saveAndClose" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+		<Button text="Close" onAction="#close" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+		<padding>
+			<Insets right="15.0" />
+		</padding>
+	</GridPane>
 	<!-- This VBox is here to allow context menus to attach to it. This prevents being able to click on the contents
 	 of titlePanes to bring up a context menu. -->
 	<VBox fx:id="contextHelper" prefHeight="0" prefWidth="0"/>

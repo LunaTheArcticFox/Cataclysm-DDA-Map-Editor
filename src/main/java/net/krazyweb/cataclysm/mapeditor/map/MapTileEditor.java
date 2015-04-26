@@ -10,6 +10,7 @@ import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.map.data.MapTile;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.*;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers.MappingController;
+import net.krazyweb.util.CloseAction;
 import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,11 +22,8 @@ import java.util.Set;
 
 public class MapTileEditor {
 
+	@SuppressWarnings("unused")
 	private static final Logger log = LogManager.getLogger(MapTileEditor.class);
-
-	public enum CloseAction {
-		SAVE, WITHOUT_SAVE
-	}
 
 	@FXML
 	private VBox boxes;

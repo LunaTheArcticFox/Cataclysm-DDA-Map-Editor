@@ -360,7 +360,7 @@ public class DataFileReader extends Service<Boolean> {
 
 		entry.id = root.get("id").asText();
 
-		root.get("items").forEach(item -> entry.items.put(item.get(0).asText(), item.get(1).asInt()));
+		root.get("items").forEach(item -> entry.itemSpawns.add(new ItemGroupEntry.ItemSpawn(item.get(0).asText(), item.get(1).asInt())));
 
 		entry.markSaved();
 

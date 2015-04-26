@@ -8,12 +8,14 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.MonsterGroupEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.OvermapEntry;
 import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.ItemGroupController;
 import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.MonsterGroupController;
 import net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers.OvermapController;
+import net.krazyweb.util.CloseAction;
 import net.krazyweb.util.FXMLHelper;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,12 +49,17 @@ public class DefinitionsEditor {
 	private ObservableList<MonsterGroupEntry> monsterGroupEntries = FXCollections.observableArrayList();
 	private ObservableList<OvermapEntry> overmapEntries = FXCollections.observableArrayList();
 
+	private CloseAction closeAction = CloseAction.WITHOUT_SAVE;
+
+	private int numberOfEntries = 1;
+
 	@FXML
 	private void initialize() {
 
 		FXMLLoader itemGroupControllerLoader = FXMLHelper.loadFXML("/fxml/definitionsEditor/entries/itemGroup.fxml")
 				.orElseThrow(IllegalStateException::new);
 		ItemGroupController itemGroupController = itemGroupControllerLoader.<ItemGroupController>getController();
+		itemGroupController.setList(itemGroupEntries);
 
 		FXMLLoader monsterGroupControllerLoader = FXMLHelper.loadFXML("/fxml/definitionsEditor/entries/monsterGroup.fxml")
 				.orElseThrow(IllegalStateException::new);
@@ -150,7 +157,9 @@ public class DefinitionsEditor {
 		if (event.getButton() == MouseButton.SECONDARY) {
 
 			MenuItem addMenuItem = new MenuItem("Add New Item Group");
-			addMenuItem.setOnAction(event1 -> itemGroupEntries.add(new ItemGroupEntry())); //TODO Ask for name, check if exists
+			ItemGroupEntry entry = new ItemGroupEntry();
+			entry.id += "_" + numberOfEntries++;
+			addMenuItem.setOnAction(event1 -> itemGroupEntries.add(entry)); //TODO Ask for name, check if exists
 
 			MenuItem cancelMenuItem = new MenuItem("Cancel");
 
@@ -205,4 +214,30 @@ public class DefinitionsEditor {
 		}
 	}
 
+	@FXML
+	private void saveAndClose() {
+		closeAction = CloseAction.SAVE;
+		close();
+	}
+
+	@FXML
+	private void close() {
+		((Stage) contextHelper.getScene().getWindow()).close();
+	}
+
+	public CloseAction getCloseAction() {
+		return closeAction;
+	}
+
+	public ObservableList<ItemGroupEntry> getItemGroupEntries() {
+		return itemGroupEntries;
+	}
+
+	public ObservableList<MonsterGroupEntry> getMonsterGroupEntries() {
+		return monsterGroupEntries;
+	}
+
+	public ObservableList<OvermapEntry> getOvermapEntries() {
+		return overmapEntries;
+	}
 }

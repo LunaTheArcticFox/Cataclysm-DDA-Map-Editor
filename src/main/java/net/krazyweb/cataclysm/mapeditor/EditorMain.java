@@ -147,6 +147,11 @@ public class EditorMain {
 	}
 
 	@Subscribe
+	public void definitionsChangedEventListener(final DefinitionsChangedEvent event) {
+		refreshTitle();
+	}
+
+	@Subscribe
 	public void undoRedoPerformedEventListener(final UndoBufferChangedEvent event) {
 		undoButton.setText("_Undo " + event.getUndoText());
 		undoButton.setDisable(event.getUndoText().isEmpty());

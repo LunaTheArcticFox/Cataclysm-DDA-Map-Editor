@@ -22,7 +22,7 @@ public class OvermapEntry implements Jsonable {
 	private OvermapEntry lastSavedState;
 
 	public OvermapEntry() {
-		name = "Overmap";
+		name = "overmap";
 	}
 
 	public OvermapEntry(final OvermapEntry entry) {

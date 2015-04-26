@@ -12,7 +12,7 @@ public class MonsterGroupEntry implements Jsonable {
 	private MonsterGroupEntry lastSavedState;
 
 	public MonsterGroupEntry() {
-		name = "Monster Group";
+		name = "MONSTER_GROUP";
 	}
 
 	public MonsterGroupEntry(final String name, final String defaultGroup, final List<MonsterGroupMonster> monsters) {
