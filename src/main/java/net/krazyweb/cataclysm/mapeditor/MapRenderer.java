@@ -266,7 +266,24 @@ public class MapRenderer {
 
 			//TODO Bitwise mapping of texture
 			graphics.setComposite(tileComposite);
-			graphics.drawImage(SwingFXUtils.fromFXImage(tool.getHighlightTile(currentTile), null), point.x * tileSize, point.y * tileSize, null);
+			Image texture = tool.getHighlightTile(currentTile);
+			if (texture == null) {
+				if (map.getFillTerrain() == null) {
+					BufferedImage tempTexture = new BufferedImage(MapEditor.SIZE, MapEditor.SIZE, BufferedImage.TYPE_4BYTE_ABGR);
+					Graphics2D graphics2D = tempTexture.createGraphics();
+					graphics2D.setPaint(java.awt.Color.BLACK);
+					graphics2D.fillRect(0, 0, MapEditor.SIZE, MapEditor.SIZE);
+					texture = SwingFXUtils.toFXImage(tempTexture, null);
+				} else {
+					TileConfiguration tileConfiguration = TileConfiguration.get(map.getFillTerrain());
+					if (tileConfiguration.isMultiTile()) {
+						texture = SwingFXUtils.toFXImage(tileSet.textures.get(tileConfiguration.getTile(TileConfiguration.AdditionalTileType.UNCONNECTED).getID()), null);
+					} else {
+						texture = SwingFXUtils.toFXImage(tileSet.textures.get(tileConfiguration.getID()), null);
+					}
+				}
+			}
+			graphics.drawImage(SwingFXUtils.fromFXImage(texture, null), point.x * tileSize, point.y * tileSize, null);
 			graphics.setComposite(overlayComposite);
 
 		}
