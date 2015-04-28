@@ -9,7 +9,7 @@
       alignment="CENTER_LEFT" prefHeight="54.0" prefWidth="598.0" spacing="15.0">
     <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true" />
     <Label>Monsters:</Label>
-    <TextField fx:id="monster" prefWidth="150"/>
+    <TextField fx:id="monsterGroup" prefWidth="150"/>
     <Label>Density:</Label>
     <TextField fx:id="density" prefWidth="75"/>
     <Label>Chance:</Label>

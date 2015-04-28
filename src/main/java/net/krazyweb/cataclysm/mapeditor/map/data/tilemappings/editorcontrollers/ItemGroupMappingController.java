@@ -2,8 +2,10 @@ package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import net.krazyweb.cataclysm.mapeditor.CataclysmDefinitions;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.ItemGroupMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
+import net.krazyweb.util.AutoCompletePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +17,7 @@ public class ItemGroupMappingController extends MappingController {
 	private static final Logger log = LogManager.getLogger(ItemGroupMappingController.class);
 
 	@FXML
-	private TextField item, chance;
+	private TextField itemGroup, chance;
 
 	private ItemGroupMapping mapping;
 
@@ -25,10 +27,10 @@ public class ItemGroupMappingController extends MappingController {
 
 			this.mapping = (ItemGroupMapping) mapping;
 
-			item.setText(this.mapping.item + "");
+			itemGroup.setText(this.mapping.item + "");
 			this.mapping.chance.ifPresent(value -> chance.setText(value.toString()));
 
-			item.textProperty().addListener((observable, oldValue, newValue) -> {
+			itemGroup.textProperty().addListener((observable, oldValue, newValue) -> {
 				this.mapping.item = newValue;
 			});
 
@@ -43,6 +45,8 @@ public class ItemGroupMappingController extends MappingController {
 					}
 				}
 			});
+
+			AutoCompletePopup.bind(itemGroup, CataclysmDefinitions.itemGroups);
 
 		} else {
 			throw new IllegalArgumentException("TileMapping '" + mapping + "' should be of type ItemGroupMapping.");

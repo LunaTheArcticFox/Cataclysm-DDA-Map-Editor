@@ -73,6 +73,7 @@ public class EditorMain {
 		showGroupsButton.setSelected(appSettings.getBoolean(ApplicationSettings.Preference.SHOW_GROUPS));
 
 		Tile.loadTiles();
+		CataclysmDefinitions.load();
 
 		new TileSet(appSettings.getPath(GAME_FOLDER).resolve(Paths.get("gfx", "ChestHoleTileset")), eventBus);
 

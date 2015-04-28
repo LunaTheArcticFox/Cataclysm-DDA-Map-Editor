@@ -2,8 +2,10 @@ package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import net.krazyweb.cataclysm.mapeditor.CataclysmDefinitions;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.VehicleMapping;
+import net.krazyweb.util.AutoCompletePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -69,6 +71,8 @@ public class VehicleMappingController extends MappingController {
 					}
 				}
 			});
+
+			AutoCompletePopup.bind(vehicle, CataclysmDefinitions.vehicles);
 
 		} else {
 			throw new IllegalArgumentException("TileMapping '" + mapping + "' should be of type VehicleMapping.");

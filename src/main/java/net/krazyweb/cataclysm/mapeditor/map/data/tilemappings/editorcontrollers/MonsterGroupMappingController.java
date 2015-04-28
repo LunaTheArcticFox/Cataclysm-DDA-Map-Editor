@@ -2,8 +2,10 @@ package net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.editorcontrollers
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TextField;
+import net.krazyweb.cataclysm.mapeditor.CataclysmDefinitions;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.MonsterGroupMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
+import net.krazyweb.util.AutoCompletePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,7 +17,7 @@ public class MonsterGroupMappingController extends MappingController {
 	private static final Logger log = LogManager.getLogger(MonsterGroupMappingController.class);
 
 	@FXML
-	private TextField monster, density, chance;
+	private TextField monsterGroup, density, chance;
 
 	private MonsterGroupMapping mapping;
 
@@ -25,12 +27,12 @@ public class MonsterGroupMappingController extends MappingController {
 
 			this.mapping = (MonsterGroupMapping) mapping;
 
-			monster.setText(this.mapping.monster);
+			monsterGroup.setText(this.mapping.monster);
 
 			this.mapping.density.ifPresent(value -> density.setText(value.toString()));
 			this.mapping.chance.ifPresent(value -> chance.setText(value.toString()));
 
-			monster.textProperty().addListener((observable, oldValue, newValue) -> {
+			monsterGroup.textProperty().addListener((observable, oldValue, newValue) -> {
 				this.mapping.monster = newValue;
 			});
 
@@ -57,6 +59,8 @@ public class MonsterGroupMappingController extends MappingController {
 					}
 				}
 			});
+
+			AutoCompletePopup.bind(monsterGroup,  CataclysmDefinitions.monsterGroups);
 
 		} else {
 			throw new IllegalArgumentException("TileMapping '" + mapping + "' should be of type MonsterGroupMapping.");

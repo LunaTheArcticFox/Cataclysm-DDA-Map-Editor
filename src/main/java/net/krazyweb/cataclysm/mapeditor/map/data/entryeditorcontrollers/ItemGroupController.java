@@ -1,12 +1,15 @@
 package net.krazyweb.cataclysm.mapeditor.map.data.entryeditorcontrollers;
 
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import net.krazyweb.cataclysm.mapeditor.CataclysmDefinitions;
 import net.krazyweb.cataclysm.mapeditor.map.data.ItemGroupEntry;
+import net.krazyweb.util.AutoCompletePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,14 +55,21 @@ public class ItemGroupController {
 
 		root.getChildren().removeAll(addedRows);
 		int i = 3;
+
+		if (itemGroupEntry.itemSpawns.isEmpty()) {
+			itemGroupEntry.itemSpawns.add(new ItemGroupEntry.ItemSpawn("item_" + (int) (Math.random() * 1000), 50));
+		}
+
 		for (ItemGroupEntry.ItemSpawn itemSpawn : itemGroupEntry.itemSpawns) {
 
-			TextField groupField = new TextField(itemSpawn.name);
-			groupField.setPrefWidth(200);
-			groupField.textProperty().addListener((observable, oldValue, newValue) -> {
+			TextField itemField = new TextField(itemSpawn.name);
+			itemField.setPrefWidth(200);
+			itemField.textProperty().addListener((observable, oldValue, newValue) -> {
 				itemSpawn.name = newValue;
 				//TODO Input validation
 			});
+
+			AutoCompletePopup.bind(itemField, FXCollections.observableArrayList(CataclysmDefinitions.items));
 
 			TextField chanceField = new TextField(String.valueOf(itemSpawn.chance));
 			chanceField.setPrefWidth(45);
@@ -74,11 +84,11 @@ public class ItemGroupController {
 				updateItemGroupRows();
 			});
 
-			addedRows.add(groupField);
+			addedRows.add(itemField);
 			addedRows.add(chanceField);
 			addedRows.add(deleteButton);
 
-			root.add(groupField, 0, i);
+			root.add(itemField, 0, i);
 			root.add(chanceField, 1, i);
 			root.add(deleteButton, 2, i++);
 

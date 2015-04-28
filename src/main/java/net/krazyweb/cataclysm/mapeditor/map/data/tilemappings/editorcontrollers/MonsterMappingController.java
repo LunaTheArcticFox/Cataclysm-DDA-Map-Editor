@@ -4,8 +4,10 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
+import net.krazyweb.cataclysm.mapeditor.CataclysmDefinitions;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.MonsterMapping;
 import net.krazyweb.cataclysm.mapeditor.map.data.tilemappings.TileMapping;
+import net.krazyweb.util.AutoCompletePopup;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -52,6 +54,8 @@ public class MonsterMappingController extends MappingController {
 					this.mapping.name = Optional.of(newValue);
 				}
 			});
+
+			AutoCompletePopup.bind(monster, CataclysmDefinitions.monsters);
 
 		} else {
 			throw new IllegalArgumentException("TileMapping '" + mapping + "' should be of type MonsterMapping.");
