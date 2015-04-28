@@ -2,6 +2,7 @@ package net.krazyweb.cataclysm.mapeditor;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.krazyweb.util.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -43,9 +44,7 @@ public class Tile {
 		Path gameFolder = ApplicationSettings.getInstance().getPath(ApplicationSettings.Preference.GAME_FOLDER);
 
 		try {
-			load(gameFolder.resolve(Paths.get("data", "json", "terrain.json")));
-			load(gameFolder.resolve(Paths.get("data", "json", "furniture.json")));
-			load(gameFolder.resolve(Paths.get("data", "json", "terrain", "ags_terrain.json")));
+			load(gameFolder.resolve(Paths.get("data", "json")));
 		} catch (IOException e) {
 			log.error("Error while loading terrain and furniture definitions:", e);
 		}
@@ -54,30 +53,56 @@ public class Tile {
 
 	private static void load(final Path path) throws IOException {
 
-		log.info("Loading tiles from: '" + path + "'");
+		FileUtils.listFiles(path).stream().filter(file -> file.getFileName().toString().endsWith(".json")).forEach(file -> {
 
-		JsonNode root = new ObjectMapper().readTree(path.toFile());
+			log.info("Loading tiles from: '" + file + "'");
 
-		root.forEach(node -> {
+			try {
 
-			boolean connectsToWalls = false;
+				JsonNode root = new ObjectMapper().readTree(file.toFile());
 
-			if (node.has("flags")) {
-				for (JsonNode flag : node.get("flags")) {
+				root.forEach(node -> {
 
-					String parsedFlag = flag.asText().replaceAll("\"", "");
+					if (node.get("type").asText().equals("terrain") || node.get("type").asText().equals("furniture")) {
 
-					if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
-						log.trace("Connects to Walls: " + node.get("id").asText());
-						connectsToWalls = true;
-						break;
+						boolean connectsToWalls = false;
+
+						if (node.has("flags")) {
+							for (JsonNode flag : node.get("flags")) {
+
+								String parsedFlag = flag.asText().replaceAll("\"", "");
+
+								if (parsedFlag.equals("CONNECT_TO_WALL") || parsedFlag.equals("WALL")) {
+									log.trace("Connects to Walls: " + node.get("id").asText());
+									connectsToWalls = true;
+									break;
+								}
+
+							}
+						}
+
+						tiles.add(new Tile(node.get("id").asText(), connectsToWalls));
+						log.trace("Loaded tile: '" + node.get("id").asText() + "'");
+
 					}
 
-				}
+				});
+
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 
-			tiles.add(new Tile(node.get("id").asText(), connectsToWalls));
-			log.trace("Loaded tile: '" + node.get("id").asText() + "'");
+		});
+
+		tiles.sort((tile1, tile2) -> {
+
+			if (tile1.id.startsWith("t_") && tile2.id.startsWith("f_")) {
+				return -1;
+			} else if (tile1.id.startsWith("f_") && tile2.id.startsWith("t_")) {
+				return 1;
+			}
+
+			return 0;
 
 		});
 
