@@ -10,7 +10,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseButton;
 import javafx.stage.Popup;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,20 +33,7 @@ public class AutoCompletePopup {
 
 	public static void bind(final TextField textField, final ObservableList<String> options) {
 
-		options.sort((o1, o2) -> {
-
-			double distance1 = StringUtils.getJaroWinklerDistance(textField.getText(), o1);
-			double distance2 = StringUtils.getJaroWinklerDistance(textField.getText(), o2);
-
-			if (distance1 > distance2) {
-				return -1;
-			} else if (distance1 < distance2) {
-				return 1;
-			}
-
-			return 0;
-
-		});
+		StringUtils.sortByClosestMatch(options, textField.getText());
 
 		AutoCompletePopup autoCompletePopup = new AutoCompletePopup();
 		autoCompletePopup.optionList = new ListView<>(options);
@@ -63,25 +49,10 @@ public class AutoCompletePopup {
 			}
 		});
 
+
 		textField.textProperty().addListener((observable, oldValue, newValue) -> {
-
-			options.sort((o1, o2) -> {
-
-				double distance1 = StringUtils.getJaroWinklerDistance(newValue, o1);
-				double distance2 = StringUtils.getJaroWinklerDistance(newValue, o2);
-
-				if (distance1 > distance2) {
-					return -1;
-				} else if (distance1 < distance2) {
-					return 1;
-				}
-
-				return 0;
-
-			});
-
+			StringUtils.sortByClosestMatch(options, newValue);
 			autoCompletePopup.optionList.getSelectionModel().selectFirst();
-
 		});
 
 		autoCompletePopup.optionList.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
