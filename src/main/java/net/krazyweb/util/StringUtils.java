@@ -1,6 +1,6 @@
 package net.krazyweb.util;
 
-import java.util.List;
+import java.util.*;
 
 public class StringUtils {
 
@@ -26,12 +26,24 @@ public class StringUtils {
 
 	public static void sortByClosestMatch(final List<String> strings, final String toMatch) {
 
-		String toFind = toMatch.replaceAll("[_\\s]", "");
+		subStrings.clear();
+
+		String toFind = toMatch.replaceAll("[_\\s]", "").toLowerCase();
+
+		Map<String, Double> scores = new HashMap<>();
 
 		strings.sort((string1, string2) -> {
 
-			double distance1 = getScore(string1, toFind);
-			double distance2 = getScore(string2, toFind);
+			if (!scores.containsKey(string1)) {
+				scores.put(string1, getScore(string1, toFind));
+			}
+
+			if (!scores.containsKey(string2)) {
+				scores.put(string2, getScore(string2, toFind));
+			}
+
+			double distance1 = scores.get(string1);
+			double distance2 = scores.get(string2);
 
 			if (distance1 > distance2) {
 				return -1;
@@ -55,63 +67,124 @@ public class StringUtils {
 
 	}
 
-	//TODO Clean this up and optimize it
+	private static List<String> subStrings = new ArrayList<>();
+	private static String[] subs;
+	private static int[] subLengths;
+
+	//TODO Clean this up
 	private static double getScore(final String string, final String toFind) {
 
 		String toTest = string.replaceAll("_", "");
 
-		double distance = org.apache.commons.lang3.StringUtils.getJaroWinklerDistance(toTest, toFind);
+		double distance = 1;
 
 		int longestMatch = -1;
 		int numberOfMatches = 0;
 
-		for (int x = 0; x < toFind.length(); x++) {
-			for (@SuppressWarnings("SuspiciousNameCombination") int y = x; y <= toFind.length(); y++) {
+		int toTestLength = toTest.length();
+		int toFindLength = toFind.length();
 
-				if (x == y) {
-					continue;
+		if (subStrings.isEmpty()) {
+
+			for (int x = 0; x < toFindLength; x++) {
+				for (@SuppressWarnings("SuspiciousNameCombination") int y = x; y <= toFindLength; y++) {
+
+					if (x == y) {
+						continue;
+					}
+
+					String sub = toFind.substring(x, y);
+					if (toFindLength < 4 || sub.length() > 1) {
+						subStrings.add(sub);
+					}
+
 				}
-
-				String sub = toFind.substring(x, y);
-
-				if (toTest.contains(sub) && sub.length() > longestMatch) {
-					longestMatch = sub.length();
-					numberOfMatches = 1;
-				} else if (toTest.contains(sub) && sub.length() == longestMatch) {
-					numberOfMatches++;
-				}
-
 			}
+
+			subStrings.sort((o1, o2) -> {
+				if (o1.length() > o2.length()) {
+					return -1;
+				} else if (o1.length() < o2.length()) {
+					return 1;
+				}
+				return 0;
+			});
+
+			subs = new String[subStrings.size()];
+			subLengths = new int[subStrings.size()];
+			for (int i = 0; i < subStrings.size(); i++) {
+				subs[i] = subStrings.get(i);
+				subLengths[i] = subs[i].length();
+			}
+
 		}
 
-		distance -= (toTest.length() / (toFind.length() + 0.000001)) * 0.2;
+		boolean foundSubstring = false;
+		int matchIndex, bestIndex = Integer.MAX_VALUE;
 
-		double percent = (double) longestMatch / toFind.length();
+		for (int i = 0; i < subStrings.size(); i++) {
+
+			String sub = subs[i];
+			int subLength = subLengths[i];
+
+			if (subLength > toTestLength) {
+				continue;
+			} if (subLength > longestMatch && (matchIndex = toTest.indexOf(sub)) > -1) {
+				longestMatch = subLength;
+				numberOfMatches = 1;
+				foundSubstring = true;
+				if (matchIndex < bestIndex) {
+					bestIndex = matchIndex;
+				}
+			} else if (subLength == longestMatch && (matchIndex = toTest.indexOf(sub)) > -1) {
+				numberOfMatches++;
+				if (matchIndex < bestIndex) {
+					bestIndex = matchIndex;
+				}
+			} else if (foundSubstring) {
+				break;
+			}
+
+			//if (attempts++ > 0) {
+			//	break;
+			//}
+
+		}
+
+		distance -= (double) bestIndex / 35.0;
+		distance -= (toTestLength / (toFindLength + 0.000001)) * 0.2;
+
+		double percent = (double) longestMatch / toFindLength;
 		distance += (percent * (numberOfMatches * 1.5) + longestMatch);
 
 		//% of toFind's characters in toTest
-		String toButcher = toTest;
-		String matches = "";
-		for (int i = 0; i < toFind.length(); i++) {
-			char c = toFind.charAt(i);
-			if (toButcher.indexOf(c) > -1) {
-				toButcher = toButcher.replaceFirst(String.valueOf(c), "");
-				matches += String.valueOf(c);
+		List<Character> toFindChars = new ArrayList<>();
+		for (char c : toFind.toCharArray()) {
+			toFindChars.add(c);
+		}
+
+		int foundCount = 0;
+		for (char c : toTest.toCharArray()) {
+			if (toFindChars.remove((Character) c)) {
+				foundCount++;
+				if (foundCount == toFindLength) {
+					break;
+				}
 			}
 		}
 
-		percent = (double) matches.length() / toFind.length();
-		distance *= percent;
+		distance *= ((double) foundCount / toFindLength);
 
 		int furthestIndex = 0;
 		String found = "";
-		for (int i = 0; i < toFind.length(); i++) {
+		for (int i = 0; i < toFindLength; i++) {
 			int index = toTest.indexOf(toFind.charAt(i), furthestIndex);
+			char c = toFind.charAt(i);
 			if (index == -1) {
-				index = toTest.indexOf(toFind.charAt(i));
-				found = toFind.charAt(i) + found;
+				index = toTest.indexOf(c);
+				found = c + found;
 			} else if (index > -1) {
-				found += toFind.charAt(i);
+				found += c;
 			}
 			if (index > furthestIndex) {
 				furthestIndex = index;
@@ -120,27 +193,24 @@ public class StringUtils {
 
 		furthestIndex = 0;
 		double score = 1;
-		String temp = toFind;
 
 		for (int i = 0; i < found.length(); i++) {
 
-			int index = temp.indexOf(found.charAt(i), furthestIndex);
+			int index = toFind.indexOf(found.charAt(i), furthestIndex);
 
 			if (index == -1) {
-				index = temp.indexOf(found.charAt(i));
+				index = toFind.indexOf(found.charAt(i));
 			}
 
 			if (index > furthestIndex) {
 				furthestIndex = index;
 			} else if (index < furthestIndex) {
-				score *= 0.8;
+				score *= 0.5;
 			}
-
-			temp = temp.substring(0, index) + temp.substring(index + 1, temp.length());
 
 		}
 
-		percent = (double) found.length() / toFind.length();
+		percent = (double) found.length() / toFindLength;
 		distance += (percent * score);
 
 		return distance;
