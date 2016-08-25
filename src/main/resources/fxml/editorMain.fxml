@@ -5,14 +5,14 @@
 <?import javafx.scene.input.*?>
 <?import javafx.scene.layout.*?>
 <?import java.net.URL?>
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" fx:controller="net.krazyweb.cataclysm.mapeditor.EditorMain" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
-	<stylesheets>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="175.0" prefWidth="300.0" fx:id="root" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+	<!--<stylesheets>
 		<URL value="@style.css" />
-	</stylesheets>
+	</stylesheets>-->
 	<top>
 		<MenuBar BorderPane.alignment="CENTER">
 			<Menu text="_File">
-				<MenuItem text="New _Project" onAction="#newFile">
+				<MenuItem text="New _Project" onAction="#newProject">
 					<accelerator><KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/></accelerator>
 				</MenuItem>
 				<MenuItem text="_New Map" onAction="#newMap">

@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<?import javafx.scene.layout.BorderPane?>
-<?import org.controlsfx.control.StatusBar?>
-<StatusBar fx:controller="net.krazyweb.cataclysm.mapeditor.StatusBarController" fx:id="statusBar" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" prefHeight="20.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-	<!--<rightItems>
-		<Slider snapToTicks="true" showTickMarks="true" minorTickCount="0" majorTickUnit="25" min="50" max="300" value="100" onMouseReleased="#zoom" fx:id="zoomSlider"/>
-	</rightItems>-->
-</StatusBar>
