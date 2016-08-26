@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor
+package net.krazyweb.cataclysm.mapeditor.data
 
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -16,7 +16,7 @@ val BITWISE_TYPES = arrayOf(TileConfiguration.UNCONNECTED, TileConfiguration.END
 data class Tileset(val width: Int, val height: Int, val isometric: Boolean = false, val pixelScale: Int = 1, val tiles: MutableMap<String, Tile> = sortedMapOf())
 data class Tile(val id: String, val texture: BufferedImage, val rotates: Boolean = false, val multiTile: Boolean = false, val additionalTiles: Map<TileConfiguration, BufferedImage> = mutableMapOf())
 
-fun loadTileset(path: Path) {
+fun loadTileset(path: Path): Tileset {
 
 	val root = ObjectMapper().readTree(path.toFile())
 	val tileInfo = root["tile_info"]
@@ -67,6 +67,8 @@ fun loadTileset(path: Path) {
 		}
 
 	}
+
+	return tileset
 
 }
 

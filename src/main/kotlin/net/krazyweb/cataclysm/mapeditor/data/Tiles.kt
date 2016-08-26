@@ -1,4 +1,4 @@
-package net.krazyweb.cataclysm.mapeditor
+package net.krazyweb.cataclysm.mapeditor.data
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import net.krazyweb.util.FileUtils
